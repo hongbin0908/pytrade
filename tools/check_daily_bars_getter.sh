@@ -5,7 +5,7 @@
 #@desc a simple wrapers of run_daily_bars_getter.sh in crontab
 #########################
 export PATH=/bin/:/usr/bin/:$PATH
-export SCRIPT_PATH=`dirname $(readlink -f $0)` # get the path of the script
+export SCRIPT_PATH=`cd $(dirname $0); pwd` # get the path of the script
 pushd . > /dev/null
 cd "$SCRIPT_PATH"
 

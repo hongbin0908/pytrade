@@ -3,10 +3,11 @@ import sys,os,urllib2,time
 from multiprocessing import Pool
 local_path = os.path.dirname(os.path.abspath(sys.argv[0]))
 sys.path.append(local_path + "/./")
+sys.path.append(local_path + "/../common/")
 
-from pyalgotrade.tools import yahoofinance;
+import YahooFinceExted as yahoofinance;
 
-root = "/home/work/stock_data/"
+root = "/data0/work/workplace/stock_data/"
 
 def get_sp500():#{{{
     finviz_retry = 3
@@ -27,9 +28,7 @@ def one_work(symbol):
     retry = 3
     while retry >= 0:
         try:
-            year = time.strftime('%Y',time.localtime(time.time()))
-            year = int(year)
-            yahoofinance.download_daily_bars(symbol, year, os.path.join(root, symbol + ".csv.bk"))
+            yahoofinance.download_daily_bars_full(symbol, os.path.join(root, symbol + ".csv.bk"))
             os.rename(os.path.join(root,symbol+".csv.bk"), os.path.join(root,symbol+".csv"))
         except Exception,ex:
             print symbol, Exception, ":", ex
