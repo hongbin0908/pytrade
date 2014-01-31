@@ -12,48 +12,77 @@ import talib
 import pyalgotrade.talibext.indicator
 from pyalgotrade import strategy
 from pyalgotrade.barfeed import yahoofeed
+from pyalgotrade.tools import yahoofinance
+from pyalgotrade import plotter
 
 
 class ExtBrokeUpStrategy(strategy.BacktestingStrategy):
     """
     __instrument : the code trading
     """
-    def __init__(self, feed, instrument):
+    def __init__(self, feed, instruments):
         strategy.BacktestingStrategy.__init__(self, feed)
-        self.__instrument = instrument
-        self.__position = None
+        self.__instruments = instruments
+        self.__positions = {}
+        self.__stops= {}
+        for instrument in instruments:
+            self.__positions[instrument] = None
+            self.__stops[instrument] = -1
+    def entry_signal(self, barDs):
+        #adx = pyalgotrade.talibext.indicator.ADX(barDs, 100,14)
+        highs = barDs.getHighDataSeries()
+        lows = barDs.getLowDataSeries()
+        if len(highs)  < 30:
+            return False
+        cur_range = highs[-1] - lows[-1]
+        for i in range(9):
+            price_range = highs[-1 -i -1] - lows[-1 -i -1]
+            if (cur_range < price_range):
+                return False
+        for i in range(29):
+            if (highs[-1] < highs[-1 - i - 1]):
+                return False
+        return True
+    def exit_signal(self,instrument, barDs):
+        position = self.__positions[instrument]
+        highs = barDs.getHighDataSeries()
+        closes = barDs.getCloseDataSeries()
+        lows = closes = barDs.getLowDataSeries()
+        cur_high = highs[-1]
+        cur_close = closes[-1]
+        cur_low = lows[-1]
+        entry_price = position.getEntryOrder().getExecutionInfo().getPrice()
+        if (self.__stops[instrument] < 0) :
+            self.__stops[instrument] = cur_close * 0.95
+        elif cur_low < self.__stops[instrument]:
+            return True
+        else:
+            if self.__stops[instrument] < cur_close * 0.95:
+                self.__stops[instrument] = cur_close * 0.95
+        return False
+
     def onBars(self, bars):
-        barDs = self.getFeed().getDataSeries("orcl")
-        adx = pyalgotrade.talibext.indicator.ADX(barDs, 100,14)
-        if adx == None:
-            return
-        print adx[-1]
-        if adx[-1] > 10:
-            self.__position = self.enterLong(self.__instrument, 10, True)
-        if adx[-1] < 10:
-            if (self.__position != None):
-                self.__position.exit()
-    def onEnterOk(self, position):
-        execInfo = position.getEntryOrder().getExecutionInfo()
-        print "%s: BUY at $%.2f" % (execInfo.getDateTime(), execInfo.getPrice())
-    def onEnterCanceled(self, position):
-        self.__position = None
-    def onExitOk(self, position):
-        execInfo = position.getExitOrder().getExecutionInfo()
-        print "%s: SELL at $%.2f" % (execInfo.getDateTime(), execInfo.getPrice())
-        self.__position = None
-    def onExitCanceled(self, position):
-        # If the exit was canceled, re-submit it.
-        self.__position.exit()
-    def onStart(self):
-        print "Initial portfolio value: $%.2f" % self.getBroker().getEquity()
-    def onFinish(self, bars):
-        print "Final portfolio value: $%.2f" % self.getBroker().getEquity()
+        for instrument in self.__instruments:
+            barDs = self.getFeed().getDataSeries(instrument)
+            if self.__positions[instrument] == None:
+                if self.entry_signal(barDs):
+                    self.__positions[instrument] = self.enterLong(instrument, 10, True)
+            else:
+                if self.exit_signal(instrument, barDs):
+                    self.__positions[instrument].exit()
+                    entryOrder = self.__positions[instrument].getEntryOrder().getExecutionInfo()
+                    exitOrder = self.__positions[instrument].getExitOrder().getExecutionInfo()
+                    print "trade: buy:%f %s sell:%f %s" % (entryOrder.getPrice(), entryOrder.getDateTime(),0,0)# exitOrder.getPrice(), exitOrder.getDateTime())
+                    self.__positions[instrument] = None
+
 def main():
-    feed = yahoofeed.Feed()
-    feed.addBarsFromCSV("orcl", os.path.join(local_path,"orcl-2000.csv"))
-    stg = ExtBrokeUpStrategy(feed, "orcl")
+    instruments = ["orcl","bidu"]
+    feed = yahoofinance.build_feed(instruments, 2011,2012,".")
+    stg = ExtBrokeUpStrategy(feed, instruments)
+    plt = plotter.StrategyPlotter(stg, True, True, True)
     stg.run()
+    plt.plot()
+
 
 if __name__ == '__main__':
     main()

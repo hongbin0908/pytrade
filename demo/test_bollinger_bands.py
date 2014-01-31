@@ -1,8 +1,8 @@
 from pyalgotrade import strategy
-from pyalgotrade.barfeed import yahoofeed
 from pyalgotrade import plotter
 from pyalgotrade.tools import yahoofinance
 from pyalgotrade.technical import bollinger
+from pyalgotrade.barfeed import yahoofeed
 
 import os
 
