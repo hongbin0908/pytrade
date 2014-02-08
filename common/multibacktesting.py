@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.7
+#!/usr/bin/env python
 # author hongbin0908@126.com
 # a common strategy 
 
@@ -16,6 +16,8 @@ from pyalgotrade import plotter
 
 from utils import *
 
+
+now = int(time.time())
 
 # static
 class UltraPosition:
@@ -67,9 +69,12 @@ class Multibacktesting(strategy.BacktestingStrategy):
                  a position traded on this instrument
     """
     def __init__(self):
-        #instruments = ['A', 'AA', 'AAPL', 'ABC', 'ABT', 'ACE', 'ACN', 'ACT', 'ADBE', 'ADI', 'ADM', 'ADP', 'ADS', 'ADSK', 'AEE', 'AEP', 'AES', 'AET', 'AFL', 'AGN', 'AIG', 'AIV', 'AIZ', 'AKAM', 'ALL', 'ALTR', 'ALXN', 'AMAT', 'AME', 'AMGN', 'AMP', 'AMT', 'AMZN', 'AN', 'AON', 'APA', 'APC', 'APD', 'APH', 'ARG', 'ATI', 'AVB', 'AVP', 'AVY', 'AXP', 'AZO', 'BA', 'BAC', 'BAX', 'BBBY', 'BBT', 'BBY', 'BCR', 'BDX', 'BEAM', 'BEN', 'BF-B', 'BHI', 'BIIB', 'BK', 'BLK', 'BLL', 'BMS', 'BMY', 'BRCM', 'BRK-B', 'BSX', 'BTU',  'BXP', 'C', 'CA', 'CAG', 'CAH', 'CAM', 'CAT', 'CB', 'CBG', 'CBS', 'CCE', 'CCI', 'CCL', 'CELG', 'CERN', 'CF', 'CFN', 'CHK', 'CHRW', 'CI', 'CINF', 'CL', 'CLF', 'CLX', 'CMA', 'CMCSA', 'CME', 'CMG', 'CMI', 'CMS', 'CNP', 'CNX', 'COF', 'COG', 'COH', 'COL', 'COP', 'COST', 'COV', 'CPB', 'CRM', 'CSC', 'CSCO', 'CSX', 'CTAS', 'CTL', 'CTSH', 'CTXS', 'CVC', 'CVS', 'CVX', 'D', 'DAL', 'DD', 'DE', 'DFS', 'DG', 'DGX', 'DHI', 'DHR', 'DIS', 'DISCA',  'DLTR', 'DNB', 'DNR', 'DO', 'DOV', 'DOW', 'DPS', 'DRI', 'DTE', 'DTV', 'DUK', 'DVA', 'DVN', 'EA', 'EBAY', 'ECL', 'ED', 'EFX', 'EIX', 'EL', 'EMC', 'EMN', 'EMR', 'EOG', 'EQR', 'EQT', 'ESRX', 'ESV', 'ETFC', 'ETN', 'ETR', 'EW', 'EXC', 'EXPD', 'EXPE', 'F', 'FAST', 'FCX', 'FDO', 'FDX', 'FE', 'FFIV', 'FIS', 'FISV', 'FITB', 'FLIR', 'FLR', 'FLS', 'FMC', 'FOSL', 'FOXA', 'FRX', 'FSLR', 'FTI', 'FTR', 'GAS', 'GCI', 'GD', 'GE',  'GHC', 'GILD', 'GIS', 'GLW',  'GME', 'GNW', 'GOOG', 'GPC', 'GPS', 'GRMN', 'GS', 'GT', 'GWW', 'HAL', 'HAR', 'HAS', 'HBAN', 'HCBK', 'HCN', 'HCP', 'HD', 'HES', 'HIG', 'HOG', 'HON', 'HOT', 'HP', 'HPQ', 'HRB', 'HRL', 'HRS', 'HSP', 'HST', 'HSY', 'HUM', 'IBM', 'ICE', 'IFF', 'IGT', 'INTC', 'INTU', 'IP', 'IPG', 'IR', 'IRM', 'ISRG', 'ITW', 'IVZ', 'JBL', 'JCI', 'JEC', 'JNJ', 'JNPR', 'JOY', 'JPM', 'JWN', 'K', 'KEY',  'TWX', 'TXN', 'TXT', 'TYC', 'UNH', 'UNM', 'UNP', 'UPS', 'URBN', 'USB', 'UTX', 'V', 'VAR', 'VFC', 'VIAB', 'VLO', 'VMC', 'VNO', 'VRSN', 'VRTX', 'VTR', 'VZ', 'WAG', 'WAT', 'WDC', 'WEC', 'WFC', 'WFM', 'WHR', 'WIN', 'WLP', 'WM', 'WMB', 'WMT', 'WU', 'WY', 'WYN', 'WYNN', 'X', 'XEL', 'XL', 'XLNX', 'XOM', 'XRAY', 'XRX', 'YHOO', 'YUM', 'ZION', 'ZMH']
+        #instruments = get_sp500_2()
         instruments = ['A', 'AA']
-        feed = yahoofinance.build_feed(instruments, 2010,2014,"/tmp")
+        tmp_dir = "/home/work/workplace/tmp"
+        if not os.path.exists(tmp_dir):
+            os.mkdir(tmp_dir)
+        feed = yahoofinance.build_feed(instruments, 2010,2014,"/home/work/workplace/tmp/")
         strategy.BacktestingStrategy.__init__(self, feed)
         self.__instruments = instruments;
         self.__positions = {}
@@ -86,9 +91,12 @@ class Multibacktesting(strategy.BacktestingStrategy):
             barDs = self.getFeed().getDataSeries(instrument)
             bar = bars[instrument]
             datetime =  bar.getDateTime()
+            dtstamp = time.mktime(datetime.timetuple())
             poss = self.__positions[instrument]
             if len(poss) == 0 or not poss[-1].isOpen():
                 entry = self.long(instrument, datetime, barDs)
+                if dtstamp > now - 24 * 7 * 3600 :
+                    print "SCAN: long %s %s" % (datetime, instrument)
                 if entry.quantity < 0:
                     entry.quantity = 10000
                 if entry.entryType == 1:
@@ -97,6 +105,8 @@ class Multibacktesting(strategy.BacktestingStrategy):
                     poss.append(pos)
             if len(poss) == 0 or not poss[-1].isOpen():
                 entry = self.short(instrument, datetime, barDs)
+                if dtstamp >  now - 24 * 7 * 3600:
+                    print "SCAN sell %s %s" % (datetime, instrument)
                 if entry.entryType == 2:
                     pos = pyalgotrade.strategy.position.ShortPosition(self, instrument, entry.limitPrice, entry.stopPrice, enry.quantity, False)
                     pos = UltraPosition(pos)
