@@ -4,10 +4,10 @@ class prices_judgement:
         middle_index = len(prices)/2
         b_prices = 0.0
         for s in range(0, middle_index):
-            b_prices += prices[s]
+            b_prices += prices[s]*1.0/(middle_index)
         a_prices = 0.0
         for s in range(middle_index+1, len(prices)):
-            a_prices += prices[s]
+            a_prices += prices[s]*1.0/(len(prices)-middle_index-1)
         if a_prices/b_prices > 1+ threshold:
             return 1
         elif a_prices/b_prices < 1-threshold:
