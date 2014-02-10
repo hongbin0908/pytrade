@@ -48,6 +48,10 @@ class UltraPosition:
         return exe.getPrice()
     def append_info(self, info):
         self.__pinfo.append(info)
+    def exit(self, limitPrice=None, stopPrice=None, goodTillCanceled=None):
+        self.__position.exit(limitPrice, stopPrice, goodTillCanceled)
+    def get_infos(self):
+        return self.__pinfo
 class EntryInfo:
     def __init__(self):
         self.entryType = 0
@@ -95,6 +99,7 @@ class Multibacktesting(strategy.BacktestingStrategy):
             poss = self.__positions[instrument]
             if len(poss) == 0 or not poss[-1].isOpen():
                 entry = self.long(instrument, datetime, barDs)
+
                 if dtstamp > now - 24 * 7 * 3600 :
                     print "SCAN: long %s %s" % (datetime, instrument)
                 if entry.quantity < 0:
@@ -103,6 +108,8 @@ class Multibacktesting(strategy.BacktestingStrategy):
                     pos = pyalgotrade.strategy.position.LongPosition(self,instrument, entry.limitPrice, entry.stopPrice, entry.quantity, False)
                     pos = UltraPosition(pos)
                     poss.append(pos)
+                    # set printable infomation
+                    pos.append_info("long position %s %d %s %s" % (datetime, entry.quantity, str(entry.limitPrice), str(entry.stopPrice)))
             if len(poss) == 0 or not poss[-1].isOpen():
                 entry = self.short(instrument, datetime, barDs)
                 if dtstamp >  now - 24 * 7 * 3600:
@@ -111,28 +118,41 @@ class Multibacktesting(strategy.BacktestingStrategy):
                     pos = pyalgotrade.strategy.position.ShortPosition(self, instrument, entry.limitPrice, entry.stopPrice, enry.quantity, False)
                     pos = UltraPosition(pos)
                     poss.append(pos)
-            if len(poss) != 0 and poss[-1].is_entered():
-                self.exit(instrument, poss[-1], datetime, barDs)
+                    # set printable information
+                    pos.append_info("short position %s %d %s %s" % (datetime, entry.quantity, str(entry.limitPrice), str(entry.stopPrice)))
+            if len(poss) != 0 and poss[-1].is_entered() and poss[-1].isOpen():
+                exit = self.exit(instrument, poss[-1], datetime, barDs)
+                if exit.exitType == 1:
+                    poss[-1].exit(exit.limitPrice, exit.stopPrice)
+                    poss[-1].append_info("exit position %s %d %s %s" % (datetime, exit.quantity, str(exit.limitPrice), str(exit.stopPrice)))
+                
     def onEnterOk(self, position):
         instrument = position.getInstrument()
-        pos = self.__positions[instrument]
+        poss = self.__positions[instrument]
         einfo = position.getEntryOrder().getExecutionInfo()
-        #pos.append_info("%s entry success at %f"%( einfo.getDateTime(), einfo.getPrice()))
+        poss[-1].append_info("%s entry success at %f"%( einfo.getDateTime(), einfo.getPrice()))
     def onExitOk(self, position):
         instrument = position.getInstrument()
-        pos = self.__positions[instrument]
+        poss = self.__positions[instrument]
         entry = position.getEntryOrder().getExecutionInfo()
         exit = position.getExitOrder().getExecutionInfo()
-        #print "%s trade: buy:%f %s sell:%f %s" % ( instrument, entry.getPrice(), entry.getDateTime(), exit.getPrice(), exit.getDateTime()),
-        #gains = exit.getPrice()  - entry.getPrice()
-        #gains = gains/entry.getPrice() * 100
-        #print "gains: %.2f%%" % gains 
-        #for info in self.__extinfos[instrument]["pos_info"]:
-        #    print "\t\t", info
-        #self.clean(instrument)
+        poss[-1].append_info(" sell:%s %f" % (exit.getDateTime(), exit.getPrice()))
+    def print_detail(self):
+        for instrument in self.__positions:
+            poss = self.__positions[instrument]
+            print instrument,
+            index = 1
+            for pos in poss:
+                print "\t#%d:", index
+                for info in pos.get_infos():
+                    print "\t\t%s", info
+                index += 1
+
+
     def run_plot(self):
         plt = plotter.StrategyPlotter(self, False, True, True)
         self.run()
+        self.print_detail()
         plt.plot()
 
 
