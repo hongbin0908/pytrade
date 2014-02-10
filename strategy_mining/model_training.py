@@ -5,8 +5,10 @@ import sklearn
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import precision_recall_curve
 from sklearn.metrics import auc
+from sklearn.metrics import roc_curve
 from price_judgement import *
 from two_crow_builder import *
+from three_inside_pattern import *
 import numpy
 from sklearn import tree
 
@@ -22,15 +24,17 @@ class base_model:
         self.sample_judgement = sample_judgement_input
         self.model_predictor = model_predictor_input
    
-    def model_process(self, open_price_list, high_price_list, low_price_list, close_price_list, timewindow):
+    def model_process(self, open_price_list, high_price_list, low_price_list, close_price_list, adjust_close_list, volume_list, timewindow):
         samples = []
         classes = []
         for s in range(timewindow, len(open_price_list)-timewindow):
-            prices = close_price_list[s-timewindow:s]
-            price_judge_high = high_price_list[s-timewindow:s+timewindow]
-            price_judge_low = low_price_list[s-timewindow:s+timewindow]
-            price_judge_open = open_price_list[s-timewindow:s+timewindow]
-            price_judge_close = close_price_list[s-timewindow:s+timewindow]
+            prices = close_price_list[s-timewindow:s+timewindow]
+            price_judge_high = high_price_list[s-timewindow:s]
+            price_judge_low = low_price_list[s-timewindow:s]
+            price_judge_open = open_price_list[s-timewindow:s]
+            price_judge_close = close_price_list[s-timewindow:s]
+            adjust_close = adjust_close_list[s-timewindow:s]
+            volume = volume_list[s-timewindow:s]
 
             result = self.sample_judgement.judge(prices, 0.05)
             if result == None:
@@ -40,41 +44,72 @@ class base_model:
                 result_list.append(0)
 
             for mindex, m in enumerate(feature_builder_list):
-                m.feature_build(price_judge_open, price_judge_high, price_judge_low, price_judge_close, mindex, result_list)
-            if result_list[0] != 0:
-                print result_list[0]
-                print result
+                m.feature_build(price_judge_open, price_judge_high, price_judge_low, price_judge_close, adjust_close, volume, mindex, result_list)
             samples.append(result_list)
             classes.append(result)
+            tmp_str = str(result)
+            for s in result_list:
+                tmp_str = tmp_str + "\t" + str(s)
+            print tmp_str
 #        if len(samples) < 100:
 #            sys.stderr.write("sample is too small\n")
 #            sys.exit(1)
 #
         model_predictor.fit(numpy.array(samples), numpy.array(classes))
         predict_value = model_predictor.predict_proba(numpy.array(samples))
-        precision, recall, threshold = precision_recall_curve(numpy.array(classes), predict_value[:,0])
+        precision, recall, threshold = roc_curve(numpy.array(classes), predict_value[:,0])
         print precision
         print recall
         print threshold
-#        area = auc(recall, precision)
-#        print "auc = %.4f" %(area)
+        area = auc(recall, precision)
+        print "auc = %.4f" %(area)
 
-    def result_predict(self, input_x):
-        return self.model_predictor.predict(input_x)
+    def result_predict(self, open_price_list, high_price_list, low_price_list, close_price_list, adjust_close_list, volume_list, timewindow):
+        samples = []
         
+        open_price = open_price_list[-timewindow-1: -1]
+        high_price = high_price_list[-timewindow-1: -1]
+        low_price = low_price_list[-timewindow-1:-1]
+        close_price = close_price_list[-timewindow - 1 : -1]
+        adjust_price = adjust_close_list[-timewindow - 1 : -1]
+        volume = volume_list[-timewindow - 1 : -1]
+        for index, s in enumerate(self.feature_builder_list):
+            samples.append(m.feature_build(price_judge_open, price_judge_high, price_judge_low, price_judge_close, adjust_close, volume, mindex, result_list))
+        predict_value = self.model_predictor.predict(samples)
+        return predict_value
+ 
+    def result_predictprob(self, open_price_list, high_price_list, low_price_list, close_price_list, adjust_close_list, volume_list, timewindow):
+        samples = []
+        
+        open_price = open_price_list[-timewindow-1: -1]
+        high_price = high_price_list[-timewindow-1: -1]
+        low_price = low_price_list[-timewindow-1:-1]
+        close_price = close_price_list[-timewindow - 1 : -1]
+        adjust_price = adjust_close_list[-timewindow - 1 : -1]
+        volume = volume_list[-timewindow - 1 : -1]
+        for index, s in enumerate(self.feature_builder_list):
+            samples.append(m.feature_build(price_judge_open, price_judge_high, price_judge_low, price_judge_close, adjust_close, volume, mindex, result_list))
+        predict_value = self.model_predictor.predict_prob(samples)
+        return predict_value
+
 if __name__ == "__main__":
     judger = prices_judgement()
     two_crow = twocrow_builder()
+    three_inside = three_inside_up_builder()
     feature_builder_list = []
     feature_builder_list.append(two_crow)
-    model_predictor = LogisticRegression()
+    feature_builder_list.append(three_inside)
+
+    model_predictor = tree.DecisionTreeClassifier()
     model = base_model(feature_builder_list, judger, model_predictor)
     open_prices = []
     high_prices = []
     low_prices = []
     close_prices = []
-    load_data(sys.argv[1], open_prices, high_prices, low_prices, close_prices)
+    adjust_close = []
+    volume = []
+    load_data(sys.argv[1], open_prices, high_prices, low_prices, close_prices, adjust_close, volume)
     
-    model.model_process(numpy.array(open_prices), numpy.array(high_prices), numpy.array(low_prices), numpy.array(close_prices), 14)
-    input_test = numpy.array([-100])
-    print model.result_predict(input_test)
+    model.model_process(numpy.array(open_prices), numpy.array(high_prices), numpy.array(low_prices), numpy.array(close_prices), numpy.array(adjust_close), numpy.array(volume), 14)
+#    input_test = numpy.array([-100, 100])
+#    print model.result_predict(input_test)
