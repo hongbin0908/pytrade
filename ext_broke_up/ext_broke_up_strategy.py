@@ -69,7 +69,7 @@ class ExtBrokeUpStrategy(Multibacktesting):
                 exit.exitType = 1
             elif cur_close < entry_price * 0.95 :
                 exit.exitType = 1
-        return False
+        return exit
 
 if __name__ == '__main__':
     ExtBrokeUpStrategy().run_plot()
