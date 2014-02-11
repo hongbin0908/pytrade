@@ -19,14 +19,14 @@ class base_model:
     feature_builder_list = []
     sample_judgement = None
     model_predictor = None
+    samples = []
+    classes = []
     def __init__(self, feature_builder_list_input, sample_judgement_input, model_predictor_input):
         self.feature_builder_list = feature_builder_list_input
         self.sample_judgement = sample_judgement_input
         self.model_predictor = model_predictor_input
-   
-    def model_process(self, open_price_list, high_price_list, low_price_list, close_price_list, adjust_close_list, volume_list, timewindow):
-        samples = []
-        classes = []
+
+    def build_sample(self, open_price_ist, high_price_list, low_price_list, close_price_list, adjust_close_list, volume_list, timewindow):
         for s in range(timewindow, len(open_price_list)-timewindow):
             prices = close_price_list[s-timewindow:s+timewindow]
             price_judge_high = high_price_list[s-timewindow:s]
@@ -45,17 +45,15 @@ class base_model:
 
             for mindex, m in enumerate(feature_builder_list):
                 m.feature_build(price_judge_open, price_judge_high, price_judge_low, price_judge_close, adjust_close, volume, mindex, result_list)
-            samples.append(result_list)
-            classes.append(result)
+            self.samples.append(result_list)
+            self.classes.append(result)
             tmp_str = str(result)
             for s in result_list:
                 tmp_str = tmp_str + "\t" + str(s)
             print tmp_str
-#        if len(samples) < 100:
-#            sys.stderr.write("sample is too small\n")
-#            sys.exit(1)
-#
-        model_predictor.fit(numpy.array(samples), numpy.array(classes))
+
+    def model_process(self):
+        model_predictor.fit(numpy.array(self.samples), numpy.array(self.classes))
         predict_value = model_predictor.predict_proba(numpy.array(samples))
         precision, recall, threshold = roc_curve(numpy.array(classes), predict_value[:,0])
         print precision
@@ -108,8 +106,11 @@ if __name__ == "__main__":
     close_prices = []
     adjust_close = []
     volume = []
-    load_data(sys.argv[1], open_prices, high_prices, low_prices, close_prices, adjust_close, volume)
-    
-    model.model_process(numpy.array(open_prices), numpy.array(high_prices), numpy.array(low_prices), numpy.array(close_prices), numpy.array(adjust_close), numpy.array(volume), 14)
+    file_list = []
+    for s in file_list:
+        load_data(file_list, open_prices, high_prices, low_prices, close_prices, adjust_close, volume)
+        model.build_sample(open_prices, high_prices, low_prices, close_prices, adjust_close, volume, 14)
+   
+    model.model_process()
 #    input_test = numpy.array([-100, 100])
 #    print model.result_predict(input_test)
