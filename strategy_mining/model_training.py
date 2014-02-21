@@ -3,6 +3,7 @@ import sys
 import os
 import sklearn
 from sklearn.linear_model import LogisticRegression
+from sklearn.svm import SVC
 from sklearn.metrics import precision_recall_curve
 from sklearn.metrics import auc
 from sklearn.metrics import roc_curve
@@ -13,6 +14,8 @@ from three_inside_strike import *
 import numpy
 from sklearn import tree
 from other_pattern import *
+from sklearn import cross_validation
+from  sklearn.naive_bayes import GaussianNB
 class base_model:
     #定义基本属性
     name = "base_model"
@@ -60,14 +63,26 @@ class base_model:
     def model_process(self):
         if len(self.samples) == 0:
             return
-        model_predictor.fit(numpy.array(self.samples), numpy.array(self.classes))
-        predict_value = model_predictor.predict_proba(numpy.array(self.samples))
-        precision, recall, threshold = roc_curve(numpy.array(self.classes), predict_value[:,0])
-        print precision
-        print recall
-        print threshold
-        area = auc(recall, precision)
-        print "auc = %.4f" %(area)
+        total_num = len(self.samples) - 1
+        print total_num
+        bs = cross_validation.Bootstrap(total_num, 3, train_size =1500, test_size = 395, random_state=0)
+        print len(bs)
+        for s, s_test in bs:
+            tmp_list = []
+            tmp_test = []
+            tmp_class = []
+            tmp_test_class = []
+            for m in s:
+                tmp_list.append(self.samples[m])
+                tmp_class.append(self.classes[m])
+            for m in s_test:
+                tmp_test.append(self.samples[m])
+                tmp_test_class.append(self.classes[m])
+            model_predictor.fit(numpy.array(tmp_list), numpy.array(tmp_class))
+            predict_value = model_predictor.predict_proba(numpy.array(tmp_test))
+            precision, recall, threshold = roc_curve(numpy.array(tmp_test_class), predict_value[:0])
+            area = auc(recall, precision)
+            print "auc = %.4f" %(area)
 
     def result_predict(self, open_price_list, high_price_list, low_price_list, close_price_list, adjust_close_list, volume_list, timewindow):
         samples = []
@@ -82,7 +97,9 @@ class base_model:
             samples.append(m.feature_build(price_judge_open, price_judge_high, price_judge_low, price_judge_close, adjust_close, volume, mindex, result_list))
         predict_value = self.model_predictor.predict(samples)
         return predict_value
- 
+    def dump_model(self):
+        pass        
+
     def result_predictprob(self, open_price_list, high_price_list, low_price_list, close_price_list, adjust_close_list, volume_list, timewindow):
         samples = []
         
@@ -178,8 +195,7 @@ if __name__ == "__main__":
     feature_builder_list.append(belt_hold)
     feature_builder_list.append(break_away)
     feature_builder_list.append(conceal_baby)
-    print len(feature_builder_list)
-    model_predictor = tree.DecisionTreeClassifier()
+    model_predictor = GaussianNB()
     model = base_model(feature_builder_list, judger, model_predictor)
     open_prices = []
     high_prices = []
