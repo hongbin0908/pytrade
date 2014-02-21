@@ -77,8 +77,8 @@ class Multibacktesting(strategy.BacktestingStrategy):
                  a position traded on this instrument
     """
     def __init__(self):
-        #instruments = get_sp500_2()
-        instruments = ['A', 'AA']
+        instruments = get_sp500_2()
+        #instruments = ['A', 'AA']
         tmp_dir = "/home/work/workplace/tmp"
         if not os.path.exists(tmp_dir):
             os.mkdir(tmp_dir)
