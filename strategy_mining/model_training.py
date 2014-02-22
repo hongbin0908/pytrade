@@ -122,10 +122,10 @@ def get_file_list():
     a help function to load test data.
     """
     file_list = []
-    for f in os.listdir(os.path.join(local_path, "../../tmp")):
+    for f in os.listdir(os.path.join(local_path, "tmp")):
         if f != None and not f.endswith(".csv"):
             continue
-        file_list.append(os.path.join(local_path, "../../tmp", f))
+        file_list.append(os.path.join(local_path, "tmp", f))
          
     return file_list
 if __name__ == "__main__":
