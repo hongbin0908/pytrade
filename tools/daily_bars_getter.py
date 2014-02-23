@@ -7,7 +7,7 @@ sys.path.append(local_path + "/../common/")
 
 import YahooFinceExted as yahoofinance;
 
-root = "/data0/work/workplace/stock_data/"
+root = "/home/work/workplace/stock_data/"
 
 def get_sp500():#{{{
     finviz_retry = 3

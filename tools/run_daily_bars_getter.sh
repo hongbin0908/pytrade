@@ -7,10 +7,9 @@
 #########################
 export PATH=/bin/:/usr/bin/:$PATH
 export SCRIPT_PATH=`cd $(dirname $0); pwd`
-pushd . > /dev/null
 cd "$SCRIPT_PATH"
 
-mkdir -p /data0/work/workplace/stock_data
+mkdir -p /home/work/workplace/stock_data
 mkdir -p ${SCRIPT_PATH}/../log/
 logfile=${SCRIPT_PATH}/../log/get_stock_prices.py.log.$(date '+%Y%m%d')
 echo "tools/daily_bars_getter.py start ..." >> $logfile
@@ -22,5 +21,4 @@ done
 
 echo "tools/daily_bars_getter.py start ..." >> $logfile
 
-popd  > /dev/null # return the directory orignal
 
