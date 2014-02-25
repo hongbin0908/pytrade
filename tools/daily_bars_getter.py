@@ -49,7 +49,7 @@ def main():
     for s in get_nasdaq2000():
         symbols.add(s)
     symbols = list(symbols)
-    pool = Pool(processes =100)
+    pool = Pool(processes =10)
     result = {}
     for symbol in symbols:
         result[symbol] = pool.apply_async(one_work, (symbol,))
