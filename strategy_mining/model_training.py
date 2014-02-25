@@ -241,7 +241,7 @@ def get_predict_value():
        load_data(s, open_prices, high_prices, low_prices, close_prices, adjust_close, volume)
        result = model.result_predict(numpy.array(open_prices), numpy.array(high_prices), numpy.array(low_prices), numpy.array(close_prices),
            numpy.array(adjust_close), numpy.array(volume), 7)
-       if result[0] > 0.5:
+       if result[0] > 0.9:
            print "%s\t%.4f" %(s, result[0])
            
 

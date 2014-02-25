@@ -9,6 +9,14 @@ import YahooFinceExted as yahoofinance;
 
 root = "/home/work/workplace/stock_data/"
 
+def get_nasdaq2000():
+    fd = open(local_path+"/nasdaq_symbols", 'r')
+    ss=[]
+    for j in fd:
+        stock_name = j.rstrip()
+        ss.append(stock_name)
+    return ss
+
 def get_sp500():#{{{
     finviz_retry = 3
     while finviz_retry >= 0:
@@ -37,7 +45,10 @@ def one_work(symbol):
         break
 
 def main():
-    symbols = get_sp500()
+    symbols = set(get_sp500())
+    for s in get_nasdaq2000():
+        symbols.add(s)
+    symbols = list(symbols)
     pool = Pool(processes =100)
     result = {}
     for symbol in symbols:
