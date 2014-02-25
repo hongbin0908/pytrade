@@ -1,3 +1,3 @@
 # Run system activity accounting tool every 10 minutes
-*/1 * * * * root /bin/sh /home/work/workplace/pytrade/tools/check_daily_bars_getter.sh
+*/1 * * * * root /bin/bash /home/work/workplace/pytrade/tools/check_daily_bars_getter.sh
 
