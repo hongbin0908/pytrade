@@ -7,88 +7,45 @@ import two_crow_builder
 class three_inside_strike_builder():
     def feature_build(self, open_price, high_price, low_price, close_price, adjust_close, volume, index, feature_result_list):
         result = talib.CDL3LINESTRIKE(open_price, high_price, low_price, close_price)
-#        for s in result:
-#            if s != 0:
-#                print s
-        middle_index = len(open_price)-1
-        feature_result_list[index] = result[middle_index]
-
+        return result
 class three_outside_move_builder():
     def feature_build(self, open_price, high_price, low_price, close_price, adjust_close, volume, index, feature_result_list):
         result = talib.CDL3OUTSIDE(open_price, high_price, low_price, close_price)
-#        for s in result:
-#            if s != 0:
-#                print s
-        middle_index = len(open_price)-1
-        feature_result_list[index] = result[middle_index]
-            
+        return result 
 class three_star_south_builder():
     def feature_build(self, open_price, high_price, low_price, close_price, adjust_close, volume, index, feature_result_list):
         result = talib.CDL3STARSINSOUTH(open_price, high_price, low_price, close_price)
-#        for s in result:
-#            if s != 0:
-#                print s
-        middle_index = len(open_price)-1
-        feature_result_list[index] = result[middle_index]
+        return result
 
 class three_ad_white_soldier_builder():
     def feature_build(self, open_price, high_price, low_price, close_price, adjust_close, volume, index, feature_result_list):
         result = talib.CDL3WHITESOLDIERS(open_price, high_price, low_price, close_price)
-#        for s in result:
-#            if s != 0:
-#                print s
-        middle_index = len(open_price)-1
-        feature_result_list[index] = result[middle_index]
-
+        return result
 
 class abandoned_baby_builder():
     def feature_build(self, open_price, high_price, low_price, close_price, adjust_close, volume, index, feature_result_list):
         result = talib.CDLABANDONEDBABY(open_price, high_price, low_price, close_price)
-#        for s in result:
-#            if s != 0:
-#                print s
-        middle_index = len(open_price)-1
-        feature_result_list[index] = result[middle_index]
-
+        return result
 
 class three_ad_block_builder():
     def feature_build(self, open_price, high_price, low_price, close_price, adjust_close, volume, index, feature_result_list):
         result = talib.CDLADVANCEBLOCK(open_price, high_price, low_price, close_price)
-#        for s in result:
-#            if s != 0:
-#                print s
-        middle_index = len(open_price)-1
-        feature_result_list[index] = result[middle_index]
-
+        return result
 
 class belt_hold_builder():
     def feature_build(self, open_price, high_price, low_price, close_price, adjust_close, volume, index, feature_result_list):
         result = talib.CDLBELTHOLD(open_price, high_price, low_price, close_price)
-#        for s in result:
-#            if s != 0:
-#                print s
-        middle_index = len(open_price)-1
-        feature_result_list[index] = result[middle_index]
-
+        return result
     
 class breakaway_builder():
     def feature_build(self, open_price, high_price, low_price, close_price, adjust_close, volume, index, feature_result_list):
         result = talib.CDLBREAKAWAY(open_price, high_price, low_price, close_price)
-#        for s in result:
-#            if s != 0:
-#                print s
-        middle_index = len(open_price)-1
-        feature_result_list[index] = result[middle_index]
-
+        return result
 
 class conceal_baby_swallow_builder():
     def feature_build(self, open_price, high_price, low_price, close_price, adjust_close, volume, index, feature_result_list):
         result = talib.CDLCONCEALBABYSWALL(open_price, high_price, low_price, close_price)
-#        for s in result:
-#            if s != 0:
-#                print s
-        middle_index = len(open_price)-1
-        feature_result_list[index] = result[middle_index]
+        return result
 if __name__ == "__main__":
     print "begin"
     tmp_low = []

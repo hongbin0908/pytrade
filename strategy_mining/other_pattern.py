@@ -10,9 +10,11 @@ class feature_builder():
         builder_list.append(self)
     def feature_build(self, open_price, high_price, low_price, close_price, adjust_close, volume, index, feature_result_list):
         result = self.feature_build_func(open_price, high_price, low_price, close_price)
+        return result
+    def feature_build_with_three_price(self, open_price, high_price, low_price, close_price, adjust_close, volume, index, feature_result_list):
+        result = self.feature_build_func(open_price, high_price, close_price)
         middle_index = len(open_price)-1
         feature_result_list[index] = result[middle_index]
-
             
 if __name__ == "__main__":
     print "begin"

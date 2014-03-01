@@ -6,14 +6,17 @@ import numpy
 class twocrow_builder():
     def feature_build(self, open_price, high_price, low_price, close_price, adjust_price, volume, index, feature_result_list):
         result = talib.CDL2CROWS(open_price, high_price, low_price, close_price)
-        middle_index = len(open_price)-1
-        feature_result_list[index] = result[middle_index]
-
+        return result
 def load_data(filename, open_price, high_price, low_price, close_price, adjust_price, volume_list):
     fd = open(filename, "r")
     for j in fd:
         try:
             line_list = j.rstrip().split(",")
+            tmp_date = line_list[0]
+            if tmp_date == "2013-02-01":
+                fd.close()
+                return
+
             open_p = float(line_list[1])
             high_p = float(line_list[2])
             low_p = float(line_list[3])
