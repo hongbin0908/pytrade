@@ -6,10 +6,11 @@ sys.path.append(local_path + "/./")
 
 import sklearn
 from sklearn.linear_model import LogisticRegression
-from sklearn.svm import SVC
+from sklearn.svm import SVR
 from sklearn.metrics import precision_recall_curve
 from sklearn.metrics import auc
 from sklearn.metrics import roc_curve
+from sklearn import metrics
 from price_judgement import *
 from two_crow_builder import *
 from three_inside_pattern import *
@@ -22,6 +23,7 @@ from momentum_pattern import *
 from sklearn import cross_validation
 from  sklearn.naive_bayes import GaussianNB
 from sklearn.ensemble import GradientBoostingRegressor
+from sklearn.ensemble import RandomForestRegressor 
 class base_model:
     #定义基本属性
     name = "base_model"
@@ -103,6 +105,9 @@ class base_model:
         if len(self.samples) == 0:
             return
         self.model_predictor.fit(self.samples, self.classes)
+        predict_value = self.model_predictor.predict(self.samples)
+        r2_score = metrics.r2_score(self.classes, predict_value)
+        print r2_score
 #        predict_value = self.model_predictor.score_samples(self.samples)
 #        predict_value = self.model_predictor.predict(self.samples)
 #        print numpy.array(tmp_test_class).shape
@@ -134,12 +139,12 @@ class base_model:
     def result_predict(self, open_price_list, high_price_list, low_price_list, close_price_list, adjust_close_list, volume_list, timewindow):
         samples = []
 #        
-        open_price = open_price_list[-timewindow-1:-1]
-        high_price = high_price_list[-timewindow-1:-1]
-        low_price = low_price_list[-timewindow-1:-1]
-        close_price = close_price_list[-timewindow - 1 :-1]
-        adjust_price = adjust_close_list[-timewindow - 1 :-1]
-        volume = volume_list[-timewindow - 1 : -1]
+        open_price = open_price_list[-timewindow-1:]
+        high_price = high_price_list[-timewindow-1:]
+        low_price = low_price_list[-timewindow-1:]
+        close_price = close_price_list[-timewindow - 1 :]
+        adjust_price = adjust_close_list[-timewindow - 1 :]
+        volume = volume_list[-timewindow - 1 :]
         try:
             for index, s in enumerate(self.feature_builder_list):
                 samples.append(s.feature_build(open_price_list, high_price_list, low_price_list, close_price_list, adjust_close_list, volume_list, index, timewindow)[-1])
@@ -150,7 +155,7 @@ class base_model:
         if numpy.all(tmp_sample == 0):
             return [0]
         predict_value = self.model_predictor.predict(tmp_sample)
-        if predict_value > 1.02:
+        if predict_value > 1.04:
             return [predict_value]
         else:
             return [0]
@@ -254,7 +259,7 @@ def get_predict_value():
    feature_builder_list.append(break_away)
    feature_builder_list.append(conceal_baby)
    
-   model_predictor = GradientBoostingRegressor()
+   model_predictor = GradientBoostingRegressor() 
    model = base_model(feature_builder_list, judger, model_predictor)
    all_open_prices = []
    all_high_prices = []
