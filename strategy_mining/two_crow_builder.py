@@ -14,10 +14,13 @@ def load_data(filename, open_price, high_price, low_price, close_price, adjust_p
         try:
             line_list = j.rstrip().split(",")
             tmp_date = line_list[0]
-            if tmp_date == "2013-07-01":
+            if tmp_date == "2013-02-01":
                 fd.close()
                 return
             open_p = float(line_list[1])
+            if open_p < 10.0:
+                fd.close()
+                return
             high_p = float(line_list[2])
             low_p = float(line_list[3])
             close_p = float(line_list[4])
@@ -25,7 +28,7 @@ def load_data(filename, open_price, high_price, low_price, close_price, adjust_p
             high_price.append(high_p)
             low_price.append(low_p)
             close_price.append(close_p)
-            volume = int(line_list[5])
+            volume = float(line_list[5])
             adjust_p = float(line_list[6])
             adjust_price.append(adjust_p)
             volume_list.append(volume)

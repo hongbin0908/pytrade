@@ -20,9 +20,12 @@ import numpy
 from sklearn import tree
 from other_pattern import *
 from momentum_pattern import *
+from volume_pattern import *
 from sklearn import cross_validation
 from  sklearn.naive_bayes import GaussianNB
-#from sklearn.ensemble import GradientBoostingRegressor
+from sklearn.ensemble import ExtraTreesRegressor
+from sklearn import neural_network
+from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.ensemble import RandomForestRegressor 
 class base_model:
     #定义基本属性
@@ -42,11 +45,13 @@ class base_model:
     def build_sample(self, open_price_list, high_price_list, low_price_list, close_price_list, adjust_close_list, volume_list, timewindow):
         self.int_num = self.int_num + 1
         samples = []
+        if len(open_price_list) < 7:
+            return
         for mindex, m in enumerate(self.feature_builder_list):
             result = m.feature_build(open_price_list, high_price_list, low_price_list, close_price_list, adjust_close_list, volume_list, mindex, timewindow).tolist()
             samples.append(m.feature_build(open_price_list, high_price_list, low_price_list, close_price_list, adjust_close_list, volume_list, mindex, timewindow).tolist())
         tmp_array = numpy.nan_to_num(numpy.column_stack(samples))
-        tmp_prices = self.sample_judgement.judge(adjust_close_list, 0.05, 14)
+        tmp_prices = self.sample_judgement.judge(adjust_close_list, 0.05, 7)
         #判断是否是无效的
 #        print "before=", self.samples.shape
         for s in range(0, tmp_array.shape[0]):
@@ -105,9 +110,9 @@ class base_model:
     def model_process(self):
         if len(self.samples) == 0:
             return
-        self.model_predictor.fit(self.samples, self.classes)
-        predict_value = self.model_predictor.predict(self.samples)
-        r2_score = metrics.r2_score(self.classes, predict_value)
+        self.model_predictor.fit(self.samples[0:300000], self.classes[0:300000])
+        predict_value = self.model_predictor.predict(self.samples[300001:])
+        r2_score = metrics.r2_score(self.classes[300001:], predict_value)
         print r2_score
 #        predict_value = self.model_predictor.score_samples(self.samples)
 #        predict_value = self.model_predictor.predict(self.samples)
@@ -139,7 +144,8 @@ class base_model:
 
     def result_predict(self, open_price_list, high_price_list, low_price_list, close_price_list, adjust_close_list, volume_list, timewindow):
         samples = []
-#        
+        if len(open_price_list) < timewindow:
+            return      
         open_price = open_price_list[-timewindow-1:-1]
         high_price = high_price_list[-timewindow-1:-1]
         low_price = low_price_list[-timewindow-1:-1]
@@ -167,12 +173,12 @@ class base_model:
     def result_predictprob(self, open_price_list, high_price_list, low_price_list, close_price_list, adjust_close_list, volume_list, timewindow):
         samples = []
         
-        open_price = open_price_list[-timewindow-1: -1]
-        high_price = high_price_list[-timewindow-1: -1]
-        low_price = low_price_list[-timewindow-1:-1]
-        close_price = close_price_list[-timewindow - 1 : -1]
-        adjust_price = adjust_close_list[-timewindow - 1 : -1]
-        volume = volume_list[-timewindow - 1 : -1]
+        open_price = open_price_list[-timewindow:]
+        high_price = high_price_list[-timewindow:]
+        low_price = low_price_list[-timewindow:]
+        close_price = close_price_list[-timewindow :]
+        adjust_price = adjust_close_list[-timewindow  :]
+        volume = volume_list[-timewindow :]
         for index, s in enumerate(self.feature_builder_list):
             samples.append(m.feature_build(price_judge_open, price_judge_high, price_judge_low, price_judge_close, adjust_close, volume, mindex, result_list))
         predict_value = self.model_predictor.predict_prob(samples)
@@ -252,6 +258,8 @@ def get_predict_value():
    feature_builder_ohc(talib.MINUS_DI, feature_builder_list)
    feature_builder_ohc(talib.PLUS_DI, feature_builder_list)
    feature_builder_ohc(talib.WILLR, feature_builder_list)
+   feature_builder_volume(talib.ADOSC, feature_builder_list)
+   feature_builder_volume(talib.AD, feature_builder_list)
    feature_builder_list.append(three_inside)
    feature_builder_list.append(three_inside_strike)
    feature_builder_list.append(three_outside_move)
@@ -263,7 +271,8 @@ def get_predict_value():
    feature_builder_list.append(break_away)
    feature_builder_list.append(conceal_baby)
    
-   model_predictor = RandomForestRegressor(n_estimators=5) 
+#   model_predictor = RandomForestRegressor(n_estimators=5) 
+   model_predictor = GradientBoostingRegressor()
    model = base_model(feature_builder_list, judger, model_predictor)
    all_open_prices = []
    all_high_prices = []
@@ -287,9 +296,9 @@ def get_predict_value():
        close_prices.reverse()
        adjust_close.reverse()
        volume.reverse()
-       if len(open_prices) < 14:
+       if len(open_prices) < 7:
            continue
-       model.build_sample(numpy.array(open_prices[:-14]), numpy.array(high_prices[:-14]), numpy.array(low_prices[:-14]), numpy.array(close_prices[:-14]), numpy.array(adjust_close[:-14]), numpy.array(volume[:-14]), 14)
+       model.build_sample(numpy.array(open_prices[:-7]), numpy.array(high_prices[:-7]), numpy.array(low_prices[:-7]), numpy.array(close_prices[:-7]), numpy.array(adjust_close[:-7]), numpy.array(volume[:-7]), 7)
    model.post_process()
    model.model_process()
    num  = 0
@@ -308,8 +317,10 @@ def get_predict_value():
        adjust_close.reverse()
        volume.reverse()
        result = model.result_predict(numpy.array(open_prices), numpy.array(high_prices), numpy.array(low_prices), numpy.array(close_prices),
-           numpy.array(adjust_close), numpy.array(volume), 14)
-       if result[0] > 1.12:
+           numpy.array(adjust_close), numpy.array(volume), 7)
+       if result == None:
+           continue
+       if result[0] >1.12 and result[0] > 0:
            num = num + 1
            print "%s\t%.4f" %(s, result[0])
    print num
