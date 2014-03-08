@@ -28,48 +28,37 @@ from sklearn import neural_network
 from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.ensemble import RandomForestRegressor 
 class base_model:
-    #定义基本属性
-    name = "base_model"
+
     #特征生成方法列表，其中，每一个特征的参数形式均为(prices_list, index,feature_result_list),其中，index表示该特征生成的下标，生成的结果会存放在feature_result_list下
     feature_builder_list = []
     sample_judgement = None
     model_predictor = None
     samples = []
     classes = []
-    int_num = 0
+    int_num = 0 # give the visual presition of the precess
     def __init__(self, feature_builder_list_input, sample_judgement_input, model_predictor_input):
         self.feature_builder_list = feature_builder_list_input
         self.sample_judgement = sample_judgement_input
         self.model_predictor = model_predictor_input
 
     def build_sample(self, open_price_list, high_price_list, low_price_list, close_price_list, adjust_close_list, volume_list, timewindow):
+        """
+        timewindow: 
+        """
         self.int_num = self.int_num + 1
         samples = []
-        if len(open_price_list) < 7:
+        if len(open_price_list) < timewindow * 2:
             return
         for mindex, m in enumerate(self.feature_builder_list):
-            result = m.feature_build(open_price_list, high_price_list, low_price_list, close_price_list, adjust_close_list, volume_list, mindex, timewindow).tolist()
+            # tolist is to ignore the memery copy of numy list
             samples.append(m.feature_build(open_price_list, high_price_list, low_price_list, close_price_list, adjust_close_list, volume_list, mindex, timewindow).tolist())
         tmp_array = numpy.nan_to_num(numpy.column_stack(samples))
         tmp_prices = self.sample_judgement.judge(adjust_close_list, 0.05, 7)
         #判断是否是无效的
-#        print "before=", self.samples.shape
         for s in range(0, tmp_array.shape[0]):
             if (numpy.any(tmp_array[s]!=0 )) and (tmp_prices[s] != -2 ):
                 self.samples.append(tmp_array[s])
                 self.classes.append(tmp_prices[s])
-#                tmp_list = []
-#                tmp_price = []
-#                tmp_list.append(tmp_array[s])
-#                tmp_price.append(tmp_prices[s])
-#                if self.samples.shape[0] == 0:
-#                    self.samples = numpy.array(tmp_list)
-#                    self.classes = numpy.array(tmp_price)
-#                else:
-#                    tmp_samples = numpy.append(self.samples, tmp_list, axis=0 )
-#                    self.samples = tmp_samples
-#                    self.classes = numpy.append(self.classes, tmp_price, axis = 1)
-        row_num = len(self.feature_builder_list)
         if self.int_num%10 == 0:
            print self.int_num
     def post_process(self):
@@ -78,80 +67,28 @@ class base_model:
         tmp_prices = numpy.array(self.classes)
         self.classes = tmp_prices
         print self.samples.shape
-#    def build_sample(self, open_price_list, high_price_list, low_price_list, close_price_list, adjust_close_list, volume_list, timewindow):
-#        for s in range(timewindow, len(open_price_list)-timewindow):
-#            prices = close_price_list[s-timewindow:s+timewindow]
-#            price_judge_high = high_price_list[s-timewindow:s]
-#            price_judge_low = low_price_list[s-timewindow:s]
-#            price_judge_open = open_price_list[s-timewindow:s]
-#            price_judge_close = close_price_list[s-timewindow:s]
-#            adjust_close = adjust_close_list[s-timewindow:s]
-#            volume = volume_list[s-timewindow:s]
-#            result = self.sample_judgement.judge(prices, 0.05)
-#            if result == None:
-#                continue
-#            result_list = []
-#            for m in range(0, len(self.feature_builder_list)):
-#                result_list.append(-1)
-#
-#            for mindex, m in enumerate(self.feature_builder_list):
-#                m.feature_build(price_judge_open, price_judge_high, price_judge_low, price_judge_close, adjust_close, volume, mindex, result_list)
-#                #print result_list
-#            if result_list.count(0) == len(result_list):
-#                continue
-#            self.samples.append(result_list)
-#            self.classes.append(result)
-#            tmp_str = str(result)
-#            for s in result_list:
-#                tmp_str = tmp_str + "\t" + str(s)
-#            if result_list[0] != 0:
-#                print tmp_str
 
     def model_process(self):
         if len(self.samples) == 0:
             return
-        self.model_predictor.fit(self.samples[0:300000], self.classes[0:300000])
-        predict_value = self.model_predictor.predict(self.samples[300001:])
-        r2_score = metrics.r2_score(self.classes[300001:], predict_value)
+        train_size = len(self.samples) * 0.6
+        print "DEBUG: train size: %d, predict size: %d" % (train_size, len(self.samples) - train_size)
+        self.model_predictor.fit(self.samples[0:train_size], self.classes[0:train_size])
+        predict_value = self.model_predictor.predict(self.samples[train_size:])
+        r2_score = metrics.r2_score(self.classes[train_size:], predict_value)
         print r2_score
-#        predict_value = self.model_predictor.score_samples(self.samples)
-#        predict_value = self.model_predictor.predict(self.samples)
-#        print numpy.array(tmp_test_class).shape
-#        print self.model_predictor.class_prior_
-#        precision, recall, threshold = roc_curve(self.classes, predict_value)
-        
-#        area = auc(recall, precision)
-#        print "auc = %.4f" %(area)
-#        for s, s_test in bs:
-#            tmp_list = []
-#            tmp_test = []
-#            tmp_class = []
-#            tmp_test_class = []
-#            for m in s:
-#                tmp_list.append(self.samples[m])
-#                tmp_class.append(self.classes[m])
-#            for m in s_test:
-#                tmp_test.append(self.samples[m])
-#                tmp_test_class.append(self.classes[m])
-#            self.model_predictor.fit(numpy.array(tmp_list), numpy.array(tmp_class))
-#            predict_value = self.model_predictor.predict_proba(numpy.array(tmp_test))
-#            print numpy.array(tmp_test_class).shape
-#            print predict_value.shape
-#            precision, recall, threshold = roc_curve(numpy.array(tmp_test_class), predict_value[:,0])
-#            
-#            area = auc(recall, precision)
-#            print "auc = %.4f" %(area)
 
     def result_predict(self, open_price_list, high_price_list, low_price_list, close_price_list, adjust_close_list, volume_list, timewindow):
         samples = []
         if len(open_price_list) < timewindow:
-            return      
-        open_price = open_price_list[-timewindow-1:-1]
-        high_price = high_price_list[-timewindow-1:-1]
-        low_price = low_price_list[-timewindow-1:-1]
-        close_price = close_price_list[-timewindow - 1 :-1]
-        adjust_price = adjust_close_list[-timewindow - 1 :-1]
-        volume = volume_list[-timewindow - 1 :-1]
+            print "ERROR: the size of input is less than %d" % (timewindow)
+            return -1      
+        open_price = open_price_list[-timewindow-1:]
+        high_price = high_price_list[-timewindow-1:]
+        low_price = low_price_list[-timewindow-1:]
+        close_price = close_price_list[-timewindow - 1 :]
+        adjust_price = adjust_close_list[-timewindow - 1 :]
+        volume = volume_list[-timewindow - 1 :]
         try:
             for index, s in enumerate(self.feature_builder_list):
                 samples.append(s.feature_build(open_price_list, high_price_list, low_price_list, close_price_list, adjust_close_list, volume_list, index, timewindow)[-1])
@@ -168,21 +105,8 @@ class base_model:
             return [0]
 
     def dump_model(self):
+        # TODO
         pass        
-
-    def result_predictprob(self, open_price_list, high_price_list, low_price_list, close_price_list, adjust_close_list, volume_list, timewindow):
-        samples = []
-        
-        open_price = open_price_list[-timewindow:]
-        high_price = high_price_list[-timewindow:]
-        low_price = low_price_list[-timewindow:]
-        close_price = close_price_list[-timewindow :]
-        adjust_price = adjust_close_list[-timewindow  :]
-        volume = volume_list[-timewindow :]
-        for index, s in enumerate(self.feature_builder_list):
-            samples.append(m.feature_build(price_judge_open, price_judge_high, price_judge_low, price_judge_close, adjust_close, volume, mindex, result_list))
-        predict_value = self.model_predictor.predict_prob(samples)
-        return predict_value
 
 def get_predict_value():
    judger = prices_judgement()
