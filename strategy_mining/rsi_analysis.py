@@ -10,7 +10,6 @@
 2. 根据斜率获取price_signal,并进行样本采样
 '''
 import sys
-import os
 import talib
 import numpy
 '''
