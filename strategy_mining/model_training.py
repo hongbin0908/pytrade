@@ -20,7 +20,7 @@ from sklearn.ensemble import ExtraTreesRegressor
 from sklearn import neural_network
 from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.ensemble import RandomForestRegressor 
-
+from sklearn import preprocessing
 from model_traing_features import *
 
 class base_model:
@@ -35,7 +35,7 @@ class base_model:
         self.feature_builder_list = feature_builder_list_input
         self.sample_judgement = sample_judgement_input
         self.model_predictor = model_predictor_input
-
+        self.normalizer = sklearn.preprocessing.MinMaxScaler(feature_range=(0, 1), copy=False)
     def build_sample(self, open_price_list, high_price_list, low_price_list, close_price_list, adjust_close_list, volume_list, timewindow):
         """
         timewindow: 
@@ -59,14 +59,16 @@ class base_model:
     def post_process(self):
         tmp_samples = numpy.array(self.samples)
         self.samples = tmp_samples
+        print self.samples.shape
         tmp_prices = numpy.array(self.classes)
+        self.samples = self.normalizer.fit_transform(tmp_samples, tmp_prices)
         self.classes = tmp_prices
         print self.samples.shape
 
     def model_process(self):
         if len(self.samples) == 0:
             return
-        train_size = len(self.samples) * 0.6
+        train_size = len(self.samples) * 0.8
         print "DEBUG: train size: %d, predict size: %d" % (train_size, len(self.samples) - train_size)
         self.model_predictor.fit(self.samples[0:train_size], self.classes[0:train_size])
         predict_value = self.model_predictor.predict(self.samples[train_size:])
@@ -78,27 +80,28 @@ class base_model:
         if len(open_price_list) < timewindow:
             print "ERROR: the size of input is less than %d" % (timewindow)
             return -1      
-        open_price = open_price_list[-timewindow-1:]
-        high_price = high_price_list[-timewindow-1:]
-        low_price = low_price_list[-timewindow-1:]
-        close_price = close_price_list[-timewindow - 1 :]
-        adjust_price = adjust_close_list[-timewindow - 1 :]
-        volume = volume_list[-timewindow - 1 :]
+        if timewindow < 30:
+            timewindow = 30
+        
+        open_price = open_price_list[-timewindow-2: -2]
+        high_price = high_price_list[-timewindow-2: -2]
+        low_price = low_price_list[-timewindow-2: -2]
+        close_price = close_price_list[-timewindow - 2 : -2]
+        adjust_price = adjust_close_list[-timewindow - 2 : -2]
+        volume = volume_list[-timewindow - 2 : -2]
         try:
             for index, s in enumerate(self.feature_builder_list):
                 samples.append(s.feature_build(open_price_list, high_price_list, low_price_list, close_price_list, adjust_close_list, volume_list, index, timewindow)[-1])
         except Exception,e:
             sys.stderr.write("ERROR exception: %s\n" %(e))
             return [0]
-        tmp_sample = numpy.nan_to_num(numpy.array(samples))
+        tmp_sample = self.normalizer.transform(numpy.nan_to_num(numpy.array(samples)))
         if numpy.all(tmp_sample == 0):
             print "ERROR: the sample data are all zero!"
             return [0]
         predict_value = self.model_predictor.predict(tmp_sample)
-        if predict_value > 1.12:
-            return [predict_value]
-        else:
-            return [0]
+        print predict_value
+        return predict_value[0]
 
     def dump_model(self):
         # TODO
@@ -107,7 +110,7 @@ class base_model:
 def main():
     judger = prices_judgement()
     feature_builder_list = build_features()
-    model_predictor = GradientBoostingRegressor()
+    model_predictor = RandomForestRegressor(n_estimators=10)
     model = base_model(feature_builder_list, judger, model_predictor)
     file_list = get_file_list()
     for s in file_list:
@@ -123,18 +126,22 @@ def main():
     model.post_process()
     model.model_process()
     num  = 0
+    final_list = []
     for s in file_list:
         open_prices, high_prices, low_prices, close_prices, adjust_close_prices,volume = get_stock_data(s)
         if len(open_prices) < 7:
             continue
-        result = model.result_predict(numpy.array(open_prices), numpy.array(high_prices), numpy.array(low_prices), numpy.array(close_prices),numpy.array(adjust_close), numpy.array(volume), 7)
+        result = model.result_predict(numpy.array(open_prices), numpy.array(high_prices), 
+                numpy.array(low_prices), numpy.array(close_prices),numpy.array(adjust_close_prices), 
+                numpy.array(volume), 7)
         if result == None:
             print "ERROR: model.result_predict of %s error" % s
             continue
-        if result[0] >1.12 and result[0] > 0:
-            num = num + 1
-            print "%s\t%.4f" %(s, result[0])
-    print num
+        if result > 0:
+            final_list.append((s, result))
+    final_sort_list = sorted(final_list, key=lambda x:x[1], reverse = True)
+    for s in final_sort_list[0:10]:
+       print s[0], s[1]
 def get_stock_data(filename):
     """
     input filename : the path of stock daily data
