@@ -1,5 +1,6 @@
 #-*-encoding:gbk-*-
 import numpy
+import math
 class prices_judgement:
     def judge(self, prices, threshold, window):
         judge_list = numpy.array(prices)
@@ -9,6 +10,7 @@ class prices_judgement:
                 continue
             b_sum = sum(prices[index-window:index])
             a_sum = sum(prices[index+1: index+window+1])
+            var = numpy.var(prices[index-window:index])
             judge_list[index] = a_sum*1.0/b_sum
 #            if a_sum*1.0/b_sum > 1 + threshold:
 #                judge_list[index] = 1

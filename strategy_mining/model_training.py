@@ -83,12 +83,12 @@ class base_model:
         if timewindow < 30:
             timewindow = 30
         
-        open_price = open_price_list[-timewindow-2: -2]
-        high_price = high_price_list[-timewindow-2: -2]
-        low_price = low_price_list[-timewindow-2: -2]
-        close_price = close_price_list[-timewindow - 2 : -2]
-        adjust_price = adjust_close_list[-timewindow - 2 : -2]
-        volume = volume_list[-timewindow - 2 : -2]
+        open_price = open_price_list[-timewindow-2: ]
+        high_price = high_price_list[-timewindow-2: ]
+        low_price = low_price_list[-timewindow-2: ]
+        close_price = close_price_list[-timewindow - 2 : ]
+        adjust_price = adjust_close_list[-timewindow - 2 : ]
+        volume = volume_list[-timewindow - 2 : ]
         try:
             for index, s in enumerate(self.feature_builder_list):
                 samples.append(s.feature_build(open_price_list, high_price_list, low_price_list, close_price_list, adjust_close_list, volume_list, index, timewindow)[-1])
@@ -100,7 +100,6 @@ class base_model:
             print "ERROR: the sample data are all zero!"
             return [0]
         predict_value = self.model_predictor.predict(tmp_sample)
-        print predict_value
         return predict_value[0]
 
     def dump_model(self):
@@ -110,7 +109,7 @@ class base_model:
 def main():
     judger = prices_judgement()
     feature_builder_list = build_features()
-    model_predictor = RandomForestRegressor(n_estimators=10)
+    model_predictor = GradientBoostingRegressor(n_estimators=40)
     model = base_model(feature_builder_list, judger, model_predictor)
     file_list = get_file_list()
     for s in file_list:
