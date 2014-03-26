@@ -158,7 +158,7 @@ def main():
     file_list = get_file_list(model.rootdir)
     for s in file_list:
         open_prices, high_prices, low_prices, close_prices, adjust_close_prices,volume = get_stock_data(s)
-        if len(open_prices) < 7:
+        if len(open_prices) < 30:
             continue
         model.build_sample(numpy.array(open_prices[:-7]),
                            numpy.array(high_prices[:-7]),
@@ -168,7 +168,7 @@ def main():
                            numpy.array(volume[:-7]), 7)
     model.post_process()
     model.model_process()
-    model.model_test(7)
+    #model.model_test(7)
     num  = 0
     final_list = []
     for s in file_list:
@@ -186,6 +186,9 @@ def main():
     final_sort_list = sorted(final_list, key=lambda x:x[1], reverse = True)
     for s in final_sort_list[0:10]:
        print get_stock_from_path(s[0]), s[1]
+    for s in final_sort_list[-10:]:
+       print get_stock_from_path(s[0]), s[1]
+       
 def get_stock_data(filename):
     """
     input filename : the path of stock daily data

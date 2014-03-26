@@ -46,8 +46,8 @@ def one_work(symbol):
 
 def main():
     symbols = set(get_sp500())
-    for s in get_nasdaq2000():
-        symbols.add(s)
+    #for s in get_nasdaq2000():
+    #    symbols.add(s)
     symbols = list(symbols)
     pool = Pool(processes =10)
     result = {}
