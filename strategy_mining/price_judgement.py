@@ -1,16 +1,34 @@
 #-*-encoding:gbk-*-
-import numpy
+import numpy 
 import math
 class prices_judgement:
-    def judge(self, prices, threshold, window):
-        judge_list = numpy.array(prices)
-        judge_list.fill(-2)
-        for index, s in enumerate(prices):
-            if index < window or index > len(prices) - window:
+    def judge(self, opens, highs, lows, closes, threshold, window):
+        judge_list = numpy.array(closes)
+        judge_list.fill(numpy.NaN)
+        for index, s in enumerate(closes):
+            if index < window or index > len(closes) - window:
                 continue
-            b_sum = sum(prices[index-window:index])
-            a_sum = sum(prices[index+1: index+window+1])
-            var = numpy.var(prices[index-window:index])
+            b_sum = sum(closes[index-window:index])
+            a_sum = sum(closes[index+1: index+window+1])
+            var = numpy.var(closes[index-window:index])
+            judge_list[index] = a_sum*1.0/b_sum
+#            if a_sum*1.0/b_sum > 1 + threshold:
+#                judge_list[index] = 1
+#            elif a_sum*1.0/b_sum < 1 - threshold :
+#                judge_list[index] = 0
+#            else:
+#                judge_list[index] = -2
+#
+        return judge_list
+class prices_judgement2:
+    def judge(self, opens, highs, lows, closes, threshold, window):
+        judge_list = numpy.array(closes)
+        judge_list.fill(numpy.NaN)
+        for index, s in enumerate(closes):
+            if index < window or index > len(closes) - window:
+                continue
+            b_sum = sum(closes[index-window:index])
+            a_sum = min(lows[index+1: index+window+1])
             judge_list[index] = a_sum*1.0/b_sum
 #            if a_sum*1.0/b_sum > 1 + threshold:
 #                judge_list[index] = 1

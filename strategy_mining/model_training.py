@@ -49,26 +49,25 @@ class base_model:
             # tolist is to ignore the memery copy of numy list
             samples.append(m.feature_build(open_price_list, high_price_list, low_price_list, close_price_list, adjust_close_list, volume_list, mindex, timewindow).tolist())
         tmp_array = numpy.nan_to_num(numpy.column_stack(samples))
-        tmp_prices = self.sample_judgement.judge(adjust_close_list, 0.05, 7)
+        tmp_array = numpy.column_stack(samples)
+        tmp_prices = self.sample_judgement.judge(open_price_list, high_price_list, low_price_list, close_price_list, 0.05, 7)
         #判断是否是无效的
         total = 0; valid = 0
+
         for s in range(0, tmp_array.shape[0]):
             total += 1
-            if (numpy.any(tmp_array[s]!=0 )) and (tmp_prices[s] != -2 ):
+            if (not numpy.isnan(numpy.min(tmp_array[s]))) and (not numpy.isnan(tmp_prices[s])):
                 valid +=1
                 self.samples.append(tmp_array[s])
                 self.classes.append(tmp_prices[s])
-        print "DEBUG: loaded %d lines, valid:%d lines" % (total, valid)
-        if self.int_num%10 == 0:
-           print self.int_num
+        #print "DEBUG: loaded %d lines, valid:%d lines" % (total, valid)
     def post_process(self):
         tmp_samples = numpy.array(self.samples)
         self.samples = tmp_samples
-        print self.samples.shape
         tmp_prices = numpy.array(self.classes)
         self.samples = self.normalizer.fit_transform(tmp_samples, tmp_prices)
         self.classes = tmp_prices
-        print self.samples.shape
+        print "TRACE sample space: ", self.samples.shape
 
     def model_process(self):
         if len(self.samples) == 0:
@@ -76,9 +75,11 @@ class base_model:
         train_size = len(self.samples) * 0.8
         print "DEBUG: train size: %d, predict size: %d" % (train_size, len(self.samples) - train_size)
         self.model_predictor.fit(self.samples[0:train_size], self.classes[0:train_size])
+        print "TRACE training ... "
         predict_value = self.model_predictor.predict(self.samples[train_size:])
+        print "TRACE train complete!"
         r2_score = metrics.r2_score(self.classes[train_size:], predict_value)
-        print r2_score
+        print "TRACE r2_score:", r2_score
     def model_test(self, timewindow):
         
         file_list = get_file_list(self.rootdir)
@@ -156,6 +157,7 @@ def main():
     model_predictor = GradientBoostingRegressor(n_estimators=40)
     model = base_model(feature_builder_list, judger, model_predictor)
     file_list = get_file_list(model.rootdir)
+    print "TRACE loading stock .. "
     for s in file_list:
         open_prices, high_prices, low_prices, close_prices, adjust_close_prices,volume = get_stock_data(s)
         if len(open_prices) < 30:
@@ -166,6 +168,7 @@ def main():
                            numpy.array(close_prices[:-7]),
                            numpy.array(adjust_close_prices[:-7]),
                            numpy.array(volume[:-7]), 7)
+    print "TRACE loaded stock: %d" % model.int_num
     model.post_process()
     model.model_process()
     #model.model_test(7)
