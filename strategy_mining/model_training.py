@@ -31,11 +31,12 @@ class base_model:
     samples = []
     classes = []
     int_num = 0 # give the visual presition of the precess
-    def __init__(self, feature_builder_list_input, sample_judgement_input, model_predictor_input):
+    def __init__(self, feature_builder_list_input, sample_judgement_input, model_predictor_input, rootdir = "/home/work/workplace/stock_data/"):
         self.feature_builder_list = feature_builder_list_input
         self.sample_judgement = sample_judgement_input
         self.model_predictor = model_predictor_input
         self.normalizer = sklearn.preprocessing.MinMaxScaler(feature_range=(0, 1), copy=False)
+        self.rootdir = rootdir
     def build_sample(self, open_price_list, high_price_list, low_price_list, close_price_list, adjust_close_list, volume_list, timewindow):
         """
         timewindow: 
@@ -50,10 +51,14 @@ class base_model:
         tmp_array = numpy.nan_to_num(numpy.column_stack(samples))
         tmp_prices = self.sample_judgement.judge(adjust_close_list, 0.05, 7)
         #判断是否是无效的
+        total = 0; valid = 0
         for s in range(0, tmp_array.shape[0]):
+            total += 1
             if (numpy.any(tmp_array[s]!=0 )) and (tmp_prices[s] != -2 ):
+                valid +=1
                 self.samples.append(tmp_array[s])
                 self.classes.append(tmp_prices[s])
+        print "DEBUG: loaded %d lines, valid:%d lines" % (total, valid)
         if self.int_num%10 == 0:
            print self.int_num
     def post_process(self):
@@ -74,7 +79,46 @@ class base_model:
         predict_value = self.model_predictor.predict(self.samples[train_size:])
         r2_score = metrics.r2_score(self.classes[train_size:], predict_value)
         print r2_score
+    def model_test(self, timewindow):
+        
+        file_list = get_file_list(self.rootdir)
 
+        for backdays in range(0, 30):
+            final_list = []
+            predicts = {} # stockname -> predict price change rate
+            actuals  = {} # stockname -> actual  price change rate
+            for s in file_list:
+                open_prices, high_prices, low_prices, close_prices, adjust_close_prices, volume = get_stock_data(s)
+                if len(open_prices) < 60:
+                    continue
+                pend = -7 - backdays
+                open_prices_r = open_prices[0:pend]
+                high_prices_r = high_prices[0:pend]
+                low_prices_r  = low_prices[0:pend]
+                close_prices_r = close_prices[0:pend]
+                adjust_close_prices_r = adjust_close_prices[0:pend]
+                volum_close_prices_r = volume[0:pend]
+                actuals[get_stock_from_path(s)] = close_prices[backdays -1] / close_prices[pend -1]
+                result = self.result_predict(numpy.array(open_prices_r),
+                                             numpy.array(high_prices_r),
+                                             numpy.array(low_prices_r),
+                                             numpy.array(close_prices_r),
+                                             numpy.array(adjust_close_prices_r),
+                                             numpy.array(volum_close_prices_r),
+                                             7)
+                if result == None:
+                    print "ERROR: model.result_predict of %s error" % s
+                    continue
+                if result > 0:
+                    final_list.append((s, result))
+                final_sort_list = sorted(final_list, key=lambda x:x[1], reverse = True)
+        
+                for s in final_sort_list[0:10]:
+                    predicts[get_stock_from_path(s[0])] = s[1]
+                for s in predicts:
+                    print "%s %f %f" % (s, predicts[s], actuals[s])
+        
+        
     def result_predict(self, open_price_list, high_price_list, low_price_list, close_price_list, adjust_close_list, volume_list, timewindow):
         samples = []
         if len(open_price_list) < timewindow:
@@ -111,7 +155,7 @@ def main():
     feature_builder_list = build_features()
     model_predictor = GradientBoostingRegressor(n_estimators=40)
     model = base_model(feature_builder_list, judger, model_predictor)
-    file_list = get_file_list()
+    file_list = get_file_list(model.rootdir)
     for s in file_list:
         open_prices, high_prices, low_prices, close_prices, adjust_close_prices,volume = get_stock_data(s)
         if len(open_prices) < 7:
@@ -124,11 +168,12 @@ def main():
                            numpy.array(volume[:-7]), 7)
     model.post_process()
     model.model_process()
+    model.model_test(7)
     num  = 0
     final_list = []
     for s in file_list:
         open_prices, high_prices, low_prices, close_prices, adjust_close_prices,volume = get_stock_data(s)
-        if len(open_prices) < 7:
+        if len(open_prices) < 30:
             continue
         result = model.result_predict(numpy.array(open_prices), numpy.array(high_prices), 
                 numpy.array(low_prices), numpy.array(close_prices),numpy.array(adjust_close_prices), 
@@ -140,7 +185,7 @@ def main():
             final_list.append((s, result))
     final_sort_list = sorted(final_list, key=lambda x:x[1], reverse = True)
     for s in final_sort_list[0:10]:
-       print s[0], s[1]
+       print get_stock_from_path(s[0]), s[1]
 def get_stock_data(filename):
     """
     input filename : the path of stock daily data
@@ -159,16 +204,21 @@ def get_stock_data(filename):
     adjust_close_prices.reverse()
     volume.reverse()
     return open_prices, high_prices, low_prices, close_prices, adjust_close_prices, volume
-    
-def get_file_list():
+
+def get_stock_from_path(pathname):
+    """
+    from /home/work/workplace/pytrade/strategy_mining/utest_data/stocks/AAPL.csv to AAPL
+    """
+    return pathname.split("/")[-1].split(".")[0]
+def get_file_list(rootdir):
     """hongbin0908@126.com
     a help function to load test data.
     """
     file_list = []
-    for f in os.listdir('/home/work/workplace/stock_data/'):
-        if f != None and not f.endswith(".csv"):
+    for f in os.listdir(rootdir):
+        if f == None or not f.endswith(".csv"):
             continue
-        file_list.append(os.path.join("/home/work/workplace/stock_data/", f))
+        file_list.append(os.path.join(rootdir, f))
          
     return file_list
 if __name__ == "__main__":
