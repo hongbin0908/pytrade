@@ -15,7 +15,7 @@ logfile=${SCRIPT_PATH}/../log/get_stock_prices.py.log.$(date '+%Y%m%d')
 echo "tools/daily_bars_getter.py start ..." >> $logfile
 
 while [ 1 ]; do
-    python $SCRIPT_PATH/daily_bars_getter.py  2>1 >>  $logfile
+    python $SCRIPT_PATH/daily_bars_getter.py  2&>1 >>  $logfile
     sleep 3600
 done
 
