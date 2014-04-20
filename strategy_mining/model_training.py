@@ -188,9 +188,9 @@ def main():
             final_list.append((s, result))
     final_sort_list = sorted(final_list, key=lambda x:x[1], reverse = True)
     for s in final_sort_list[0:10]:
-       print get_stock_from_path(s[0]), s[1]
+       print "up", get_stock_from_path(s[0]), s[1]
     for s in final_sort_list[-10:]:
-       print get_stock_from_path(s[0]), s[1]
+       print "down", get_stock_from_path(s[0]), s[1]
        
 def get_stock_data(filename):
     """
