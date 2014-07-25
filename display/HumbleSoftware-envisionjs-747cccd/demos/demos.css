@@ -1,0 +1,83 @@
+/* Demo */
+body {
+  font-family: "Droid Sans",sans-serif;
+}
+body,
+a,
+a:visited {
+  color: #333;
+}
+h3 {
+  text-align: center;
+  margin: 40px 0px;
+  font-size: 36px;
+  text-shadow: 2px 2px 0 #CCC;
+}
+ul {
+  list-style: none;
+}
+div#content {
+  margin: 0px auto;
+  width: 600px;
+}
+div#demo {
+  height: 417px;
+  background: url('ajax-loader.gif') #fff center center no-repeat;
+}
+div.controls {
+    margin: 0px 0px 8px 0px;
+    padding-right: 2px;
+    text-align: right;
+}
+div.controls>span {
+    padding-left: 16px;
+}
+div#footer {
+  margin: 80px auto 20px auto;
+  text-align: center;
+  color: #666;
+  font-size: 12px;
+}
+div#footer a:visited {
+  color: #666;
+}
+
+.weierstrass .envision-timeseries-summary .envision-component {
+  height: 200px;
+}
+
+.million .envision-timeseries-connector,
+.million .envision-timeseries-summary {
+  background: #fff;
+
+}
+.million .envision-timeseries-detail {
+  padding-top: 26px;
+  padding-bottom: 18px;
+}
+.million .envision-timeseries-detail .envision-component {
+  height: 104px;
+}
+.million .envision-timeseries-summary {
+}
+.million .envision-timeseries-summary .envision-component {
+  height: 150px;
+}
+
+@media screen and (max-width: 600px) {
+  div#demo {
+    height: 253px;
+  }
+
+  h3 {
+    margin: 12px 0px;
+    font-size: 24px;
+  }
+
+  div#content {
+    width: 90%;
+  }
+  div#footer {
+    margin: 40px 0px 20px 0px;
+  }
+}
