@@ -1,11 +1,17 @@
 #!/usr/bin/env python
-import sys,os,urllib2,time
-from multiprocessing import Pool
+import os, sys
+
 local_path = os.path.dirname(os.path.abspath(sys.argv[0]))
 sys.path.append(local_path + "/./")
 sys.path.append(local_path + "/../common/")
 
 import YahooFinceExted as yahoofinance;
+
+import urllib, urllib2
+
+import multiprocessing
+
+
 
 root = "/home/work/workplace/stock_data/"
 
@@ -31,7 +37,7 @@ def get_sp500():#{{{
     return symbols  
 #}}}
 
-def one_work(symbol):
+def one_work(symbol): # {{{
     print symbol
     retry = 3
     while retry >= 0:
@@ -43,6 +49,7 @@ def one_work(symbol):
             retry -=1
             continue
         break
+#}}}
 
 def main():
     symbols = set(get_sp500())
@@ -50,7 +57,7 @@ def main():
     #for s in get_nasdaq2000():
     #    symbols.add(s)
     symbols = list(symbols)
-    pool = Pool(processes =10)
+    pool = multiprocessing.Pool(processes =10)
     result = {}
     for symbol in symbols:
         result[symbol] = pool.apply_async(one_work, (symbol,))

@@ -9,10 +9,27 @@ from two_crow_builder import *
 from three_inside_pattern import *
 from three_inside_strike import *
 from other_pattern import *
-from momentum_pattern import *
+from model_base import *
 from volume_pattern import *
 from cycle_pattern import *
 import talib_ext as te
+def build_features_1():
+    """
+    return : list. a list of feature builder class
+    """
+    feature_builder_list = []
+
+    feature_builder_c(te.PRICE_9, feature_builder_list)
+    feature_builder_c(te.PRICE_8, feature_builder_list)
+    feature_builder_c(te.PRICE_7, feature_builder_list)
+    feature_builder_c(te.PRICE_6, feature_builder_list)
+    feature_builder_c(te.PRICE_5, feature_builder_list)
+    feature_builder_c(te.PRICE_4, feature_builder_list)
+    feature_builder_c(te.PRICE_3, feature_builder_list)
+    feature_builder_c(te.PRICE_2, feature_builder_list)
+    feature_builder_c(te.PRICE_1, feature_builder_list)
+    feature_builder_c(te.PRICE_0, feature_builder_list)
+    return feature_builder_list
 def build_features():
     """
     return : list. a list of feature builder class

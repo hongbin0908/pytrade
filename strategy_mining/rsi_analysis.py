@@ -176,21 +176,6 @@ def get_sample(price_list):
             continue
         print "%.4f\t%.4f\t%.4f\t%d" %(rsi_index[s], price_sum[s], price_sum[s+7], sign)
     
-'''
-加载文件，获取price_list
-'''        
-def load_data(filename):
-    tprice = []
-    fd = open(filename, "r")
-    for j in fd:
-        line_list = j.rstrip().split(",")
-        try:
-            price = float(line_list[4])
-        except Exception,e:
-            continue
-        tprice.append(price)
-    price_list = numpy.array(tprice)
-    return price_list
 
 if __name__ == "__main__":
     price_list = load_data(sys.argv[1])

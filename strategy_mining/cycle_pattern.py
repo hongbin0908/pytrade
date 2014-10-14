@@ -11,6 +11,8 @@ class feature_builder_c():
     def feature_build(self, open_price, high_price, low_price, close_price, adjust_close, volume, index, feature_result_list):
         result = self.feature_build_func(close_price)
         return result
+    def name(self):
+        return self.feature_build_func.__name__
 
 if __name__ == "__main__":
     print "begin"

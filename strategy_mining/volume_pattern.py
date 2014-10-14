@@ -14,8 +14,9 @@ class feature_builder_volume():
     def feature_build_with_three_price(self, open_price, high_price, low_price, close_price, adjust_close, volume, index, feature_result_list):
         result = self.feature_build_func(high_price, low_price, close_price)
         middle_index = len(open_price)-1
-        feature_result_list[index] = result[middle_index]
-            
+        feature_result_list[index] = result[middle_index]    
+    def name(self):
+        return self.feature_build_func.__name__
 class feature_builder_volume_only():
     def __init__(self, feature_func, builder_list):
         self.feature_build_func = feature_func
