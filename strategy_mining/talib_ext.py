@@ -1,6 +1,36 @@
 import talib
 import numpy as np
     
+
+def PRICE_n(close, n):
+    np_pre_closes = np.array(close)
+    for i in range(n):
+        pre_closes.append(np.array)
+    for i in range(n, close.shape[0]):
+        pre_closes.append(close[i])
+    np_pre_closes = np.array(pre_closes)
+    assert(np_pre_closes.shape == close.shape)
+    return np_pre_closes
+def PRICE_0(close):
+    return PRICE_n(close, 0)
+def PRICE_1(close):
+    return PRICE_n(close, 1)
+def PRICE_2(close):
+    return PRICE_n(close, 2)
+def PRICE_3(close):
+    return PRICE_n(close, 3)
+def PRICE_4(close):
+    return PRICE_n(close, 4)
+def PRICE_5(close):
+    return PRICE_n(close, 5)
+def PRICE_6(close):
+    return PRICE_n(close, 6)
+def PRICE_7(close):
+    return PRICE_n(close, 7)
+def PRICE_8(close):
+    return PRICE_n(close, 8)
+def PRICE_9(close):
+    return PRICE_n(close, 9)
 def ADX_extn(high, low, close, n):
     adx = talib.ADX(high, low,close)
     assert  adx.shape[0] > 2 * n

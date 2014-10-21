@@ -1,5 +1,3 @@
-#-*-encoding:gbk-*-
-
 import sys,os
 local_path = os.path.dirname(os.path.abspath(sys.argv[0]))
 sys.path.append(local_path + "/./")
@@ -192,25 +190,6 @@ def main():
     for s in final_sort_list[-10:]:
        print "down", get_stock_from_path(s[0]), s[1]
        
-def get_stock_data(filename):
-    """
-    input filename : the path of stock daily data
-    """
-    open_prices = []
-    high_prices = []
-    low_prices = []
-    close_prices = []
-    adjust_close_prices = []
-    volume = []
-    load_data(filename, open_prices, high_prices, low_prices, close_prices, adjust_close_prices, volume)
-    open_prices.reverse()
-    high_prices.reverse()
-    low_prices.reverse()
-    close_prices.reverse()
-    adjust_close_prices.reverse()
-    volume.reverse()
-    return open_prices, high_prices, low_prices, close_prices, adjust_close_prices, volume
-
 def get_stock_from_path(pathname):
     """
     from /home/work/workplace/pytrade/strategy_mining/utest_data/stocks/AAPL.csv to AAPL
