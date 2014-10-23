@@ -15,7 +15,7 @@ logfile=${SCRIPT_PATH}/../log/get_stock_prices.py.log.$(date '+%Y%m%d')
 echo "tools/daily_bars_getter.py start ..." >> $logfile
 
 rm -rf /home/work/workplace/stock_data/*
-python $SCRIPT_PATH/daily_bars_getter.py  2&>1 >>  $logfile
+python2.7 $SCRIPT_PATH/daily_bars_getter.py  2&>1 >>  $logfile
 
 echo "tools/daily_bars_getter.py start ..." >> $logfile
 

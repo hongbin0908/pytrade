@@ -65,7 +65,7 @@ def parse_options(paraser):
     """
     parser command line
     """
-    parser.add_option("--window", dest="window",action = "store", default=10, help = "the history price window")
+    parser.add_option("--window", dest="window",action = "store", default=60, help = "the history price window")
     parser.add_option("--output", dest="output",action = "store", default="data/prices_series/", help = "the output directory")
     return parser.parse_args()
 
