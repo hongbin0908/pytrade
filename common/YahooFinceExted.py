@@ -19,7 +19,7 @@
 .. moduleauthor Bin Hong <hongbin0908@126.com>
 """
 
-import sys,os,urllib
+import sys,os,urllib2
 local_path = os.path.dirname(os.path.abspath(sys.argv[0]))
 sys.path.append(local_path + "/./")
 
@@ -28,7 +28,8 @@ from pyalgotrade.tools import yahoofinance
 
 def __download_instrument_prices_full(instrument):
     url = "http://ichart.finance.yahoo.com/table.csv?s=%s&g=d&ignore=.csv" % instrument
-    f = urllib.urlopen(url)
+    print url
+    f = urllib2.urlopen(url, timeout=60)
     if f.headers['Content-Type'] != 'text/csv':
         raise Exception("Failed to download data: %s" % f.getcode())
     buff = f.read()

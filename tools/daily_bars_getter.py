@@ -52,14 +52,15 @@ def one_work(symbol): # {{{
 #}}}
 
 def main():
-    symbols = set(get_sp500())
+    symbols = get_sp500()
     #symbols = set()
     #for s in get_nasdaq2000():
     #    symbols.add(s)
-    symbols = list(symbols)
-    pool = multiprocessing.Pool(processes =10)
+    # symbols = list(symbols)
+    pool = multiprocessing.Pool(processes =50 )
     result = {}
     for symbol in symbols:
+        #one_work(symbol)
         result[symbol] = pool.apply_async(one_work, (symbol,))
     for symbol in symbols:
         result[symbol].get()
