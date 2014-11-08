@@ -21,7 +21,7 @@ logging.basicConfig(level = logging.DEBUG,
     filename = local_path + '/log/%s.log' % (os.path.basename(sys.argv[0]),), 
     filemode = 'a')
 
-class ExtractorBase:
+class ExtractorBase: # {{{
     def __init__(self, symbol, dates, open_prices, high_prices, low_prices, close_prices, window):
         self.symbol = symbol
         self.dates = dates
@@ -32,8 +32,11 @@ class ExtractorBase:
         self.window = window
     def extract_features_and_classes(self):
         assert(False)
+    def extract_yesterday_features_and_classes(self):
+        assert(False)
     def extract_last_features(self):
         assert(False)
+# }}}
 class Extractor1(ExtractorBase):
     def extract_features_and_classes(self): #{{{
         ret = ""
@@ -133,6 +136,84 @@ class Extractor3(ExtractorBase):
         return ret
     # }}}
 
+class Extractor4(ExtractorBase):
+    def extract_features_and_classes(self): #{{{
+        ret = ""
+        for i in range(len(self.close_prices)-self.window-1):
+            for  j in range(self.window):
+                inc = self.open_prices[i+j+1] * 1.0 / self.close_prices[i+j]
+                inc = int(inc * 10000) 
+                
+                ret +=  str(inc) + ","
+                inc = self.high_prices[i+j+1] * 1.0 / self.close_prices[i+j]
+                inc = int(inc * 10000) 
+                
+                ret +=  str(inc) + ","
+                inc = self.low_prices[i+j+1] * 1.0 / self.close_prices[i+j]
+                inc = int(inc * 10000) 
+                
+                ret +=  str(inc) + ","
+                inc = self.close_prices[i+j+1] * 1.0 / self.close_prices[i+j]
+                inc = int(inc * 10000) 
+                ret +=  str(inc) + ","
+            classes = 0
+            if self.close_prices[i+self.window + 1] > self.close_prices[i+self.window] :
+                 classes = 1
+            ret += "%d" % classes + "\n"
+        return ret
+    # }}}
+
+
+    def extract_yesterday_features_and_classes(self): #{{{
+        assert(len(self.dates) == len(self.close_prices))
+        ret = ""
+        ret += self.symbol + ","
+        ret += str(self.dates[-1]) + ","
+        for i in range(len(self.close_prices)-self.window-2, len(self.close_prices)-2):
+            inc = self.open_prices[i+1]*1.0/self.close_prices[i]
+            inc = int(inc * 10000) 
+            ret += str(inc) + "," 
+            inc = self.high_prices[i+1]*1.0/self.close_prices[i]
+            inc = int(inc * 10000) 
+            ret += str(inc) + "," 
+            inc = self.low_prices[i+1]*1.0/self.close_prices[i]
+            inc = int(inc * 10000) 
+            ret += str(inc) + "," 
+            inc = self.close_prices[i+1]*1.0/self.close_prices[i]
+            inc = int(inc * 10000) 
+            ret += str(inc) + "," 
+        clazz = 0
+        if self.close_prices[-1] > self.close_prices[-2]:
+            clazz = 1
+        else:
+            clazz = 0
+        ret += str(clazz) + "\n"
+        return ret
+    # }}}
+
+    def extract_last_features(self): #{{{
+        assert(len(self.dates) == len(self.close_prices))
+        ret = ""
+        ret += self.symbol + ","
+        ret += str(self.dates[-1]) + ","
+        for i in range(len(self.close_prices)-self.window-1, len(self.close_prices)-1):
+            inc = self.open_prices[i+1]*1.0/self.close_prices[i]
+            inc = int(inc * 10000) 
+            ret += str(inc) + "," 
+            inc = self.high_prices[i+1]*1.0/self.close_prices[i]
+            inc = int(inc * 10000) 
+            ret += str(inc) + "," 
+            inc = self.low_prices[i+1]*1.0/self.close_prices[i]
+            inc = int(inc * 10000) 
+            ret += str(inc) + "," 
+            inc = self.close_prices[i+1]*1.0/self.close_prices[i]
+            inc = int(inc * 10000) 
+            if i != (len(self.close_prices)-2):
+                ret += str(inc) + "," 
+            else:
+                ret += str(inc) + "\n" 
+        return ret
+    # }}}
 def main(options, args): # {{{
     #cmd_str = "/bin/mkdir -p " + options.output
     #print cmd_str
@@ -142,6 +223,7 @@ def main(options, args): # {{{
 
     f_train = open(options.output + "/" + "train.csv", "w")
     f_last = open(options.output + "/" + "last.csv", "w")
+    f_yesterday = open(options.output + "/" + "yesterday.csv", "w")
 
     # get the extractor
     Extractor = globals()[options.extractor]
@@ -161,8 +243,11 @@ def main(options, args): # {{{
             extractor.extract_features_and_classes(),
         print >> f_last, "%s" % \
                 extractor.extract_last_features(),
+        print >> f_yesterday, "%s" % \
+                extractor.extract_yesterday_features_and_classes(),
     f_train.close()
     f_last.close()
+    f_yesterday.close()
 # }}}
 
 def parse_options(parser): #{{{
@@ -170,7 +255,7 @@ def parse_options(parser): #{{{
     parser command line
     """
     parser.add_option("--extractor", dest="extractor",action = "store", \
-            default="Extractor1", help = "the extractor to use")
+            default="Extractor4", help = "the extractor to use")
     parser.add_option("--window", type="int", dest="window",action = "store", \
             default=60, help = "the history price window")
     parser.add_option("--output", dest="output",action = "store", \

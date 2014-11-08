@@ -22,7 +22,7 @@ class ModuleBuildPriceSeries2Test (unittest.TestCase):
         (options, args) = model.parse_options(parser)
         self.assertEqual(60, options.window)
         self.assertEqual(local_path + '/data/prices_series/', options.output)
-        self.assertEqual('Extractor1', options.extractor)
+        self.assertEqual('Extractor4', options.extractor)
     # }}}
 
     def test_extract_features_and_classes_1(self): # {{{
@@ -81,7 +81,7 @@ class ModuleBuildPriceSeries2Test (unittest.TestCase):
                 extractor.extract_last_features() )
     # }}}
 
-    def test_extract_2(self):
+    def test_extract_2(self): #{{{
         close_prices = [1,2,4,2,1,2,4]
         dates = [1,2,3,4,5,6,7]
         extractor = Extractor2("SYM", dates, None, None, None, close_prices, 4)
@@ -90,7 +90,9 @@ class ModuleBuildPriceSeries2Test (unittest.TestCase):
                          extractor.extract_features_and_classes() )
         self.assertEqual("SYM,7,0.5,0.25,0.5,1.0\n",
                 extractor.extract_last_features() )
-    def test_extract_2(self):
+    # }}}
+
+    def test_extract_3(self): # {{{
         open_prices =  [1,2,4,2,1,2,4]
         high_prices =  [1,2,4,2,1,2,4]
         low_prices =   [1,2,4,2,1,2,4]
@@ -102,6 +104,23 @@ class ModuleBuildPriceSeries2Test (unittest.TestCase):
                          extractor.extract_features_and_classes() )
         self.assertEqual("SYM,7,0.5,0.5,0.5,0.5,0.25,0.25,0.25,0.25,0.5,0.5,0.5,0.5,1.0,1.0,1.0,1.0\n",
                 extractor.extract_last_features() )
+    # }}}
+
+    def test_extract_4(self): #{{{
+        open_prices =  [1,2,4,2,1,2,4]
+        high_prices =  [1,2,4,2,1,2,4]
+        low_prices =   [1,2,4,2,1,2,4]
+        close_prices = [1,2,4,2,1,2,4]
+        dates = [1,2,3,4,5,6,7]
+        extractor = Extractor4("SYM", dates, open_prices, high_prices, low_prices, close_prices, 4)
+        self.assertEqual("20000,20000,20000,20000,20000,20000,20000,20000,5000,5000,5000,5000,5000,5000,5000,5000,1\n" + 
+                         "20000,20000,20000,20000,5000,5000,5000,5000,5000,5000,5000,5000,20000,20000,20000,20000,1\n",
+                         extractor.extract_features_and_classes() )
+        self.assertEqual("SYM,7,5000,5000,5000,5000,5000,5000,5000,5000,20000,20000,20000,20000,20000,20000,20000,20000\n",
+                extractor.extract_last_features() )
+        self.assertEqual("SYM,7,20000,20000,20000,20000,5000,5000,5000,5000,5000,5000,5000,5000,20000,20000,20000,20000,1\n",
+                extractor.extract_yesterday_features_and_classes() )
+    # }}}
 
     def test_main_1(self): # {{{
         parser = OptionParser()

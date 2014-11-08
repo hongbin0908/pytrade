@@ -60,7 +60,7 @@ def main(options, args):
     
     print "preparing models"
     model_predictor = GradientBoostingClassifier(max_features=40,learning_rate=0.05, max_depth=5, n_estimators=300)
-    model_predictor = GradientBoostingClassifier()
+    #model_predictor = GradientBoostingClassifier()
     X_train, X_test, y_train, y_test = cross_validation.train_test_split(X, y, test_size=0.3, random_state=0)
     clf = model_predictor.fit(X_train, y_train)
     pred = model_predictor.predict_proba(X_test)
@@ -149,6 +149,59 @@ def main(options, args):
     if p8 > 0 :  print tp8*1.0/p8, p8
     if p9 > 0 :  print tp9*1.0/p9, p9
 
+    #{{{ test yesterday 
+    print "test yesterday ..."
+    stock_predict_out = file(options.input + "/" + "test_yesterday.csv", "w")
+    p501 = 0
+    p502 = 0
+    p601 = 0
+    p602 = 0
+    p651 = 0
+    p652 = 0
+    p701 = 0
+    p702 = 0
+    for line in file(options.input + "/" + "yesterday.csv", "r"):
+        tokens = line.split(",")
+        l_features = []
+        for i in range(len(tokens)):
+            if 0 == i or 1==i:
+                print >> stock_predict_out, "%s," % tokens[i],
+            elif len(tokens) -1 == i:
+                clazz = int(tokens[i].strip())
+                print >> stock_predict_out, "%d," % clazz,
+            else:
+                l_features.append(float(tokens[i].strip()))
+        l_features2 = []
+        l_features2.append(l_features)
+        np_features = np.array(l_features2)
+        if np_features.shape[1] != X.shape[1] :
+            assert(false)
+        pred = model_predictor.predict_proba(np_features)[0,1]
+        if pred > 0.5:
+            p501 += 1
+            if clazz == 1:
+                p502 += 1
+        if pred > 0.6:
+            p601 += 1
+            if clazz == 1:
+                p602 += 1
+        if pred > 0.65:
+            p651 += 1
+            if clazz == 1:
+                p652 += 1
+        if pred > 0.7:
+            p701 += 1
+            if clazz == 1:
+                p702 += 1
+
+        print >> stock_predict_out, "%f" % pred
+    stock_predict_out.close()
+    if p501 > 0 : print "0.5: %f %d" % (p502*1.0/p501, p502)
+    if p601 > 0 : print "0.6: %f %d" % (p602*1.0/p601, p602)
+    if p651 > 0 : print "0.65: %f %d" % (p652*1.0/p651, p652)
+    if p701 > 0 : print "0.7: %f %d" % (p702*1.0/p701, p702)
+
+    #}}}
     #{{{ prediction
     print "prediction ..."
     stock_predict_out = file(options.input + "/" + "predict.csv", "w")
