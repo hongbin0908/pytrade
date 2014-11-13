@@ -22,7 +22,7 @@ logging.basicConfig(level = logging.DEBUG,
     filemode = 'a')
 
 class ExtractorBase: # {{{
-    def __init__(self, symbol, dates, open_prices, high_prices, low_prices, close_prices, window):
+    def __init__(self, symbol, dates, open_prices, high_prices, low_prices, close_prices, window, volumes=None):
         self.symbol = symbol
         self.dates = dates
         self.open_prices = open_prices
@@ -30,6 +30,7 @@ class ExtractorBase: # {{{
         self.low_prices = low_prices
         self.close_prices = close_prices
         self.window = window
+        self.volumes = volumes
     def extract_features_and_classes(self):
         assert(False)
     def extract_yesterday_features_and_classes(self):
@@ -191,7 +192,7 @@ class Extractor4(ExtractorBase):
         return ret
     # }}}
 
-    def extract_last_features(self): #{{{
+    def extract_last_features(self): #{{
         assert(len(self.dates) == len(self.close_prices))
         ret = ""
         ret += self.symbol + ","
@@ -206,6 +207,95 @@ class Extractor4(ExtractorBase):
             inc = self.low_prices[i+1]*1.0/self.close_prices[i]
             inc = int(inc * 10000) 
             ret += str(inc) + "," 
+            inc = self.close_prices[i+1]*1.0/self.close_prices[i]
+            inc = int(inc * 10000) 
+            if i != (len(self.close_prices)-2):
+                ret += str(inc) + "," 
+            else:
+                ret += str(inc) + "\n" 
+        return ret
+    # }}}
+class Extractor5(ExtractorBase):
+    def extract_features_and_classes(self): #{{{
+        ret = ""
+        for i in range(len(self.close_prices)-self.window-1):
+            for  j in range(self.window):
+                inc = self.open_prices[i+j+1] * 1.0 / self.close_prices[i+j]
+                inc = int(inc * 10000) 
+                ret +=  str(inc) + ","
+
+                inc = self.high_prices[i+j+1] * 1.0 / self.close_prices[i+j]
+                inc = int(inc * 10000) 
+                ret +=  str(inc) + ","
+
+                inc = self.low_prices[i+j+1] * 1.0 / self.close_prices[i+j]
+                inc = int(inc * 10000) 
+                ret +=  str(inc) + ","
+
+                inc = self.close_prices[i+j+1] * 1.0 / self.close_prices[i+j]
+                inc = int(inc * 10000) 
+                ret +=  str(inc) + ","
+
+                inc = self.volumes[i+j+1] * 1.0 / self.volumes[i+j]
+                inc = int(inc * 10000)
+                ret += str(inc) + ","
+
+            classes = 0
+            if self.close_prices[i+self.window + 1] > self.close_prices[i+self.window] :
+                 classes = 1
+            ret += "%d" % classes + "\n"
+        return ret
+    # }}}
+
+
+    def extract_yesterday_features_and_classes(self): #{{{
+        assert(len(self.dates) == len(self.close_prices))
+        ret = ""
+        ret += self.symbol + ","
+        ret += str(self.dates[-1]) + ","
+        for i in range(len(self.close_prices)-self.window-2, len(self.close_prices)-2):
+            inc = self.open_prices[i+1]*1.0/self.close_prices[i]
+            inc = int(inc * 10000) 
+            ret += str(inc) + "," 
+            inc = self.high_prices[i+1]*1.0/self.close_prices[i]
+            inc = int(inc * 10000) 
+            ret += str(inc) + "," 
+            inc = self.low_prices[i+1]*1.0/self.close_prices[i]
+            inc = int(inc * 10000) 
+            ret += str(inc) + "," 
+            inc = self.close_prices[i+1]*1.0/self.close_prices[i]
+            inc = int(inc * 10000) 
+            ret += str(inc) + "," 
+            inc = self.volumes[i+1] * 1.0 / self.volumes[i]
+            inc = int(inc * 10000)
+            ret += str(inc) + ","
+        clazz = 0
+        if self.close_prices[-1] > self.close_prices[-2]:
+            clazz = 1
+        else:
+            clazz = 0
+        ret += str(clazz) + "\n"
+        return ret
+    # }}}
+
+    def extract_last_features(self): #{{
+        assert(len(self.dates) == len(self.close_prices))
+        ret = ""
+        ret += self.symbol + ","
+        ret += str(self.dates[-1]) + ","
+        for i in range(len(self.close_prices)-self.window-1, len(self.close_prices)-1):
+            inc = self.open_prices[i+1]*1.0/self.close_prices[i]
+            inc = int(inc * 10000) 
+            ret += str(inc) + "," 
+            inc = self.high_prices[i+1]*1.0/self.close_prices[i]
+            inc = int(inc * 10000) 
+            ret += str(inc) + "," 
+            inc = self.low_prices[i+1]*1.0/self.close_prices[i]
+            inc = int(inc * 10000) 
+            ret += str(inc) + "," 
+            inc = self.volumes[i+1] * 1.0 / self.volumes[i]
+            inc = int(inc * 10000)
+            ret += str(inc) + ","
             inc = self.close_prices[i+1]*1.0/self.close_prices[i]
             inc = int(inc * 10000) 
             if i != (len(self.close_prices)-2):
@@ -235,7 +325,7 @@ def main(options, args): # {{{
             logging.debug("build the %d's stock" % stock_num)
         symbol = get_stock_from_path(f)
         dates, open_prices, high_prices, low_prices, close_prices, adjust_close_prices, volumes = get_stock_data(f)
-        extractor = Extractor(symbol, dates, open_prices, high_prices, low_prices, close_prices, options.window)
+        extractor = Extractor(symbol, dates, open_prices, high_prices, low_prices, close_prices, options.window, volumes)
         if len(dates)  < options.limit:
             logging.debug("%s is too short(%d)!" % (symbol, len(dates)))
             continue
@@ -255,7 +345,7 @@ def parse_options(parser): #{{{
     parser command line
     """
     parser.add_option("--extractor", dest="extractor",action = "store", \
-            default="Extractor4", help = "the extractor to use")
+            default="Extractor5", help = "the extractor to use")
     parser.add_option("--window", type="int", dest="window",action = "store", \
             default=60, help = "the history price window")
     parser.add_option("--output", dest="output",action = "store", \

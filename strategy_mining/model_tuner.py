@@ -59,11 +59,15 @@ def main(options, args):
         y = y[0:int(options.short)]
     
     print "preparing models"
-    model_predictor = GradientBoostingClassifier(max_features=40,learning_rate=0.05, max_depth=5, n_estimators=300)
+    model_predictor = GradientBoostingClassifier(max_features=0.6, learning_rate=0.05, max_depth=5, n_estimators=300)
     #model_predictor = GradientBoostingClassifier()
     X_train, X_test, y_train, y_test = cross_validation.train_test_split(X, y, test_size=0.3, random_state=0)
+#    print cross_validation.cross_val_score(model_predictor, X, y)
     clf = model_predictor.fit(X_train, y_train)
     pred = model_predictor.predict_proba(X_test)
+#    tpred = model_predictor.predict(X_test)
+ #   score = model_predictor.score(X_test, tpred)
+ #   print "score=", score
     assert(len(pred) == X_test.shape[0])
     dpred = {}
     for i in range(len(pred)):
