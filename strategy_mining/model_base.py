@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 #@author 
 import sys,os
+import datetime
 local_path = os.path.dirname(os.path.abspath(sys.argv[0]))
 sys.path.append(local_path + "/./")
 
@@ -81,7 +82,7 @@ def format10(open_prices, high_prices, low_prices, close_prices, adjust_prices):
         close_prices[s]= close_prices[s]/open_price_first
         adjust_prices[s]=adjust_prices[s]/open_price_first
 
-def get_stock_data(filename):
+def get_stock_data(filename, utildate = None):
     """
     input filename : the path of stock daily data
     """
@@ -104,5 +105,10 @@ def get_stock_data(filename):
     if len(dates) < length:
         length = len(dates)
     return dates[-1*length:], open_prices[-1*length:], high_prices[-1*length:], low_prices[-1*length:], close_prices[-1*length:], adjust_close_prices[-1*length:], volumes[-1*length:]
+def get_date_str(): # {{{
+    now = datetime.datetime.now()
+    return now.strftime('%Y-%m-%d')
+# }}}
+
 if __name__ == '__main__':
     main()

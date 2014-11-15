@@ -35,9 +35,12 @@ from sklearn.neural_network import BernoulliRBM
 from sklearn.pipeline import Pipeline
 # parse the command paramaters
 from optparse import OptionParser
+from model_base import get_date_str
 
 def main(options, args):
-    fsampleY = open(options.input + "/" + "train.csv", "r")
+    if options.utildate == None:
+        options.utildate = get_date_str()
+    fsampleY = open(options.input + "/" + options.utildate + "/train.csv", "r")
     l_X = []
     l_y = []
 
@@ -155,7 +158,7 @@ def main(options, args):
 
     #{{{ test yesterday 
     print "test yesterday ..."
-    stock_predict_out = file(options.input + "/" + "test_yesterday.csv", "w")
+    stock_predict_out = file(options.input + "/" + options.utildate +  "/test_yesterday.csv", "w")
     p501 = 0
     p502 = 0
     p601 = 0
@@ -164,7 +167,7 @@ def main(options, args):
     p652 = 0
     p701 = 0
     p702 = 0
-    for line in file(options.input + "/" + "yesterday.csv", "r"):
+    for line in file(options.input + "/" + options.utildate + "/yesterday.csv", "r"):
         tokens = line.split(",")
         l_features = []
         for i in range(len(tokens)):
@@ -208,8 +211,8 @@ def main(options, args):
     #}}}
     #{{{ prediction
     print "prediction ..."
-    stock_predict_out = file(options.input + "/" + "predict.csv", "w")
-    for line in file(options.input + "/" + "last.csv", "r"):
+    stock_predict_out = file(options.input + "/" + options.utildate + "/predict.csv", "w")
+    for line in file(options.input + "/" + options.utildate + "/last.csv", "r"):
         tokens = line.split(",")
         l_features = []
         for i in range(len(tokens)):
@@ -236,6 +239,7 @@ def parse_options(paraser): # {{{
     """
     parser.add_option("--input", dest="input",action = "store", default="data/prices_series/", help = "the input filename dir")
     parser.add_option("--short", dest="short",action = "store", default=-1, help = "using short data")
+    parser.add_option("--utildate", dest="utildate",action = "store", default=None, help = "the last date to train")
     return parser.parse_args()
 #}}} 
 

@@ -10,7 +10,7 @@ sys.path.append(local_path + "/./")
 # parse the command paramaters
 from optparse import OptionParser
 
-from model_base import get_file_list,get_stock_data,get_stock_from_path
+from model_base import get_file_list,get_stock_data,get_stock_from_path,get_date_str
 import logging
 
 import subprocess
@@ -192,7 +192,7 @@ class Extractor4(ExtractorBase):
         return ret
     # }}}
 
-    def extract_last_features(self): #{{
+    def extract_last_features(self): #{{{
         assert(len(self.dates) == len(self.close_prices))
         ret = ""
         ret += self.symbol + ","
@@ -278,7 +278,7 @@ class Extractor5(ExtractorBase):
         return ret
     # }}}
 
-    def extract_last_features(self): #{{
+    def extract_last_features(self): #{{{
         assert(len(self.dates) == len(self.close_prices))
         ret = ""
         ret += self.symbol + ","
@@ -311,9 +311,17 @@ def main(options, args): # {{{
     #cmd.wait()
     options.window = int(options.window)
 
-    f_train = open(options.output + "/" + "train.csv", "w")
-    f_last = open(options.output + "/" + "last.csv", "w")
-    f_yesterday = open(options.output + "/" + "yesterday.csv", "w")
+    if options.utildate == None:
+        options.utildate = get_date_str()
+    d_train     = options.output + "/" + options.utildate ;
+    if not os.path.exists(d_train) : os.makedirs(d_train)
+    f_train     = open(d_train + "/train.csv", "w")
+    d_last      = options.output + "/" + options.utildate  ;
+    if not os.path.exists(d_train) : os.makedirs(d_last)
+    f_last      = open( d_last + "/last.csv", "w")
+    d_yesterday = options.output + "/" + options.utildate ;
+    if not os.path.exists(d_train) : os.makedirs(d_yesterday)
+    f_yesterday = open( d_yesterday + "/yesterday.csv", "w")
 
     # get the extractor
     Extractor = globals()[options.extractor]
@@ -356,6 +364,7 @@ def parse_options(parser): #{{{
     parser.add_option("--limit", type="int", dest="limit",action = "store", \
             default=499, \
             help = "the limit length of stock data")
+    parser.add_option("--utildate", dest="utildate",action = "store", default=None, help = "the last date to train")
     return parser.parse_args()
 # }}}
 
