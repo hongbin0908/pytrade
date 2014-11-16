@@ -36,8 +36,6 @@ class ExtractorBase: # {{{
         self.volumes = volumes
     def extract_features_and_classes(self):
         assert(False)
-    def extract_yesterday_features_and_classes(self):
-        assert(False)
     def extract_last_features(self):
         assert(False)
 # }}}
@@ -167,34 +165,6 @@ class Extractor4(ExtractorBase):
         return ret
     # }}}
 
-
-    def extract_yesterday_features_and_classes(self): #{{{
-        assert(len(self.dates) == len(self.close_prices))
-        ret = ""
-        ret += self.symbol + ","
-        ret += str(self.dates[-1]) + ","
-        for i in range(len(self.close_prices)-self.window-2, len(self.close_prices)-2):
-            inc = self.open_prices[i+1]*1.0/self.close_prices[i]
-            inc = int(inc * 10000) 
-            ret += str(inc) + "," 
-            inc = self.high_prices[i+1]*1.0/self.close_prices[i]
-            inc = int(inc * 10000) 
-            ret += str(inc) + "," 
-            inc = self.low_prices[i+1]*1.0/self.close_prices[i]
-            inc = int(inc * 10000) 
-            ret += str(inc) + "," 
-            inc = self.close_prices[i+1]*1.0/self.close_prices[i]
-            inc = int(inc * 10000) 
-            ret += str(inc) + "," 
-        clazz = 0
-        if self.close_prices[-1] > self.close_prices[-2]:
-            clazz = 1
-        else:
-            clazz = 0
-        ret += str(clazz) + "\n"
-        return ret
-    # }}}
-
     def extract_last_features(self): #{{{
         assert(len(self.dates) == len(self.close_prices))
         ret = ""
@@ -251,36 +221,6 @@ class Extractor5(ExtractorBase):
     # }}}
 
 
-    def extract_yesterday_features_and_classes(self): #{{{
-        assert(len(self.dates) == len(self.close_prices))
-        ret = ""
-        ret += self.symbol + ","
-        ret += str(self.dates[-1]) + ","
-        for i in range(len(self.close_prices)-self.window-2, len(self.close_prices)-2):
-            inc = self.open_prices[i+1]*1.0/self.close_prices[i]
-            inc = int(inc * 10000) 
-            ret += str(inc) + "," 
-            inc = self.high_prices[i+1]*1.0/self.close_prices[i]
-            inc = int(inc * 10000) 
-            ret += str(inc) + "," 
-            inc = self.low_prices[i+1]*1.0/self.close_prices[i]
-            inc = int(inc * 10000) 
-            ret += str(inc) + "," 
-            inc = self.close_prices[i+1]*1.0/self.close_prices[i]
-            inc = int(inc * 10000) 
-            ret += str(inc) + "," 
-            inc = self.volumes[i+1] * 1.0 / self.volumes[i]
-            inc = int(inc * 10000)
-            ret += str(inc) + ","
-        clazz = 0
-        if self.close_prices[-1] > self.close_prices[-2]:
-            clazz = 1
-        else:
-            clazz = 0
-        ret += str(clazz) + "\n"
-        return ret
-    # }}}
-
     def extract_last_features(self): #{{{
         assert(len(self.dates) == len(self.close_prices))
         ret = ""
@@ -322,9 +262,6 @@ def main(options, args): # {{{
     d_last      = options.output + "/" + options.utildate  ;
     if not os.path.exists(d_train) : os.makedirs(d_last)
     f_last      = open( d_last + "/last.csv", "w")
-    d_yesterday = options.output + "/" + options.utildate ;
-    if not os.path.exists(d_train) : os.makedirs(d_yesterday)
-    f_yesterday = open( d_yesterday + "/yesterday.csv", "w")
 
     # get the extractor
     Extractor = globals()[options.extractor]
@@ -335,7 +272,7 @@ def main(options, args): # {{{
         if stock_num % 10 == 0:
             logging.debug("build the %d's stock" % stock_num)
         symbol = get_stock_from_path(f)
-        dates, open_prices, high_prices, low_prices, close_prices, adjust_close_prices, volumes = get_stock_data(f)
+        dates, open_prices, high_prices, low_prices, close_prices, adjust_close_prices, volumes = get_stock_data(f, options.utildate)
         extractor = Extractor(symbol, dates, open_prices, high_prices, low_prices, close_prices, options.window, volumes)
         if len(dates)  < options.limit:
             logging.debug("%s is too short(%d)!" % (symbol, len(dates)))
@@ -344,11 +281,8 @@ def main(options, args): # {{{
             extractor.extract_features_and_classes(),
         print >> f_last, "%s" % \
                 extractor.extract_last_features(),
-        print >> f_yesterday, "%s" % \
-                extractor.extract_yesterday_features_and_classes(),
     f_train.close()
     f_last.close()
-    f_yesterday.close()
 # }}}
 
 def parse_options(parser): #{{{
