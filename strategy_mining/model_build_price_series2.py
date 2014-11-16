@@ -16,9 +16,12 @@ import logging
 import subprocess
 
 
+filedir = local_path + '/log/'
+if not os.path.exists(filedir):
+    os.makedirs(filedir)
 logging.basicConfig(level = logging.DEBUG,
-    format = '%(levelname)s %(asctime)s [%(filename)s:%(lineno)d] %(message)s',                                                                              
-    filename = local_path + '/log/%s.log' % (os.path.basename(sys.argv[0]),), 
+    format = '%(levelname)s %(asctime)s [%(filename)s:%(lineno)d] %(message)s',
+    filename = filedir + '%s.log' % (os.path.basename(sys.argv[0]),), 
     filemode = 'a')
 
 class ExtractorBase: # {{{

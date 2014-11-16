@@ -82,10 +82,13 @@ def format10(open_prices, high_prices, low_prices, close_prices, adjust_prices):
         close_prices[s]= close_prices[s]/open_price_first
         adjust_prices[s]=adjust_prices[s]/open_price_first
 
-def get_stock_data(filename, utildate = None):
+def get_stock_data(filename, str_utildate = None):
     """
     input filename : the path of stock daily data
     """
+    if str_utildate == None:
+        str_utildate = get_date_str()
+    dt_utildate = parse_date_str(str_utildate)
     dates = []
     open_prices = []
     high_prices = []
@@ -104,10 +107,32 @@ def get_stock_data(filename, utildate = None):
     length = 365 * 2
     if len(dates) < length:
         length = len(dates)
-    return dates[-1*length:], open_prices[-1*length:], high_prices[-1*length:], low_prices[-1*length:], close_prices[-1*length:], adjust_close_prices[-1*length:], volumes[-1*length:]
+    dates2 = [] 
+    open_prices2 = []
+    high_prices2 = []
+    low_prices2 = []
+    close_prices2 = []
+    adjust_close_prices2 = []
+    volumes2 = []
+    for i in range(-1 * length, 0):
+        dt_cur_date = parse_date_str(dates[i])
+        if dt_cur_date < dt_utildate:
+            dates2.append(dates[i])
+            open_prices2.append(open_prices[i])
+            high_prices2.append(high_prices[i])
+            low_prices2.append(low_prices[i])
+            close_prices2.append(close_prices[i])
+            adjust_close_prices2.append(adjust_close_prices[i])
+            volumes2.append(volumes[i])
+        else:
+            break
+    return dates2, open_prices2, high_prices2, low_prices2, close_prices2, adjust_close_prices2, volumes2
 def get_date_str(): # {{{
     now = datetime.datetime.now()
     return now.strftime('%Y-%m-%d')
+# }}}
+def parse_date_str(date_str): # {{{
+    return datetime.datetime.strptime(date_str, '%Y-%m-%d')
 # }}}
 
 if __name__ == '__main__':

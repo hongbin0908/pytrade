@@ -11,9 +11,12 @@ import urllib, urllib2
 
 import multiprocessing
 
+import finsymbols
 
 
 root = "/home/work/workplace/stock_data/"
+if not os.path.exists(root):
+    os.makedirs(root)
 
 def get_nasdaq2000():
     fd = open(local_path+"/nasdaq_symbols", 'r')
@@ -24,16 +27,9 @@ def get_nasdaq2000():
     return ss
 
 def get_sp500():#{{{
-    finviz_retry = 3
-    while finviz_retry >= 0:
-        try:
-            resp = urllib2.urlopen("""http://finviz.com/export.ashx?v=152&f=idx_sp500&ft=1&ta=1&p=d&r=1&c=1""")
-        except Exception,ex:
-            print Exception,":",ex
-            finviz_retry -= 1
-            continue
-        break
-    symbols = [symbol.strip().strip("\"") for symbol in resp.read().split("\n")[1:]]
+    symbols = []
+    for each in finsymbols.symbols.get_sp500_symbols():
+        symbols.append(each['symbol'])
     return symbols  
 #}}}
 
