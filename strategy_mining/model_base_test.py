@@ -15,6 +15,8 @@ class ModelBaseTest (unittest.TestCase):
         dates, opens, highs, lows, close, adjusts, volumes = base.get_stock_data(local_path + "/testdata/A.csv", "2014-11-14")
         self.assertEqual(8, len(dates))
         self.assertEqual("2014-11-13", dates[-1])
+    def test_get_date_str(self):
+        print base.get_date_str()
 def main():
     unittest.main()
 if __name__ == '__main__':
