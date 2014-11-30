@@ -127,9 +127,11 @@ def get_stock_data(filename, str_utildate = None):
         else:
             break
     return dates2, open_prices2, high_prices2, low_prices2, close_prices2, adjust_close_prices2, volumes2
-def get_date_str(): # {{{
+def get_date_str(back = 0): # {{{
     now = datetime.datetime.now()
-    return now.strftime('%Y-%m-%d')
+    delta = datetime.timedelta(days=back)
+    n_days = now - delta
+    return n_days.strftime('%Y-%m-%d')
 # }}}
 def parse_date_str(date_str): # {{{
     return datetime.datetime.strptime(date_str, '%Y-%m-%d')

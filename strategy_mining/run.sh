@@ -14,8 +14,8 @@ cd ../tools/ ;
 python daily_bars_getter.py
 
 cd "$SCRIPT_PATH" 
-python model_build_price_series2.py --extractor=Extractor5 --output=data/price_series5/ --window=14
-python model_tuner.py --input=data/price_series5/ 
+python model_build_price_series2.py  --window=14
+python model_tuner.py 
 
 popd  > /dev/null # return the directory orignal
 

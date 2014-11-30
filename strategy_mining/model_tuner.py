@@ -23,11 +23,11 @@ from scipy import sparse
 from itertools import combinations
 from sklearn.ensemble import GradientBoostingClassifier, RandomForestClassifier, ExtraTreesClassifier
 import operator
-from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.linear_model import LogisticRegression
 from sklearn.naive_bayes import GaussianNB
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import GradientBoostingClassifier
+from sklearn.ensemble import GradientBoostingRegressor
 from sklearn import svm
 from sklearn import tree
 from sklearn import linear_model, metrics
@@ -62,19 +62,29 @@ def main(options, args):
         y = y[0:int(options.short)]
     
     print "preparing models"
-    model_predictor = GradientBoostingClassifier(max_features=0.6, learning_rate=0.05, max_depth=5, n_estimators=300)
+    if options.isregress == True:
+        model_predictor = GradientBoostingRegressor(max_features=0.6, learning_rate = 0.05, max_depth=5, n_estimators=300)
+    else :
+        model_predictor = GradientBoostingClassifier(max_features=0.6, learning_rate=0.05, max_depth=5, n_estimators=300)
     #model_predictor = GradientBoostingClassifier()
     X_train, X_test, y_train, y_test = cross_validation.train_test_split(X, y, test_size=0.3, random_state=0)
-#    print cross_validation.cross_val_score(model_predictor, X, y)
+    # print cross_validation.cross_val_score(model_predictor, X, y)
     clf = model_predictor.fit(X_train, y_train)
-    pred = model_predictor.predict_proba(X_test)
+
+    if options.isregress:
+        pred = model_predictor.predict(X_test)
+    else:
+        pred = model_predictor.predict_proba(X_test)
 #    tpred = model_predictor.predict(X_test)
  #   score = model_predictor.score(X_test, tpred)
  #   print "score=", score
     assert(len(pred) == X_test.shape[0])
     dpred = {}
     for i in range(len(pred)):
-        dpred[i] = pred[i,1]
+        if options.isregress:
+            dpred[i] = pred[i]
+        else:
+            dpred[i] = pred[i,1]
     dpred = sorted(dpred.iteritems(),key=operator.itemgetter(1))
     tp5 =0
     p5 = 0
@@ -114,10 +124,16 @@ def main(options, args):
     if p9 > 0 :  print "threshold 0.98:", tp9*1.0/p9, p9
 
 
-    pred = model_predictor.predict_proba(X_train)
+    if options.isregress :
+        pred = model_predictor.predict(X_train)
+    else:
+        pred = model_predictor.predict_proba(X_train)
     dpred = {}
     for i in range(len(pred)):
-        dpred[i] = pred[i,1]
+        if options.isregress:
+            dpred[i] = pred[i]
+        else:
+            dpred[i] = pred[i,1]
     dpred = sorted(dpred.iteritems(),key=operator.itemgetter(1))
     tp5 =0
     p5 = 0
@@ -156,59 +172,6 @@ def main(options, args):
     if p8 > 0 :  print tp8*1.0/p8, p8
     if p9 > 0 :  print tp9*1.0/p9, p9
 
-    #{{{ test yesterday 
-    print "test yesterday ..."
-    stock_predict_out = file(options.input + "/" + options.utildate +  "/test_yesterday.csv", "w")
-    p501 = 0
-    p502 = 0
-    p601 = 0
-    p602 = 0
-    p651 = 0
-    p652 = 0
-    p701 = 0
-    p702 = 0
-    for line in file(options.input + "/" + options.utildate + "/yesterday.csv", "r"):
-        tokens = line.split(",")
-        l_features = []
-        for i in range(len(tokens)):
-            if 0 == i or 1==i:
-                print >> stock_predict_out, "%s," % tokens[i],
-            elif len(tokens) -1 == i:
-                clazz = int(tokens[i].strip())
-                print >> stock_predict_out, "%d," % clazz,
-            else:
-                l_features.append(float(tokens[i].strip()))
-        l_features2 = []
-        l_features2.append(l_features)
-        np_features = np.array(l_features2)
-        if np_features.shape[1] != X.shape[1] :
-            assert(false)
-        pred = model_predictor.predict_proba(np_features)[0,1]
-        if pred > 0.5:
-            p501 += 1
-            if clazz == 1:
-                p502 += 1
-        if pred > 0.6:
-            p601 += 1
-            if clazz == 1:
-                p602 += 1
-        if pred > 0.65:
-            p651 += 1
-            if clazz == 1:
-                p652 += 1
-        if pred > 0.7:
-            p701 += 1
-            if clazz == 1:
-                p702 += 1
-
-        print >> stock_predict_out, "%f" % pred
-    stock_predict_out.close()
-    if p501 > 0 : print "0.5: %f %d" % (p502*1.0/p501, p502)
-    if p601 > 0 : print "0.6: %f %d" % (p602*1.0/p601, p602)
-    if p651 > 0 : print "0.65: %f %d" % (p652*1.0/p651, p652)
-    if p701 > 0 : print "0.7: %f %d" % (p702*1.0/p701, p702)
-
-    #}}}
     #{{{ prediction
     print "prediction ..."
     stock_predict_out = file(options.input + "/" + options.utildate + "/predict.csv", "w")
@@ -227,8 +190,12 @@ def main(options, args):
         np_features = np.array(l_features2)
         if np_features.shape[1] != X.shape[1] :
             assert(false)
-        pred = model_predictor.predict_proba(np_features)
-        print >> stock_predict_out, "%f" % pred[0,1]
+        if options.isregress:
+            pred = model_predictor.predict(np_features)
+            print >> stock_predict_out, "%f" % pred
+        else:
+            pred = model_predictor.predict_proba(np_features)
+            print >> stock_predict_out, "%f" % pred[0,1]
     stock_predict_out.close()
 
     #}}}
@@ -240,6 +207,7 @@ def parse_options(paraser): # {{{
     parser.add_option("--input", dest="input",action = "store", default="data/prices_series/", help = "the input filename dir")
     parser.add_option("--short", dest="short",action = "store", default=-1, help = "using short data")
     parser.add_option("--utildate", dest="utildate",action = "store", default=None, help = "the last date to train")
+    parser.add_option("--isregress", dest="isregress",action = "store_true", default=True, help = "using repgress model or classify?")
     return parser.parse_args()
 #}}} 
 

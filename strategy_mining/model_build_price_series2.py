@@ -14,6 +14,8 @@ from model_base import get_file_list,get_stock_data,get_stock_from_path,get_date
 import logging
 
 import subprocess
+from model_extractor_base import ExtractorBase
+from model_extractor4 import Extractor4
 
 
 filedir = local_path + '/log/'
@@ -24,21 +26,6 @@ logging.basicConfig(level = logging.DEBUG,
     filename = filedir + '%s.log' % (os.path.basename(sys.argv[0]),), 
     filemode = 'a')
 
-class ExtractorBase: # {{{
-    def __init__(self, symbol, dates, open_prices, high_prices, low_prices, close_prices, window, volumes=None):
-        self.symbol = symbol
-        self.dates = dates
-        self.open_prices = open_prices
-        self.high_prices = high_prices
-        self.low_prices = low_prices
-        self.close_prices = close_prices
-        self.window = window
-        self.volumes = volumes
-    def extract_features_and_classes(self):
-        assert(False)
-    def extract_last_features(self):
-        assert(False)
-# }}}
 class Extractor1(ExtractorBase):
     def extract_features_and_classes(self): #{{{
         ret = ""
@@ -138,115 +125,7 @@ class Extractor3(ExtractorBase):
         return ret
     # }}}
 
-class Extractor4(ExtractorBase):
-    def extract_features_and_classes(self): #{{{
-        ret = ""
-        for i in range(len(self.close_prices)-self.window-1):
-            for  j in range(self.window):
-                inc = self.open_prices[i+j+1] * 1.0 / self.close_prices[i+j]
-                inc = int(inc * 10000) 
-                
-                ret +=  str(inc) + ","
-                inc = self.high_prices[i+j+1] * 1.0 / self.close_prices[i+j]
-                inc = int(inc * 10000) 
-                
-                ret +=  str(inc) + ","
-                inc = self.low_prices[i+j+1] * 1.0 / self.close_prices[i+j]
-                inc = int(inc * 10000) 
-                
-                ret +=  str(inc) + ","
-                inc = self.close_prices[i+j+1] * 1.0 / self.close_prices[i+j]
-                inc = int(inc * 10000) 
-                ret +=  str(inc) + ","
-            classes = 0
-            if self.close_prices[i+self.window + 1] > self.close_prices[i+self.window] :
-                 classes = 1
-            ret += "%d" % classes + "\n"
-        return ret
-    # }}}
 
-    def extract_last_features(self): #{{{
-        assert(len(self.dates) == len(self.close_prices))
-        ret = ""
-        ret += self.symbol + ","
-        ret += str(self.dates[-1]) + ","
-        for i in range(len(self.close_prices)-self.window-1, len(self.close_prices)-1):
-            inc = self.open_prices[i+1]*1.0/self.close_prices[i]
-            inc = int(inc * 10000) 
-            ret += str(inc) + "," 
-            inc = self.high_prices[i+1]*1.0/self.close_prices[i]
-            inc = int(inc * 10000) 
-            ret += str(inc) + "," 
-            inc = self.low_prices[i+1]*1.0/self.close_prices[i]
-            inc = int(inc * 10000) 
-            ret += str(inc) + "," 
-            inc = self.close_prices[i+1]*1.0/self.close_prices[i]
-            inc = int(inc * 10000) 
-            if i != (len(self.close_prices)-2):
-                ret += str(inc) + "," 
-            else:
-                ret += str(inc) + "\n" 
-        return ret
-    # }}}
-class Extractor5(ExtractorBase):
-    def extract_features_and_classes(self): #{{{
-        ret = ""
-        for i in range(len(self.close_prices)-self.window-1):
-            for  j in range(self.window):
-                inc = self.open_prices[i+j+1] * 1.0 / self.close_prices[i+j]
-                inc = int(inc * 10000) 
-                ret +=  str(inc) + ","
-
-                inc = self.high_prices[i+j+1] * 1.0 / self.close_prices[i+j]
-                inc = int(inc * 10000) 
-                ret +=  str(inc) + ","
-
-                inc = self.low_prices[i+j+1] * 1.0 / self.close_prices[i+j]
-                inc = int(inc * 10000) 
-                ret +=  str(inc) + ","
-
-                inc = self.close_prices[i+j+1] * 1.0 / self.close_prices[i+j]
-                inc = int(inc * 10000) 
-                ret +=  str(inc) + ","
-
-                inc = self.volumes[i+j+1] * 1.0 / self.volumes[i+j]
-                inc = int(inc * 10000)
-                ret += str(inc) + ","
-
-            classes = 0
-            if self.close_prices[i+self.window + 1] > self.close_prices[i+self.window] :
-                 classes = 1
-            ret += "%d" % classes + "\n"
-        return ret
-    # }}}
-
-
-    def extract_last_features(self): #{{{
-        assert(len(self.dates) == len(self.close_prices))
-        ret = ""
-        ret += self.symbol + ","
-        ret += str(self.dates[-1]) + ","
-        for i in range(len(self.close_prices)-self.window-1, len(self.close_prices)-1):
-            inc = self.open_prices[i+1]*1.0/self.close_prices[i]
-            inc = int(inc * 10000) 
-            ret += str(inc) + "," 
-            inc = self.high_prices[i+1]*1.0/self.close_prices[i]
-            inc = int(inc * 10000) 
-            ret += str(inc) + "," 
-            inc = self.low_prices[i+1]*1.0/self.close_prices[i]
-            inc = int(inc * 10000) 
-            ret += str(inc) + "," 
-            inc = self.volumes[i+1] * 1.0 / self.volumes[i]
-            inc = int(inc * 10000)
-            ret += str(inc) + ","
-            inc = self.close_prices[i+1]*1.0/self.close_prices[i]
-            inc = int(inc * 10000) 
-            if i != (len(self.close_prices)-2):
-                ret += str(inc) + "," 
-            else:
-                ret += str(inc) + "\n" 
-        return ret
-    # }}}
 def main(options, args): # {{{
     #cmd_str = "/bin/mkdir -p " + options.output
     #print cmd_str
@@ -273,7 +152,7 @@ def main(options, args): # {{{
             logging.debug("build the %d's stock" % stock_num)
         symbol = get_stock_from_path(f)
         dates, open_prices, high_prices, low_prices, close_prices, adjust_close_prices, volumes = get_stock_data(f, options.utildate)
-        extractor = Extractor(symbol, dates, open_prices, high_prices, low_prices, close_prices, options.window, volumes)
+        extractor = Extractor(symbol, dates, open_prices, high_prices, low_prices, close_prices, options.window, options.span, options.isregress, volumes)
         if len(dates)  < options.limit:
             logging.debug("%s is too short(%d)!" % (symbol, len(dates)))
             continue
@@ -290,7 +169,7 @@ def parse_options(parser): #{{{
     parser command line
     """
     parser.add_option("--extractor", dest="extractor",action = "store", \
-            default="Extractor5", help = "the extractor to use")
+            default="Extractor4", help = "the extractor to use")
     parser.add_option("--window", type="int", dest="window",action = "store", \
             default=60, help = "the history price window")
     parser.add_option("--output", dest="output",action = "store", \
@@ -302,6 +181,8 @@ def parse_options(parser): #{{{
             default=499, \
             help = "the limit length of stock data")
     parser.add_option("--utildate", dest="utildate",action = "store", default=None, help = "the last date to train")
+    parser.add_option("--span", dest="span",action = "store", type="int", default=5,help = "the span of the price to predict")
+    parser.add_option("--isregress", dest="isregress",action = "store_true", default=True, help = "using repgress model or classify?")
     return parser.parse_args()
 # }}}
 
