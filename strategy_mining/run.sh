@@ -14,7 +14,7 @@ cd ../tools/ ;
 python daily_bars_getter.py
 
 cd "$SCRIPT_PATH" 
-python model_build_price_series2.py  --window=14
+python model_build_price_series2.py  
 python model_tuner.py 
 
 popd  > /dev/null # return the directory orignal

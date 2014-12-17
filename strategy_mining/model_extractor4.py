@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-#@author redbin@outlook.com
+#@author binred@outlook.com
 
 """
 generate the price series of stocks which base on the first day's price

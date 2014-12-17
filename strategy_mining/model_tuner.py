@@ -16,6 +16,7 @@ import scipy
 import sys
 import sklearn.decomposition
 from sklearn.metrics import mean_squared_error
+from sklearn.metrics import r2_score
 from string import punctuation
 from sklearn.neighbors import RadiusNeighborsRegressor, KNeighborsRegressor
 import time
@@ -75,6 +76,9 @@ def main(options, args):
         pred = model_predictor.predict(X_test)
     else:
         pred = model_predictor.predict_proba(X_test)
+    # calculate the R2score
+    r2 = r2_score(y_test, pred)
+    print "the r2 score is ", r2
 #    tpred = model_predictor.predict(X_test)
  #   score = model_predictor.score(X_test, tpred)
  #   print "score=", score
@@ -85,44 +89,34 @@ def main(options, args):
             dpred[i] = pred[i]
         else:
             dpred[i] = pred[i,1]
-    dpred = sorted(dpred.iteritems(),key=operator.itemgetter(1))
-    tp5 =0
-    p5 = 0
-    tp7 = 0
-    p7 = 0
-    tp6 = 0
-    p6 = 0
-    tp8 = 0
-    p8 = 0
-    tp9 = 0
-    p9 = 0
-    for preds in dpred:
-        if preds[1] > 0.5:
-            p5 += 1
-            if y_test[preds[0]] == 1:
-                tp5 +=1
-        if preds[1] > 0.6:
-            p6 +=1
-            if y_test[preds[0]] == 1:
-                tp6 += 1
-        if preds[1] > 0.65:
-            p7 +=1
-            if y_test[preds[0]] == 1:
-                tp7 += 1
-        if preds[1] > 0.8:
-            p8 +=1
-            if y_test[preds[0]] == 1:
-                tp8 += 1
-        if preds[1] > 0.98:
-            p9 +=1
-            if y_test[preds[0]] == 1:
-                tp9 += 1
-    if p5 > 0 :  print "threshold 0.5:", tp5*1.0/p5, p5
-    if p6 > 0 :  print "threshold 0.6:", tp6*1.0/p6, p6
-    if p7 > 0 :  print "threshold 0.65:", tp7*1.0/p7, p7
-    if p8 > 0 :  print "threshold 0.8:", tp8*1.0/p8, p8
-    if p9 > 0 :  print "threshold 0.98:", tp9*1.0/p9, p9
+    dpred = sorted(dpred.iteritems(),key=operator.itemgetter(1), reverse = 1)
+    stop_index = 0
+    for i in range(len(dpred)):
+        if dpred[i][1] < 10000:
+            break
+        else:
+            stop_index = i
+    m=0
+    n=(stop_index) / 10
+    for i in range(n+1):
+        if y_test[dpred[i][0]] > 10000:
+            m += 1
+    print "%d %f %f %f" % (n, dpred[0][1], dpred[n][1], m * 1.0 / (n+1))
 
+    m=0
+    n=(stop_index) / 50
+    for i in range(n+1):
+        if y_test[dpred[i][0]] > 10000:
+            m += 1
+    print "%d %f %f %f" % (n, dpred[0][1], dpred[n][1], m * 1.0 / (n+1))
+
+        
+    m=0
+    n=(stop_index) 
+    for i in range(n+1):
+        if y_test[dpred[i][0]] > 10000:
+            m += 1
+    print "%d %f %f %f" % (n, dpred[0][1], dpred[n][1], m * 1.0 / (n+1))
 
     if options.isregress :
         pred = model_predictor.predict(X_train)
@@ -134,43 +128,35 @@ def main(options, args):
             dpred[i] = pred[i]
         else:
             dpred[i] = pred[i,1]
-    dpred = sorted(dpred.iteritems(),key=operator.itemgetter(1))
-    tp5 =0
-    p5 = 0
-    tp7 = 0
-    p7 = 0
-    tp6 = 0
-    p6 = 0
-    tp8 = 0
-    p8 = 0
-    tp9 = 0
-    p9 = 0
-    for preds in dpred:
-        if preds[1] > 0.5:
-            p5 += 1
-            if y_train[preds[0]] == 1:
-                tp5 +=1
-        if preds[1] > 0.6:
-            p6 +=1
-            if y_train[preds[0]] == 1:
-                tp6 += 1
-        if preds[1] > 0.65:
-            p7 +=1
-            if y_train[preds[0]] == 1:
-                tp7 += 1
-        if preds[1] > 0.8:
-            p8 +=1
-            if y_train[preds[0]] == 1:
-                tp8 += 1
-        if preds[1] > 0.98:
-            p9 +=1
-            if y_train[preds[0]] == 1:
-                tp9 += 1
-    if p5 > 0 :  print tp5*1.0/p5, p5
-    if p6 > 0 :  print tp6*1.0/p6, p6
-    if p7 > 0 :  print tp7*1.0/p7, p7
-    if p8 > 0 :  print tp8*1.0/p8, p8
-    if p9 > 0 :  print tp9*1.0/p9, p9
+    # dpred = [(3, 9781.0001), (2, 9811.0000), (0, 9873.06), (6, 10111.999), (1, 10289.999), (5, 10343.9), (4, 10387.999)]
+    dpred = sorted(dpred.iteritems(),key=operator.itemgetter(1),reverse=1)
+    stop_index = 0
+    for i in range(len(dpred)):
+        if dpred[i][1] < 10000:
+            break
+        else :
+            stop_index = i
+    m=0
+    n=(stop_index) / 10
+    for i in range(n+1):
+        if y_train[dpred[i][0]] > 10000:
+            m += 1
+    print "%d %f %f %f" % (n, dpred[0][1], dpred[n][1], m * 1.0 / (n+1))
+
+    m=0
+    n=(stop_index) / 50
+    for i in range(n+1):
+        if y_train[dpred[i][0]] > 10000:
+            m += 1
+    print "%d %f %f %f" % (n, dpred[0][1], dpred[n][1], m * 1.0 / (n+1))
+
+        
+    m=0
+    n=(stop_index) 
+    for i in range(n+1):
+        if y_train[dpred[i][0]] > 10000:
+            m += 1
+    print "%d %f %f %f" % (n, dpred[0][1], dpred[n][1], m * 1.0 / (n+1))
 
     #{{{ prediction
     print "prediction ..."
