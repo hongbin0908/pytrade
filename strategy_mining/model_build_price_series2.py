@@ -134,11 +134,12 @@ def main(options, args): # {{{
     options.window = int(options.window)
 
     if options.utildate == None:
-        options.utildate = get_date_str()
-    d_train     = options.output + "/" + options.utildate ;
+        print "ERROR: the utildate is NONE!"
+        assert(False)
+    d_train     = options.output + "/" + options.extractor+  "_" + str(options.span) + "/" + options.utildate ;
     if not os.path.exists(d_train) : os.makedirs(d_train)
-    f_train     = open(d_train + "/train.csv", "w")
-    d_last      = options.output + "/" + options.utildate  ;
+    f_train     = open(d_train + "/features.csv", "w")
+    d_last      = options.output + "/" + options.extractor+  "_" + str(options.span) + "/" + options.utildate  ;
     if not os.path.exists(d_train) : os.makedirs(d_last)
     f_last      = open( d_last + "/last.csv", "w")
 
@@ -151,11 +152,14 @@ def main(options, args): # {{{
         if stock_num % 10 == 0:
             logging.debug("build the %d's stock" % stock_num)
         symbol = get_stock_from_path(f)
-        dates, open_prices, high_prices, low_prices, close_prices, adjust_close_prices, volumes = get_stock_data(f, options.utildate)
-        extractor = Extractor(symbol, dates, open_prices, high_prices, low_prices, close_prices, options.window, options.span, options.isregress, volumes)
+        dates, open_prices, high_prices, low_prices, close_prices, adjust_close_prices, volumes = get_stock_data(f, options.utildate, 1000)
         if len(dates)  < options.limit:
             logging.debug("%s is too short(%d)!" % (symbol, len(dates)))
             continue
+        if not dates[-1] == options.utildate:
+            print "the last date(%s) of stock data is not %s" % (dates[-1], options.utildate)
+            assert(False)
+        extractor = Extractor(symbol, dates, open_prices, high_prices, low_prices, close_prices, options.window, options.span, options.isregress, volumes)
         print >> f_train, "%s" %  \
             extractor.extract_features_and_classes(),
         print >> f_last, "%s" % \

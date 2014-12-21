@@ -84,7 +84,7 @@ def format10(open_prices, high_prices, low_prices, close_prices, adjust_prices):
         close_prices[s]= close_prices[s]/open_price_first
         adjust_prices[s]=adjust_prices[s]/open_price_first
 
-def get_stock_data(filename, str_utildate = None):
+def get_stock_data(filename, str_utildate = None, length = 1000):
     """
     input filename : the path of stock daily data
     """
@@ -106,9 +106,6 @@ def get_stock_data(filename, str_utildate = None):
     close_prices.reverse()
     adjust_close_prices.reverse()
     volumes.reverse()
-    length = 365 * 2
-    if len(dates) < length:
-        length = len(dates)
     dates2 = [] 
     open_prices2 = []
     high_prices2 = []
@@ -116,9 +113,9 @@ def get_stock_data(filename, str_utildate = None):
     close_prices2 = []
     adjust_close_prices2 = []
     volumes2 = []
-    for i in range(-1 * length, 0):
+    for i in range(-1 * len(dates), 0):
         dt_cur_date = parse_date_str(dates[i])
-        if dt_cur_date < dt_utildate:
+        if dt_cur_date <= dt_utildate:
             dates2.append(dates[i])
             open_prices2.append(open_prices[i])
             high_prices2.append(high_prices[i])
@@ -128,7 +125,16 @@ def get_stock_data(filename, str_utildate = None):
             volumes2.append(volumes[i])
         else:
             break
-    return dates2, open_prices2, high_prices2, low_prices2, close_prices2, adjust_close_prices2, volumes2
+    if len(dates2) < length:
+        length = len(dates)
+    return  dates2[len(dates2)-length:len(dates2)+1], \
+            open_prices2[len(open_prices2)-length:len(open_prices2)+1], \
+            high_prices2[len(high_prices2)-length:len(high_prices2)+1], \
+            low_prices2[len(low_prices2)-length:len(low_prices2)+1], \
+            close_prices2[len(close_prices2)-length:len(close_prices2)+1], \
+            adjust_close_prices2[len(adjust_close_prices2)-length:len(adjust_close_prices2)+1], \
+            volumes2[len(volumes2)-length:len(volumes2)+1]
+
 def get_date_str(): # {{{
     now = datetime.datetime.now()
     return now.strftime('%Y-%m-%d')

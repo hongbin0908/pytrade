@@ -40,8 +40,8 @@ from model_base import get_date_str
 
 def main(options, args):
     if options.utildate == None:
-        options.utildate = get_date_str()
-    fsampleY = open(options.input + "/" + options.utildate + "/train.csv", "r")
+        assert(False)
+    fsampleY = open(options.input + "/" + options.utildate + "/features.csv", "r")
     l_X = []
     l_y = []
 
@@ -54,6 +54,7 @@ def main(options, args):
             else:
                 l_y.append(int(tokens[i]))
         l_X.append(features)
+    print "features loaded!"
     X = np.array(l_X)
     y = np.array(l_y)
     assert(X.shape[0] == y.shape[0])
@@ -160,7 +161,9 @@ def main(options, args):
 
     #{{{ prediction
     print "prediction ..."
-    stock_predict_out = file(options.input + "/" + options.utildate + "/predict.csv", "w")
+    stock_predict_dir = options.output + "/GradientBoostingRegressor/" + options.utildate
+    if not os.path.exists(sotck_predict_dir) : os.makedirs(stock_predict_dir)
+    stock_predict_out = file(stock_predict_dir + "/predicted.cv", "w")
     for line in file(options.input + "/" + options.utildate + "/last.csv", "r"):
         tokens = line.split(",")
         l_features = []
@@ -190,7 +193,8 @@ def parse_options(paraser): # {{{
     """
     parser command line
     """
-    parser.add_option("--input", dest="input",action = "store", default="data/prices_series/", help = "the input filename dir")
+    parser.add_option("--input", dest="input",action = "store", default="data/prices_series/Extractor4_5/", help = "the input filename dir")
+    parser.add_option("--output", dest="output",action = "store", default="data/prices_series/", help = "the input filename dir")
     parser.add_option("--short", dest="short",action = "store", default=-1, help = "using short data")
     parser.add_option("--utildate", dest="utildate",action = "store", default=None, help = "the last date to train")
     parser.add_option("--isregress", dest="isregress",action = "store_true", default=True, help = "using repgress model or classify?")
