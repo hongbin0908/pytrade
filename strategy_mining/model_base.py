@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 #@author 
 import sys,os
 import datetime
@@ -127,15 +129,52 @@ def get_stock_data(filename, str_utildate = None):
         else:
             break
     return dates2, open_prices2, high_prices2, low_prices2, close_prices2, adjust_close_prices2, volumes2
-def get_date_str(back = 0): # {{{
+def get_date_str(): # {{{
     now = datetime.datetime.now()
-    delta = datetime.timedelta(days=back)
-    n_days = now - delta
-    return n_days.strftime('%Y-%m-%d')
+    return now.strftime('%Y-%m-%d')
 # }}}
 def parse_date_str(date_str): # {{{
     return datetime.datetime.strptime(date_str, '%Y-%m-%d')
 # }}}
+
+
+def get_stock_data_one_day(sym, datestr,stock_root="/home/work/workplace/stock_data/"):
+    """
+    描述: 获取指定一天的股票数据
+    输入: 股票代码 时间(YYYY-MM-DD)
+    输出: dict {"open":xx,"high":xx,"low":xx,"close":xx,"adj_close":xx,"volume":xx}
+
+    """
+    if len(datestr) != 10:
+        assert(False)
+    res = {}
+    filename = os.path.join(stock_root, sym + ".csv")
+    if not os.path.exists(filename): 
+        print "filename not exists : " , filename
+        assert(False)
+    lines = open(filename, "r").readlines() ; assert(len(lines)>1)
+    for line in lines[1:]:
+        terms = line.rstrip().split(",")
+        strdate = terms[0]
+        if  len(strdate) != 10:
+            print "the date string format error[date:%s][line:%s]" % (strdate, line)
+            assert(False)
+        if strdate != datestr :
+            continue
+        res["open"]  = float(terms[1])
+        res["high"]  = float(terms[2])
+        res["low"]   = float(terms[3])
+        res["close"] = float(terms[4])
+        res["volume"]  = float(terms[5])
+        res["adj_close"] = float(terms[6])
+
+        # random check
+        assert( res["low"] <= res["high"]  )
+        assert( res["low"] <= res["open"]  )
+        assert( res["low"] <= res["close"]  )
+        
+        break
+    return res;
 
 if __name__ == '__main__':
     main()

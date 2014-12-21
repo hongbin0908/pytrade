@@ -16,7 +16,10 @@ class ModelBaseTest (unittest.TestCase):
         self.assertEqual(8, len(dates))
         self.assertEqual("2014-11-13", dates[-1])
     def test_get_date_str(self):
-        print base.get_date_str(1)
+        print base.get_date_str()
+    def test_get_stock_data_one_day(self):
+        stock_prices = base.get_stock_data_one_day('YHOO', '2013-11-01')
+        print stock_prices
 def main():
     unittest.main()
 if __name__ == '__main__':
