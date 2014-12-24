@@ -26,7 +26,9 @@ class Extractor5(ExtractorBase):
                 inc = int(inc * 10000) 
                 ret +=  str(inc) + ","
 
-
+                if self.volumes[i+j] == 0 :
+                    print "the volume is 0 of symbo(%s)" % self.symbol
+                    sys.exit(1)
                 inc = self.volumes[i+j+1] * 1.0 / self.volumes[i+j]
                 inc = int(inc * 10000)
                 ret += str(inc) + ","

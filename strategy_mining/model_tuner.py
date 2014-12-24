@@ -4,6 +4,7 @@
 
 # <codecell>
 
+import os
 import numpy as np
 import math
 from math import log
@@ -37,6 +38,8 @@ from sklearn.pipeline import Pipeline
 # parse the command paramaters
 from optparse import OptionParser
 from model_base import get_date_str
+from model_train_base import TrainRegress
+from model_train_nothing import Nothing
 
 def main(options, args):
     if options.utildate == None:
@@ -64,8 +67,11 @@ def main(options, args):
         y = y[0:int(options.short)]
     
     print "preparing models"
+    trainModel = globals()[options.trainmodel]()
+    print trainModel
     if options.isregress == True:
-        model_predictor = GradientBoostingRegressor(max_features=0.6, learning_rate = 0.05, max_depth=5, n_estimators=300)
+        model_predictor = trainModel.get_model()
+        #model_predictor = GradientBoostingRegressor(max_features=0.6, learning_rate = 0.05, max_depth=5, n_estimators=300)
     else :
         model_predictor = GradientBoostingClassifier(max_features=0.6, learning_rate=0.05, max_depth=5, n_estimators=300)
     #model_predictor = GradientBoostingClassifier()
@@ -80,7 +86,7 @@ def main(options, args):
     # calculate the R2score
     r2 = r2_score(y_test, pred)
     print "the r2 score is ", r2
-#    tpred = model_predictor.predict(X_test)
+ #   tpred = model_predictor.predict(X_test)
  #   score = model_predictor.score(X_test, tpred)
  #   print "score=", score
     assert(len(pred) == X_test.shape[0])
@@ -162,7 +168,7 @@ def main(options, args):
     #{{{ prediction
     print "prediction ..."
     stock_predict_dir = options.output + "/GradientBoostingRegressor/" + options.utildate
-    if not os.path.exists(sotck_predict_dir) : os.makedirs(stock_predict_dir)
+    if not os.path.exists(stock_predict_dir) : os.makedirs(stock_predict_dir)
     stock_predict_out = file(stock_predict_dir + "/predicted.cv", "w")
     for line in file(options.input + "/" + options.utildate + "/last.csv", "r"):
         tokens = line.split(",")
@@ -197,7 +203,8 @@ def parse_options(paraser): # {{{
     parser.add_option("--output", dest="output",action = "store", default="data/prices_series/", help = "the input filename dir")
     parser.add_option("--short", dest="short",action = "store", default=-1, help = "using short data")
     parser.add_option("--utildate", dest="utildate",action = "store", default=None, help = "the last date to train")
-    parser.add_option("--isregress", dest="isregress",action = "store_true", default=True, help = "using repgress model or classify?")
+    parser.add_option("--isregress", dest="isregress", action = "store_true", default=True, help = "using repgress model or classify?")
+    parser.add_option("--trainmodel", dest="trainmodel", action = "store", default="Nothing", help = "the model class to train")
     return parser.parse_args()
 #}}} 
 

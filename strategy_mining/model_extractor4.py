@@ -14,6 +14,9 @@ class Extractor4(ExtractorBase):
         ret = ""
         for i in range(len(self.close_prices)-self.window-self.span):
             for  j in range(self.window):
+                if self.volumes[i+j] == 0:
+                    print "the volumes is 0 of symbol(%s)" % self.symbol
+                    sys.exit(1)
                 inc = self.volumes[i+j+1] * 1.0 / self.volumes[i+j]
                 inc = int(inc * 10000)
                 ret += str(inc) + ","
