@@ -42,7 +42,7 @@ def get_stock_from_path(pathname):
     """
     from /home/work/workplace/pytrade/strategy_mining/utest_data/stocks/AAPL.csv to AAPL
     """
-    return pathname.split("/")[-1].split(".")[0]
+    return os.path.splitext(pathname.split("/")[-1])[0]
 
 def load_data(filename, dates, open_price, high_price, low_price, close_price, adjust_price, volume_list):
     fd = open(filename, "r")
@@ -182,5 +182,47 @@ def get_stock_data_one_day(sym, datestr,stock_root="/home/work/workplace/stock_d
         break
     return res;
 
+def get_stock_data_span_day(sym, datestr,span, stock_root="/home/work/workplace/stock_data/"):
+    """
+    描述: 获取指定一天后span天的股票数据
+    输入: 股票代码 时间(YYYY-MM-DD)
+    输出: dict {"open":xx,"high":xx,"low":xx,"close":xx,"adj_close":xx,"volume":xx}
+
+    """
+    if len(datestr) != 10:
+        assert(False)
+    res = {}
+    filename = os.path.join(stock_root, sym + ".csv")
+    if not os.path.exists(filename): 
+        print "filename not exists : " , filename
+        assert(False)
+    lines = open(filename, "r").readlines() ; assert(len(lines)>1)
+    index = 0
+    for index in range(1, len(lines)):
+        line = lines[index]
+        terms = line.rstrip().split(",")
+        strdate = terms[0]
+        if  len(strdate) != 10:
+            print "the date string format error[date:%s][line:%s]" % (strdate, line)
+            assert(False)
+        if strdate != datestr :
+            continue
+        line = lines[index + span]
+        terms = line.rstrip().split(",")
+        res["open"]  = float(terms[1])
+        res["high"]  = float(terms[2])
+        res["low"]   = float(terms[3])
+        res["close"] = float(terms[4])
+        res["volume"]  = float(terms[5])
+        res["adj_close"] = float(terms[6])
+        res["date"] = terms[0]
+
+        # random check
+        assert( res["low"] <= res["high"]  )
+        assert( res["low"] <= res["open"]  )
+        assert( res["low"] <= res["close"]  )
+        
+        break
+    return res;
 if __name__ == '__main__':
     main()

@@ -10,15 +10,16 @@ pushd . > /dev/null
 cd "$SCRIPT_PATH" 
  
 cd ../tools/ ; 
-#python daily_bars_getter.py
+#:wq#:wqaily_bars_getter.py
 cd "$SCRIPT_PATH" 
 
 rm -rf /home/work/workplace/stock_data/BMC.csv 
 
 for ((i=90;i>=0;i++)); do
     datestr=$(date -d"$i days ago" +%Y-%m-%d) 
-    #time python model_build_price_series2.py --utildate=${datestr} || exit 1
+    time python model_build_price_series2.py --utildate=${datestr} || exit 1
     time python model_tuner.py  --input=data/prices_series/Extractor4_5 --utildate=${datestr} || exit 1
+    time python post_check.py  --direct=data/prices_series/Nothing/${datestr}  || exit 1
 done
 
 

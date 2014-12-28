@@ -4,7 +4,7 @@
 
 # <codecell>
 
-import os
+import os,sys,json,datetime
 import numpy as np
 import math
 from math import log
@@ -167,9 +167,13 @@ def main(options, args):
 
     #{{{ prediction
     print "prediction ..."
-    stock_predict_dir = options.output + "/GradientBoostingRegressor/" + options.utildate
+    stock_predict_dir = options.output + "/"+ options.trainmodel +"/" + options.utildate
     if not os.path.exists(stock_predict_dir) : os.makedirs(stock_predict_dir)
-    stock_predict_out = file(stock_predict_dir + "/predicted.cv", "w")
+    stock_predict_out = file(stock_predict_dir + "/predicted.csv", "w")
+
+    metastr = file(options.input + "/" + options.utildate + "/meta.json", "r").readlines()[0]
+    metajson  = json.loads(metastr)
+    
     for line in file(options.input + "/" + options.utildate + "/last.csv", "r"):
         tokens = line.split(",")
         l_features = []
@@ -178,6 +182,7 @@ def main(options, args):
                 print >> stock_predict_out, "%s," % tokens[i],
             elif 1 == i:
                 print >> stock_predict_out, "%s," % tokens[i],
+                print >> stock_predict_out, "%d," % metajson["span"],
             else:
                 l_features.append(float(tokens[i].strip()))
         l_features2 = []
