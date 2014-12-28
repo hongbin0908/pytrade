@@ -22,9 +22,9 @@ while true
 do
     datestr=$(date -d"$start_date + $i day" "+%Y-%m-%d") 
     time python model_build_price_series2.py --utildate=${datestr} --window=7 || exit 1
-    time python model_tuner.py  --input=data/prices_series/Extractor4_21_5 --utildate=${datestr} --trainmodel=Nothing || continue
-    time python model_tuner.py  --input=data/prices_series/Extractor4_21_5 --utildate=${datestr} --trainmodel=God || continue
-    time python model_tuner.py  --input=data/prices_series/Extractor4_21_5 --utildate=${datestr} --trainmodel=Gdbc1 || continue
+    time python model_tuner.py  --input=data/prices_series/Extractor4_7_5 --utildate=${datestr} --trainmodel=Nothing || continue
+    time python model_tuner.py  --input=data/prices_series/Extractor4_7_5 --utildate=${datestr} --trainmodel=God || continue
+    time python model_tuner.py  --input=data/prices_series/Extractor4_7_5 --utildate=${datestr} --trainmodel=Gdbc1 || continue
     time python post_check.py  --direct=data/prices_series/Nothing/${datestr}  || exit 1
     time python post_check.py  --direct=data/prices_series/God/${datestr}  || exit 1
     time python post_check.py  --direct=data/prices_series/Gdbc1/${datestr}  || exit 1

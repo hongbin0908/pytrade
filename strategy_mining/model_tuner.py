@@ -73,8 +73,10 @@ def main(options, args):
     trainModel = globals()[options.trainmodel]()
     print trainModel
     if options.isregress == True:
-        model_predictor = trainModel.get_model()
-        #model_predictor = GradientBoostingRegressor(max_features=0.6, learning_rate = 0.05, max_depth=5, n_estimators=300)
+        if options.trainmodel == "Gdbc1":
+            model_predictor = GradientBoostingRegressor(max_features=0.6, learning_rate = 0.05, max_depth=5, n_estimators=300)
+        else:
+            model_predictor = trainModel.get_model()
     else :
         model_predictor = GradientBoostingClassifier(max_features=0.6, learning_rate=0.05, max_depth=5, n_estimators=300)
     #model_predictor = GradientBoostingClassifier()
