@@ -4,7 +4,7 @@
 """
 generate the price series of stocks which base on the first day's price
 """
-import sys,os,numpy
+import sys,os,numpy,random
 local_path = os.path.dirname(os.path.abspath(sys.argv[0]))
 sys.path.append(local_path + "/./")
 
@@ -13,7 +13,7 @@ class NothingModel:
     def fit(self,x,y):
         pass
     def predict(self,X):
-        return numpy.ones(X.shape[0]) * 10000
+        return numpy.ones(X.shape[0]) * 10000 * (1 + (random.random() -0.5)* 0.01)
 class Nothing(TrainRegress):
     def get_model(self):
         return NothingModel()

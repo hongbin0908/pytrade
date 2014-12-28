@@ -136,10 +136,10 @@ def main(options, args): # {{{
     if options.utildate == None:
         print "ERROR: the utildate is NONE!"
         assert(False)
-    d_train     = options.output + "/" + options.extractor+  "_" + str(options.span) + "/" + options.utildate ;
+    d_train     = options.output + "/" + options.extractor+ "_"+str(options.window)+ "_" + str(options.span) + "/" + options.utildate ;
     if not os.path.exists(d_train) : os.makedirs(d_train)
     f_train     = open(d_train + "/features.csv", "w")
-    d_last      = options.output + "/" + options.extractor+  "_" + str(options.span) + "/" + options.utildate  ;
+    d_last      = options.output + "/" + options.extractor+ "_"+str(options.window)+ "_" + str(options.span) + "/" + options.utildate  ;
     if not os.path.exists(d_train) : os.makedirs(d_last)
     f_last      = open( d_last + "/last.csv", "w")
     f_meta      = open( d_train + "/meta.json", "w")
@@ -182,7 +182,7 @@ def parse_options(parser): #{{{
     parser.add_option("--extractor", dest="extractor",action = "store", \
             default="Extractor4", help = "the extractor to use")
     parser.add_option("--window", type="int", dest="window",action = "store", \
-            default=60, help = "the history price window")
+            default=21, help = "the history price window")
     parser.add_option("--output", dest="output",action = "store", \
             default=local_path + "/data/prices_series/", help = "the output directory")
     parser.add_option("--stocks_path", dest="stocks_path",action = "store", \

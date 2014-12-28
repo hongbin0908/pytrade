@@ -40,6 +40,9 @@ from optparse import OptionParser
 from model_base import get_date_str
 from model_train_base import TrainRegress
 from model_train_nothing import Nothing
+from model_train_god import God
+from model_train_gdbc1 import Gdbc1
+import  model_base as base
 
 def main(options, args):
     if options.utildate == None:
@@ -80,91 +83,17 @@ def main(options, args):
     clf = model_predictor.fit(X_train, y_train)
 
     if options.isregress:
-        pred = model_predictor.predict(X_test)
+        if options.trainmodel != "God":
+            pred = model_predictor.predict(X_test)
+            r2 = r2_score(y_test, pred)
+            print "the r2 score is ", r2
     else:
         pred = model_predictor.predict_proba(X_test)
     # calculate the R2score
-    r2 = r2_score(y_test, pred)
-    print "the r2 score is ", r2
  #   tpred = model_predictor.predict(X_test)
  #   score = model_predictor.score(X_test, tpred)
  #   print "score=", score
-    assert(len(pred) == X_test.shape[0])
-    dpred = {}
-    for i in range(len(pred)):
-        if options.isregress:
-            dpred[i] = pred[i]
-        else:
-            dpred[i] = pred[i,1]
-    dpred = sorted(dpred.iteritems(),key=operator.itemgetter(1), reverse = 1)
-    stop_index = 0
-    for i in range(len(dpred)):
-        if dpred[i][1] < 10000:
-            break
-        else:
-            stop_index = i
-    m=0
-    n=(stop_index) / 10
-    for i in range(n+1):
-        if y_test[dpred[i][0]] > 10000:
-            m += 1
-    print "%d %f %f %f" % (n, dpred[0][1], dpred[n][1], m * 1.0 / (n+1))
-
-    m=0
-    n=(stop_index) / 50
-    for i in range(n+1):
-        if y_test[dpred[i][0]] > 10000:
-            m += 1
-    print "%d %f %f %f" % (n, dpred[0][1], dpred[n][1], m * 1.0 / (n+1))
-
-        
-    m=0
-    n=(stop_index) 
-    for i in range(n+1):
-        if y_test[dpred[i][0]] > 10000:
-            m += 1
-    print "%d %f %f %f" % (n, dpred[0][1], dpred[n][1], m * 1.0 / (n+1))
-
-    if options.isregress :
-        pred = model_predictor.predict(X_train)
-    else:
-        pred = model_predictor.predict_proba(X_train)
-    dpred = {}
-    for i in range(len(pred)):
-        if options.isregress:
-            dpred[i] = pred[i]
-        else:
-            dpred[i] = pred[i,1]
-    # dpred = [(3, 9781.0001), (2, 9811.0000), (0, 9873.06), (6, 10111.999), (1, 10289.999), (5, 10343.9), (4, 10387.999)]
-    dpred = sorted(dpred.iteritems(),key=operator.itemgetter(1),reverse=1)
-    stop_index = 0
-    for i in range(len(dpred)):
-        if dpred[i][1] < 10000:
-            break
-        else :
-            stop_index = i
-    m=0
-    n=(stop_index) / 10
-    for i in range(n+1):
-        if y_train[dpred[i][0]] > 10000:
-            m += 1
-    print "%d %f %f %f" % (n, dpred[0][1], dpred[n][1], m * 1.0 / (n+1))
-
-    m=0
-    n=(stop_index) / 50
-    for i in range(n+1):
-        if y_train[dpred[i][0]] > 10000:
-            m += 1
-    print "%d %f %f %f" % (n, dpred[0][1], dpred[n][1], m * 1.0 / (n+1))
-
-        
-    m=0
-    n=(stop_index) 
-    for i in range(n+1):
-        if y_train[dpred[i][0]] > 10000:
-            m += 1
-    print "%d %f %f %f" % (n, dpred[0][1], dpred[n][1], m * 1.0 / (n+1))
-
+    #assert(len(pred) == X_test.shape[0])
     #{{{ prediction
     print "prediction ..."
     stock_predict_dir = options.output + "/"+ options.trainmodel +"/" + options.utildate
@@ -191,7 +120,10 @@ def main(options, args):
         if np_features.shape[1] != X.shape[1] :
             assert(false)
         if options.isregress:
-            pred = model_predictor.predict(np_features)
+            if options.trainmodel == "God":
+                pred = model_predictor.predict(np_features, tokens[0], tokens[1], metajson["span"])
+            else:
+                pred = model_predictor.predict(np_features)
             print >> stock_predict_out, "%f" % pred
         else:
             pred = model_predictor.predict_proba(np_features)
