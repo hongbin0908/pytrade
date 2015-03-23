@@ -7,7 +7,7 @@ local_path = os.path.dirname(os.path.abspath(sys.argv[0]))
 sys.path.append(local_path + "/./")
 
 if __name__ == '__main__':
-    conn = MySQLdb.connect(host="localhost", user="root", passwd="123456", db="mytrade", charset="utf8")
+    conn = MySQLdb.connect(host="123.56.128.198", user="root", passwd="123456", db="mytrade", charset="utf8")
     cursor = conn.cursor()
 
     backtrace = int(sys.argv[1])
