@@ -21,7 +21,15 @@ if __name__ == '__main__':
         params = (s_cur_date)
 
         n = cursor.execute(sql, params)
-        data =  yahoo.get_historical(s_cur_date, s_cur_date)
+        retry = 3
+        while retry >= 0:
+            try:
+                data =  yahoo.get_historical(s_cur_date, s_cur_date)
+            except Exception, ex:
+                retry -= 1
+                continue
+            break
+
         if n == 0:
             sql = "insert into exchange_days(datetime, isvalid)" \
             +"values(%s,%s); "
