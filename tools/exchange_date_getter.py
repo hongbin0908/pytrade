@@ -22,7 +22,7 @@ if __name__ == '__main__':
 
         n = cursor.execute(sql, params)
         data =  yahoo.get_historical(s_cur_date, s_cur_date)
-        if n == 1:
+        if n == 0:
             sql = "insert into exchange_days(datetime, isvalid)" \
             +"values(%s,%s); "
             if len(data) > 0:
