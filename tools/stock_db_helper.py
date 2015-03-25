@@ -5,8 +5,6 @@ import json, MySQLdb, datetime
 local_path = os.path.dirname(os.path.abspath(sys.argv[0]))
 sys.path.append(local_path + "/./")
 
-import finsymbols
-from yahoo_finance import Share
 
 conn = None
 
@@ -84,8 +82,6 @@ def insert_stock_data_daily(symbol, date, volume, open_price, close_price, high,
     cursor = conn.cursor()
     assert(volume > 0)
     assert(high >= close_price)
-    print low 
-    print close_price
     assert(low <= close_price)
     sql = "insert into stock_data_daily (symbol, date, volume, open, close, high, low, adj_close) values (%s, %s, %s,%s,%s,%s,%s,%s)"
     params = (symbol, date, volume, open_price, close_price, high, low, adj_close)
@@ -95,8 +91,29 @@ def insert_stock_data_daily(symbol, date, volume, open_price, close_price, high,
     cursor.close()
     return True
 
+def check_is_share_ready(lSymbol, date):
+    get_conn()
+    cursor = conn.cursor()
+    assert(len(lSymbol) > 0)
+    sSymbols = ""
+    for sym in lSymbol :
+        sSymbols += '"' + sym + '",'
+    sSymbols = sSymbols[0:len(sSymbols) - 1]
+    sql = "select count(*) from stock_data_daily where date = %s and symbol in (" + sSymbols +")"
+    params = (date)
+    n = cursor.execute(sql, params)
+    
+    for row in cursor.fetchall():
+        num = int(row[0])
+        break
+    if num == len(lSymbol):
+        return True
+    return False
+    cursor.close()
+
 
 if __name__ == '__main__':
     #print is_valid_date("2014-01-13")
     #print get_sp500_list()
-    print insert_stock_data_daily("TEST", "2014-01-15", 100, 1.0,1.0,1.0,1.0,1.0)
+    #print insert_stock_data_daily("TEST", "2014-01-15", 100, 1.0,1.0,1.0,1.0,1.0)
+    print check_is_share_ready(["MSFT","YHOO"], "2015-03-17")

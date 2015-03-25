@@ -36,6 +36,7 @@ if __name__ == '__main__':
             continue
         get_batch(s_start, s_now, sym_stack)
         sym_stack = []
+        sym_stack.append(symbol)
 
     get_batch(s_start, s_now, sym_stack)
 
