@@ -74,6 +74,8 @@ class base_model:
         print "TRACE training ... "
         predict_value = self.model_predictor.predict(self.samples[train_size:])
         print "TRACE train complete!"
+        print 'xxxxxxx'
+        print self.classes[train_size:][0]
         r2_score = metrics.r2_score(self.classes[train_size:], predict_value)
         print "TRACE r2_score:", r2_score
     def model_test(self, timewindow):
