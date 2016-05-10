@@ -22,7 +22,6 @@ from sklearn import preprocessing
 from model_traing_features import *
 
 class base_model:
-    #�������ɷ����б����У�ÿһ�������Ĳ�����ʽ��Ϊ(prices_list, index,feature_result_list),���У�index��ʾ���������ɵ��±꣬���ɵĽ��������feature_result_list��
     feature_builder_list = []
     sample_judgement = None
     model_predictor = None
@@ -49,7 +48,6 @@ class base_model:
         tmp_array = numpy.nan_to_num(numpy.column_stack(samples))
         tmp_array = numpy.column_stack(samples)
         tmp_prices = self.sample_judgement.judge(open_price_list, high_price_list, low_price_list, close_price_list, 0.05, 7)
-        #�ж��Ƿ�����Ч��
         total = 0; valid = 0
 
         for s in range(0, tmp_array.shape[0]):
@@ -173,7 +171,7 @@ def main():
     num  = 0
     final_list = []
     for s in file_list:
-        open_prices, high_prices, low_prices, close_prices, adjust_close_prices,volume = get_stock_data(s)
+        dates, open_prices, high_prices, low_prices, close_prices, adjust_close_prices,volume = get_stock_data(s)
         if len(open_prices) < 30:
             continue
         result = model.result_predict(numpy.array(open_prices), numpy.array(high_prices), 
