@@ -22,7 +22,7 @@ from sklearn import preprocessing
 from model_traing_features import *
 
 class base_model:
-    #特征生成方法列表，其中，每一个特征的参数形式均为(prices_list, index,feature_result_list),其中，index表示该特征生成的下标，生成的结果会存放在feature_result_list下
+    #锟斤拷锟斤拷锟斤拷锟缴凤拷锟斤拷锟叫憋拷锟斤拷锟叫ｏ拷每一锟斤拷锟斤拷锟斤拷锟侥诧拷锟斤拷锟斤拷式锟斤拷为(prices_list, index,feature_result_list),锟斤拷锟叫ｏ拷index锟斤拷示锟斤拷锟斤拷锟斤拷锟斤拷锟缴碉拷锟铰标，锟斤拷锟缴的斤拷锟斤拷锟斤拷锟斤拷锟絝eature_result_list锟斤拷
     feature_builder_list = []
     sample_judgement = None
     model_predictor = None
@@ -49,7 +49,7 @@ class base_model:
         tmp_array = numpy.nan_to_num(numpy.column_stack(samples))
         tmp_array = numpy.column_stack(samples)
         tmp_prices = self.sample_judgement.judge(open_price_list, high_price_list, low_price_list, close_price_list, 0.05, 7)
-        #判断是否是无效的
+        #锟叫讹拷锟角凤拷锟斤拷锟斤拷效锟斤拷
         total = 0; valid = 0
 
         for s in range(0, tmp_array.shape[0]):
@@ -157,7 +157,7 @@ def main():
     file_list = get_file_list(model.rootdir)
     print "TRACE loading stock .. "
     for s in file_list:
-        open_prices, high_prices, low_prices, close_prices, adjust_close_prices,volume = get_stock_data(s)
+        dates, open_prices, high_prices, low_prices, close_prices, adjust_close_prices,volume = get_stock_data(s)
         if len(open_prices) < 30:
             continue
         model.build_sample(numpy.array(open_prices[:-7]),
