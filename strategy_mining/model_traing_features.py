@@ -13,6 +13,17 @@ from model_base import *
 from volume_pattern import *
 from cycle_pattern import *
 import talib_ext as te
+class feature_builder_ohc():
+    def __init__(self, feature_func, builder_list):
+        self.feature_build_func = feature_func
+        builder_list.append(self)
+
+    def feature_build(self, open_price, high_price, low_price, close_price, adjust_close, volume, index, feature_result_list):
+        result = self.feature_build_func(high_price, low_price, close_price)
+        return result
+
+    def name(self):
+        return self.feature_build_func.__name__
 def build_features_1():
     """
     return : list. a list of feature builder class

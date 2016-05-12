@@ -44,9 +44,13 @@ class base_model:
             return
         for mindex, m in enumerate(self.feature_builder_list):
             # tolist is to ignore the memery copy of numy list
-            samples.append(m.feature_build(open_price_list, high_price_list, low_price_list, close_price_list, adjust_close_list, volume_list, mindex, timewindow).tolist())
+            cur_feat = m.feature_build(open_price_list, high_price_list, low_price_list, close_price_list, adjust_close_list, volume_list, mindex, timewindow).tolist()
+            samples.append(cur_feat)
         tmp_array = numpy.nan_to_num(numpy.column_stack(samples))
         tmp_array = numpy.column_stack(samples)
+
+        print tmp_array.shape; 
+
         tmp_prices = self.sample_judgement.judge(open_price_list, high_price_list, low_price_list, close_price_list, 0.05, 7)
         total = 0; valid = 0
 
@@ -68,12 +72,33 @@ class base_model:
     def model_process(self):
         if len(self.samples) == 0:
             return
-        train_size = len(self.samples) * 0.8
+        train_size = self.train_len
+        assert self.train_len + self.test_len == len(self.samples)
         print "DEBUG: train size: %d, predict size: %d" % (train_size, len(self.samples) - train_size)
         self.model_predictor.fit(self.samples[0:train_size], self.classes[0:train_size])
         print "TRACE training ... "
         predict_value = self.model_predictor.predict(self.samples[train_size:])
+        print "predict_value", predict_value[0]
         print "TRACE train complete!"
+        pos = 0; neg = 0; pos_all = 0; neg_all = 0; all = 0
+        tests = self.classes[train_size:]
+        for i in range(0, predict_value.size):
+            if (predict_value[i]>1):
+                if tests[i] > 1:
+                    pos +=1
+                pos_all+=1
+            if (predict_value[i]<1):
+                if tests[i] < 1:
+                    neg +=1
+                neg_all+=1
+            all += 1
+        opos  = 0
+        for i in range(0, predict_value.size):
+            if tests[i] > 1:
+                opos += 1
+
+        print "%d\t%d\t%f\t%d\t%d\t%f\t%f" % ( pos, pos_all, pos*1.0/pos_all, neg, neg_all, neg*1.0/neg_all, opos*1.0/all)
+        
         r2_score = metrics.r2_score(self.classes[train_size:], predict_value)
         print "TRACE r2_score:", r2_score
     def model_test(self, timewindow):
@@ -125,6 +150,7 @@ class base_model:
             timewindow = 30
         
         open_price = open_price_list[-timewindow-2: ]
+        print open_price; assert False
         high_price = high_price_list[-timewindow-2: ]
         low_price = low_price_list[-timewindow-2: ]
         close_price = close_price_list[-timewindow - 2 : ]
@@ -154,8 +180,9 @@ def main():
     model = base_model(feature_builder_list, judger, model_predictor)
     file_list = get_file_list(model.rootdir)
     print "TRACE loading stock .. "
+    idx = 0
     for s in file_list:
-        dates, open_prices, high_prices, low_prices, close_prices, adjust_close_prices,volume = get_stock_data(s)
+        dates, open_prices, high_prices, low_prices, close_prices, adjust_close_prices,volume = get_stock_data(s, '1970-01-01', '2013-01-01')
         if len(open_prices) < 30:
             continue
         model.build_sample(numpy.array(open_prices[:-7]),
@@ -164,6 +191,27 @@ def main():
                            numpy.array(close_prices[:-7]),
                            numpy.array(adjust_close_prices[:-7]),
                            numpy.array(volume[:-7]), 7)
+        idx += 1
+        if idx > 10: 
+            break
+    model.train_len = len(model.samples)
+    idx = 0
+    for s in file_list:
+        dates, open_prices, high_prices, low_prices, close_prices, adjust_close_prices,volume = get_stock_data(s, '2013-01-01', '2099-01-01')
+        if len(open_prices) < 30:
+            continue
+        model.build_sample(numpy.array(open_prices[:-7]),
+                           numpy.array(high_prices[:-7]),
+                           numpy.array(low_prices[:-7]),
+                           numpy.array(close_prices[:-7]),
+                           numpy.array(adjust_close_prices[:-7]),
+                           numpy.array(volume[:-7]), 7)
+        idx += 1
+        if idx > 10: 
+            break
+    model.test_len = len(model.samples) - model.train_len
+
+
     print "TRACE loaded stock: %d" % model.int_num
     model.post_process()
     model.model_process()
@@ -171,7 +219,7 @@ def main():
     num  = 0
     final_list = []
     for s in file_list:
-        dates, open_prices, high_prices, low_prices, close_prices, adjust_close_prices,volume = get_stock_data(s)
+        dates, open_prices, high_prices, low_prices, close_prices, adjust_close_prices,volume = get_stock_data(s, '1970-01-01','2099-01-01')
         if len(open_prices) < 30:
             continue
         result = model.result_predict(numpy.array(open_prices), numpy.array(high_prices), 

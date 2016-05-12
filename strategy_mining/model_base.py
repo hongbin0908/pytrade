@@ -4,8 +4,11 @@
 #@author 
 import sys,os
 import datetime
+import numpy as np
+import pandas as pd
 local_path = os.path.dirname(os.path.abspath(sys.argv[0]))
 sys.path.append(local_path + "/./")
+from model_traing_features import *
 
 def main():
     pass
@@ -15,21 +18,7 @@ import talib
 import numpy
 import two_crow_builder
 
-class feature_builder_ohc():
-    def __init__(self, feature_func, builder_list):
-        self.feature_build_func = feature_func
-        builder_list.append(self)
-
-    def feature_build(self, open_price, high_price, low_price, close_price, adjust_close, volume, index, feature_result_list):
-        result = self.feature_build_func(high_price, low_price, close_price)
-        return result
-
-    def name(self):
-        return self.feature_build_func.__name__
 def get_file_list(rootdir):
-    """hongbin0908@126.com
-    a help function to load test data.
-    """
     file_list = []
     for f in os.listdir(rootdir):
         if f == None or not f.endswith(".csv"):
@@ -84,13 +73,71 @@ def format10(open_prices, high_prices, low_prices, close_prices, adjust_prices):
         close_prices[s]= close_prices[s]/open_price_first
         adjust_prices[s]=adjust_prices[s]/open_price_first
 
-def get_stock_data(filename, str_utildate = None, length = 1000):
+def get_all():
+    sym2df = {}
+    i = 0
+    for each in get_file_list("/home/work/workplace/stock_data/"):
+        symbol = get_stock_from_path(each)
+        df = get_stock_data_pd(symbol)
+        df = cal_features(df)
+        df = judge(df, 7)
+        sym2df[symbol] = df #.dropna()
+        print symbol
+        i += 1
+        #if i > 5:
+        #    break
+    return sym2df
+
+def cal_features(df):
+    builders = build_features()
+    for mindex, m in enumerate(builders):
+        feat = m.feature_build(df['open'].values,
+                        df['high'].values,
+                        df['low'].values,
+                        df['close'].values,
+                        df['adjclose'].values,
+                        df['volume'].values,
+                        mindex, 30)
+        dates =  df.index.values
+        assert feat.size == df.shape[0] and dates.size == feat.size
+        #pdFeat = pd.DataFrame({"feat"+str(mindex):feat},index=dates)
+
+        #assert pdFeat.shape[0] == df.shape[0]
+
+        #df = df.merge(pdFeat, left_index=True, right_index=True, how='left')
+        df['feat'+str(mindex)] = feat
+    return df
+def get_stock_data_pd(symbol):
+    names = ["date", 'open', 'high', 'low', 'close','volume', 'adjclose']
+    df = pd.read_csv("/home/work/workplace/stock_data/"+symbol+".csv", names = names, skiprows = 1,  sep=",", index_col = 'date', parse_dates=True).sort_index()
+    df['volume'] = df['volume']*1.0
+    return df
+
+
+def judge(df, window):
+    df["sma"] =  df['close'].rolling(window).mean()
+    npEmpty1 = np.empty(window-1); npEmpty1.fill(numpy.NaN)
+    npEmpty2 = np.empty(window); npEmpty2.fill(numpy.NaN)
+    df["sma_shift"] = np.hstack((npEmpty1,df['sma'][window*2-1:].values,npEmpty2))
+    df["label"] = df["sma_shift"]/df["close"]
+
+    #judge_list = np.empty(df.shape[0])
+    #judge_list.fill(numpy.NaN)
+    #for i in range(window, df.shape[0]):
+    #    b_sum = sum(df["close"][i-window: i])
+    #    a_sum = sum(df["close"][i:i+window])
+    #    judge_list[i] = a_sum*1.0/b_sum
+    #df["label"] = judge_list 
+    return df 
+
+def get_stock_data(filename, str_startdate = None, str_utildate = None, length = 1000):
     """
     input filename : the path of stock daily data
     """
     if str_utildate == None:
         str_utildate = get_date_str()
     dt_utildate = parse_date_str(str_utildate)
+    dt_startdate = parse_date_str(str_startdate)
     dates = []
     open_prices = []
     high_prices = []
@@ -115,7 +162,7 @@ def get_stock_data(filename, str_utildate = None, length = 1000):
     volumes2 = []
     for i in range(-1 * len(dates), 0):
         dt_cur_date = parse_date_str(dates[i])
-        if dt_cur_date <= dt_utildate:
+        if dt_cur_date < dt_utildate and dt_cur_date >= dt_startdate:
             dates2.append(dates[i])
             open_prices2.append(open_prices[i])
             high_prices2.append(high_prices[i])
@@ -123,8 +170,6 @@ def get_stock_data(filename, str_utildate = None, length = 1000):
             close_prices2.append(close_prices[i])
             adjust_close_prices2.append(adjust_close_prices[i])
             volumes2.append(volumes[i])
-        else:
-            break
     if len(dates2) < length:
         length = len(dates)
     return  dates2[len(dates2)-length:len(dates2)+1], \
@@ -145,12 +190,6 @@ def parse_date_str(date_str): # {{{
 
 
 def get_stock_data_one_day(sym, datestr,stock_root="/home/work/workplace/stock_data/"):
-    """
-    描述: 获取指定一天的股票数据
-    输入: 股票代码 时间(YYYY-MM-DD)
-    输出: dict {"open":xx,"high":xx,"low":xx,"close":xx,"adj_close":xx,"volume":xx}
-
-    """
     if len(datestr) != 10:
         assert(False)
     res = {}
@@ -174,21 +213,14 @@ def get_stock_data_one_day(sym, datestr,stock_root="/home/work/workplace/stock_d
         res["volume"]  = float(terms[5])
         res["adj_close"] = float(terms[6])
 
-        # random check
         assert( res["low"] <= res["high"]  )
         assert( res["low"] <= res["open"]  )
         assert( res["low"] <= res["close"]  )
         
         break
-    return res;
+    return res
 
 def get_stock_data_span_day(sym, datestr,span, stock_root="/home/work/workplace/stock_data/"):
-    """
-    描述: 获取指定一天后span天的股票数据
-    输入: 股票代码 时间(YYYY-MM-DD)
-    输出: dict {"open":xx,"high":xx,"low":xx,"close":xx,"adj_close":xx,"volume":xx}
-
-    """
     if len(datestr) != 10:
         assert(False)
     res = {}
@@ -225,4 +257,8 @@ def get_stock_data_span_day(sym, datestr,span, stock_root="/home/work/workplace/
         break
     return res;
 if __name__ == '__main__':
-    main()
+    #print get_stock_data('/home/work/workplace/stock_data/MSFT.csv', '2010-01-01', '2010-02-01')
+    #print get_all()
+    df = get_stock_data_pd("MSFT")
+    #cal_features(df)
+    judge(df, 7)
