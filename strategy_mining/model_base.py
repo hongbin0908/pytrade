@@ -80,9 +80,8 @@ def get_all():
         symbol = get_stock_from_path(each)
         df = get_stock_data_pd(symbol)
         df = cal_features(df)
-        df = judge(df, 7)
+        df = judge(df)
         sym2df[symbol] = df #.dropna()
-        print symbol
         i += 1
         #if i > 5:
         #    break
@@ -105,7 +104,7 @@ def cal_features(df):
         #assert pdFeat.shape[0] == df.shape[0]
 
         #df = df.merge(pdFeat, left_index=True, right_index=True, how='left')
-        df['feat'+str(mindex)] = feat
+        df['feat_'+str(mindex)] = feat
     return df
 def get_stock_data_pd(symbol):
     names = ["date", 'open', 'high', 'low', 'close','volume', 'adjclose']
@@ -114,21 +113,23 @@ def get_stock_data_pd(symbol):
     return df
 
 
-def judge(df, window):
-    df["sma"] =  df['close'].rolling(window).mean()
-    npEmpty1 = np.empty(window-1); npEmpty1.fill(numpy.NaN)
-    npEmpty2 = np.empty(window); npEmpty2.fill(numpy.NaN)
-    df["sma_shift"] = np.hstack((npEmpty1,df['sma'][window*2-1:].values,npEmpty2))
-    df["label"] = df["sma_shift"]/df["close"]
-
-    #judge_list = np.empty(df.shape[0])
-    #judge_list.fill(numpy.NaN)
-    #for i in range(window, df.shape[0]):
-    #    b_sum = sum(df["close"][i-window: i])
-    #    a_sum = sum(df["close"][i:i+window])
-    #    judge_list[i] = a_sum*1.0/b_sum
-    #df["label"] = judge_list 
+def _judge(df, window):
+    df["close_shift"] = df["close"].shift(-1 * window)
+    df["label" + str(window)] = df["close_shift"]/df["close"]
     return df 
+
+def judge(df):
+    df = _judge(df, 1)
+    df = _judge(df, 2)
+    df = _judge(df, 3)
+    df = _judge(df, 5)
+    df = _judge(df, 6)
+    df = _judge(df, 8)
+    df = _judge(df, 10)
+    df = _judge(df, 20)
+    df = _judge(df, 30)
+    df = _judge(df, 60)
+    return df
 
 def get_stock_data(filename, str_startdate = None, str_utildate = None, length = 1000):
     """
@@ -261,4 +262,4 @@ if __name__ == '__main__':
     #print get_all()
     df = get_stock_data_pd("MSFT")
     #cal_features(df)
-    judge(df, 7)
+    judge(df, 1)

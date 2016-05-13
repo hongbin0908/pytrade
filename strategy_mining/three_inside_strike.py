@@ -11,7 +11,7 @@ class three_inside_strike_builder():
 class three_outside_move_builder():
     def feature_build(self, open_price, high_price, low_price, close_price, adjust_close, volume, index, feature_result_list):
         result = talib.CDL3OUTSIDE(open_price, high_price, low_price, close_price)
-        return result 
+        return result  * -1
 class three_star_south_builder():
     def feature_build(self, open_price, high_price, low_price, close_price, adjust_close, volume, index, feature_result_list):
         result = talib.CDL3STARSINSOUTH(open_price, high_price, low_price, close_price)
@@ -20,7 +20,7 @@ class three_star_south_builder():
 class three_ad_white_soldier_builder():
     def feature_build(self, open_price, high_price, low_price, close_price, adjust_close, volume, index, feature_result_list):
         result = talib.CDL3WHITESOLDIERS(open_price, high_price, low_price, close_price)
-        return result
+        return result * -1
 
 class abandoned_baby_builder():
     def feature_build(self, open_price, high_price, low_price, close_price, adjust_close, volume, index, feature_result_list):

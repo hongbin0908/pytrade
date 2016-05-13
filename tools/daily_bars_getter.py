@@ -53,7 +53,7 @@ def main():
     #for s in get_nasdaq2000():
     #    symbols.add(s)
     # symbols = list(symbols)
-    pool = multiprocessing.Pool(processes =50 )
+    pool = multiprocessing.Pool(processes =10 )
     result = {}
     for symbol in symbols:
         #one_work(symbol)
