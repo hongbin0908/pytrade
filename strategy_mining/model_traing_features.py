@@ -1,8 +1,8 @@
 #-*-encoding:gbk-*-
 
+
 import sys,os
-local_path = os.path.dirname(os.path.abspath(sys.argv[0]))
-sys.path.append(local_path + "/./")
+local_path = os.path.dirname(__file__)
 
 from price_judgement import *
 from two_crow_builder import *
@@ -24,23 +24,7 @@ class feature_builder_ohc():
 
     def name(self):
         return self.feature_build_func.__name__
-def build_features_1():
-    """
-    return : list. a list of feature builder class
-    """
-    feature_builder_list = []
 
-    feature_builder_c(te.PRICE_9, feature_builder_list)
-    feature_builder_c(te.PRICE_8, feature_builder_list)
-    feature_builder_c(te.PRICE_7, feature_builder_list)
-    feature_builder_c(te.PRICE_6, feature_builder_list)
-    feature_builder_c(te.PRICE_5, feature_builder_list)
-    feature_builder_c(te.PRICE_4, feature_builder_list)
-    feature_builder_c(te.PRICE_3, feature_builder_list)
-    feature_builder_c(te.PRICE_2, feature_builder_list)
-    feature_builder_c(te.PRICE_1, feature_builder_list)
-    feature_builder_c(te.PRICE_0, feature_builder_list)
-    return feature_builder_list
 def build_features():
     """
     return : list. a list of feature builder class

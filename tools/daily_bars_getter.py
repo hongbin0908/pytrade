@@ -14,7 +14,7 @@ import multiprocessing
 import finsymbols
 
 
-root = "/home/work/workplace/stock_data/"
+root = os.path.join(local_path, "..", "data", 'yeod')
 if not os.path.exists(root):
     os.makedirs(root)
 

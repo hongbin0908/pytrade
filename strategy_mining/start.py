@@ -19,10 +19,10 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn import preprocessing
 
 def get_feat_names(df):
-    return [x for x in df.columns if x.startswith('feat_')]
-    for i in range(0, 76):
-        l.append("feat"+str(i))
-    return l
+    #return ["ta_adx14", "ta_mid14", "ta_pid14"]
+    return [x for x in df.columns if x.startswith('ta_')]
+
+
 def build_trains(sym2feats, start, end):
     npTrains = None
     npLabels = None
@@ -41,7 +41,6 @@ def build_trains(sym2feats, start, end):
     return npTrains, npLabels.ravel()
 
 
-
 def ana(npTestLabel, npPred, threshold):
     npPos = npPred[npPred >= 1+threshold]
     npTrueInPos = npTestLabel[(npPred >= 1.0+threshold) & (npTestLabel>=1.0)]
@@ -53,7 +52,11 @@ def ana(npTestLabel, npPred, threshold):
         print npTrueInPos.size*1.0/npPos.size,
     else:
         print 0.0,
-    print "%d\t%d\t%f\t" % (npNeg.size, npFalseInNeg.size, npFalseInNeg.size*1.0/npNeg.size),
+    print "%d\t%d\t" % (npNeg.size, npFalseInNeg.size),
+    if npNeg.size > 0:
+        print npFalseInNeg.size*1.0/npNeg.size,
+    else:
+        print 0.0,
     print "%d\t%d\t%f\t" % (npTrue.size, npTestLabel.size, npTrue.size*1.0/npTestLabel.size)
 
 def merge(sym2feats, start ,end):
@@ -66,15 +69,12 @@ def merge(sym2feats, start ,end):
         index1 = []
         for i in range(0,df.shape[0]):
             index1.append(sym)
-            print sym
         df = pd.DataFrame(df.values, index = [index1, index2], columns = df.columns.values )
         df.index.names = ['sym','date']
-        print df.head()
         if dfMerged is None:
             dfMerged = df
         else:
             dfMerged = dfMerged.append(df)
-
     return dfMerged
 
 def cal_cor(df, feat,pos, neg, label):
@@ -110,7 +110,7 @@ def train(sym2feats, start1, end1, start2, end2):
     npTrainFeat, npTrainLabel = build_trains(sym2feats, start1, end1)
     print npTrainFeat.size
     npTestFeat, npTestLabel = build_trains(sym2feats, start2, end2)
-    model = GradientBoostingRegressor(n_estimators=128)
+    model = GradientBoostingRegressor(n_estimators=300,learning_rate=0.1, max_depth=3, verbose=1)
     model.fit(npTrainFeat, npTrainLabel)
     npPred = model.predict(npTestFeat)
 
@@ -118,6 +118,9 @@ def train(sym2feats, start1, end1, start2, end2):
     ana(npTestLabel, npPred,0.005)
     ana(npTestLabel, npPred, 0.01)
     ana(npTestLabel, npPred, 0.02)
+    ana(npTestLabel, npPred, 0.03)
+    ana(npTestLabel, npPred, 0.04)
+    ana(npTestLabel, npPred, 0.05)
     return model
 
 def main():
@@ -131,24 +134,24 @@ def main():
     #    cal_cor(dfMerged, feat, 100, 0, "label30")
     #sys.exit(0)
 
-    dfMerged = merge(sym2feats, '2016-05-01', '2099-01-01')
-    print dfMerged.head()
-    dfMerged.to_csv('merged-2016-05-01.csv')
-    npMergedFeat = dfMerged.loc[:,get_feat_names(dfMerged)].values
-    model = train(sym2feats, '2006-05-01', '2016-05-01', '2006-05-01', '2016-05-01')
-    npMergedPred = model.predict(npMergedFeat)
-    dfMerged["pred"] = npMergedPred
-    dfMerged.to_csv('pred-2016-05-01.csv')
-    print '2002-01-01', '2012-01-01', '2012-01-01', '2013-01-01'
-    train(sym2feats, '2002-01-01', '2012-01-01', '2012-01-01', '2013-01-01')
-    print '2002-01-01', '2012-01-01', '2012-06-01', '2013-01-01'
-    train(sym2feats, '2002-01-01', '2012-01-01', '2012-06-01', '2013-01-01')
-    print '2002-01-01', '2012-01-01', '2012-01-01', '2012-06-01'
-    train(sym2feats, '2002-01-01', '2012-01-01', '2012-01-01', '2012-06-01')
-    print '2003-01-01', '2013-01-01', '2013-01-01', '2014-01-01'
-    train(sym2feats, '2003-01-01', '2013-01-01', '2013-01-01', '2014-01-01')
-    print '2004-01-01', '2014-01-01', '2014-01-01', '2015-01-01'
-    train(sym2feats, '2004-01-01', '2014-01-01', '2014-01-01', '2015-01-01')
+    #dfMerged = merge(sym2feats, '2016-05-01', '2099-01-01')
+    #print dfMerged.head()
+    #dfMerged.to_csv('merged-2016-05-01.csv')
+    #npMergedFeat = dfMerged.loc[:,get_feat_names(dfMerged)].values
+    #model = train(sym2feats, '2006-05-01', '2016-05-01', '2006-05-01', '2016-05-01')
+    #npMergedPred = model.predict(npMergedFeat)
+    #dfMerged["pred"] = npMergedPred
+    #dfMerged.to_csv('pred-2016-05-01.csv')
+    print '1970-01-01', '2012-01-01', '2012-01-01', '2015-01-01'
+    train(sym2feats, '2002-01-01', '2012-01-01', '2012-01-01', '2099-01-01')
+    #print '2002-01-01', '2012-01-01', '2012-06-01', '2013-01-01'
+    #train(sym2feats, '2002-01-01', '2012-01-01', '2012-06-01', '2013-01-01')
+    #print '2002-01-01', '2012-01-01', '2012-01-01', '2012-06-01'
+    #train(sym2feats, '2002-01-01', '2012-01-01', '2012-01-01', '2012-06-01')
+    #print '2003-01-01', '2013-01-01', '2013-01-01', '2014-01-01'
+    #train(sym2feats, '2003-01-01', '2013-01-01', '2013-01-01', '2014-01-01')
+    #print '2004-01-01', '2014-01-01', '2014-01-01', '2015-01-01'
+    #train(sym2feats, '2004-01-01', '2014-01-01', '2014-01-01', '2015-01-01')
 
 
 

@@ -28,10 +28,7 @@ def get_file_list(rootdir):
     return file_list
 
 def get_stock_from_path(pathname):
-    """
-    from /home/work/workplace/pytrade/strategy_mining/utest_data/stocks/AAPL.csv to AAPL
-    """
-    return os.path.splitext(pathname.split("/")[-1])[0]
+    return os.path.splitext(os.path.split(pathname)[-1])[0]
 
 def load_data(filename, dates, open_price, high_price, low_price, close_price, adjust_price, volume_list):
     fd = open(filename, "r")
@@ -76,15 +73,14 @@ def format10(open_prices, high_prices, low_prices, close_prices, adjust_prices):
 def get_all():
     sym2df = {}
     i = 0
-    for each in get_file_list("/home/work/workplace/stock_data/"):
+    for each in get_file_list(os.path.join(local_path, '..', 'data','ta')):
         symbol = get_stock_from_path(each)
         df = get_stock_data_pd(symbol)
-        df = cal_features(df)
         df = judge(df)
         sym2df[symbol] = df #.dropna()
         i += 1
-        #if i > 5:
-        #    break
+        if i > 500:
+            break
     return sym2df
 
 def cal_features(df):
@@ -107,8 +103,7 @@ def cal_features(df):
         df['feat_'+str(mindex)] = feat
     return df
 def get_stock_data_pd(symbol):
-    names = ["date", 'open', 'high', 'low', 'close','volume', 'adjclose']
-    df = pd.read_csv("/home/work/workplace/stock_data/"+symbol+".csv", names = names, skiprows = 1,  sep=",", index_col = 'date', parse_dates=True).sort_index()
+    df = pd.read_csv(os.path.join(local_path, '..', 'data', 'ta', symbol+".csv"),  index_col = 'date', parse_dates=True).sort_index()
     df['volume'] = df['volume']*1.0
     return df
 
@@ -258,8 +253,10 @@ def get_stock_data_span_day(sym, datestr,span, stock_root="/home/work/workplace/
         break
     return res;
 if __name__ == '__main__':
+    print get_file_list(os.path.join(local_path, '..', 'data', 'yeod'))
+    print get_stock_from_path("'C:\\pythonwp\\pytrade\\strategy_mining\\..\\data\\yeod\\A.csv")
     #print get_stock_data('/home/work/workplace/stock_data/MSFT.csv', '2010-01-01', '2010-02-01')
     #print get_all()
-    df = get_stock_data_pd("MSFT")
+    #df = get_stock_data_pd("MSFT")
     #cal_features(df)
-    judge(df, 1)
+    #judge(df, 1)
