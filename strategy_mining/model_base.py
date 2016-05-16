@@ -76,105 +76,17 @@ def get_all():
     for each in get_file_list(os.path.join(local_path, '..', 'data','ta')):
         symbol = get_stock_from_path(each)
         df = get_stock_data_pd(symbol)
-        df = judge(df)
         sym2df[symbol] = df #.dropna()
         i += 1
-        if i > 500:
-            break
+        #if i > 5:
+        #    break
     return sym2df
 
-def cal_features(df):
-    builders = build_features()
-    for mindex, m in enumerate(builders):
-        feat = m.feature_build(df['open'].values,
-                        df['high'].values,
-                        df['low'].values,
-                        df['close'].values,
-                        df['adjclose'].values,
-                        df['volume'].values,
-                        mindex, 30)
-        dates =  df.index.values
-        assert feat.size == df.shape[0] and dates.size == feat.size
-        #pdFeat = pd.DataFrame({"feat"+str(mindex):feat},index=dates)
-
-        #assert pdFeat.shape[0] == df.shape[0]
-
-        #df = df.merge(pdFeat, left_index=True, right_index=True, how='left')
-        df['feat_'+str(mindex)] = feat
-    return df
 def get_stock_data_pd(symbol):
     df = pd.read_csv(os.path.join(local_path, '..', 'data', 'ta', symbol+".csv"),  index_col = 'date', parse_dates=True).sort_index()
-    df['volume'] = df['volume']*1.0
     return df
 
 
-def _judge(df, window):
-    df["close_shift"] = df["close"].shift(-1 * window)
-    df["label" + str(window)] = df["close_shift"]/df["close"]
-    return df 
-
-def judge(df):
-    df = _judge(df, 1)
-    df = _judge(df, 2)
-    df = _judge(df, 3)
-    df = _judge(df, 5)
-    df = _judge(df, 6)
-    df = _judge(df, 8)
-    df = _judge(df, 10)
-    df = _judge(df, 20)
-    df = _judge(df, 30)
-    df = _judge(df, 60)
-    return df
-
-def get_stock_data(filename, str_startdate = None, str_utildate = None, length = 1000):
-    """
-    input filename : the path of stock daily data
-    """
-    if str_utildate == None:
-        str_utildate = get_date_str()
-    dt_utildate = parse_date_str(str_utildate)
-    dt_startdate = parse_date_str(str_startdate)
-    dates = []
-    open_prices = []
-    high_prices = []
-    low_prices = []
-    close_prices = []
-    adjust_close_prices = []
-    volumes = []
-    load_data(filename, dates, open_prices, high_prices, low_prices, close_prices, adjust_close_prices, volumes)
-    dates.reverse()
-    open_prices.reverse()
-    high_prices.reverse()
-    low_prices.reverse()
-    close_prices.reverse()
-    adjust_close_prices.reverse()
-    volumes.reverse()
-    dates2 = [] 
-    open_prices2 = []
-    high_prices2 = []
-    low_prices2 = []
-    close_prices2 = []
-    adjust_close_prices2 = []
-    volumes2 = []
-    for i in range(-1 * len(dates), 0):
-        dt_cur_date = parse_date_str(dates[i])
-        if dt_cur_date < dt_utildate and dt_cur_date >= dt_startdate:
-            dates2.append(dates[i])
-            open_prices2.append(open_prices[i])
-            high_prices2.append(high_prices[i])
-            low_prices2.append(low_prices[i])
-            close_prices2.append(close_prices[i])
-            adjust_close_prices2.append(adjust_close_prices[i])
-            volumes2.append(volumes[i])
-    if len(dates2) < length:
-        length = len(dates)
-    return  dates2[len(dates2)-length:len(dates2)+1], \
-            open_prices2[len(open_prices2)-length:len(open_prices2)+1], \
-            high_prices2[len(high_prices2)-length:len(high_prices2)+1], \
-            low_prices2[len(low_prices2)-length:len(low_prices2)+1], \
-            close_prices2[len(close_prices2)-length:len(close_prices2)+1], \
-            adjust_close_prices2[len(adjust_close_prices2)-length:len(adjust_close_prices2)+1], \
-            volumes2[len(volumes2)-length:len(volumes2)+1]
 
 def get_date_str(): # {{{
     now = datetime.datetime.now()
