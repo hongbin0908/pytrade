@@ -20,15 +20,15 @@ from sklearn import preprocessing
 
 def get_feat_names(df):
     #return ["ta_adx14", "ta_mid14", "ta_pid14"]
-    return ["ta_adx_14","ta_adxr_14","ta_mdi_14","ta_pdi_14",\
-            "ta_apo_12_26_0","ta_aroon_up_14","ta_aroon_down_14",\
-            "ta_ad",\
-            "diff_0_1","diff_1_1","diff_2_1","diff_3_1",\
-            "ta_aroonosc_14",\
-            "ta_adsoc","ta_obv","ta_atr_14","ta_natr_14","ta_trange"]
-    #return [x for x in df.columns if x.startswith('ta_')]
+    #return ["ta_adx_14","ta_adxr_14","ta_mdi_14","ta_pdi_14",\
+    #        "ta_apo_12_26_0","ta_aroon_up_14","ta_aroon_down_14",\
+    #        "ta_ad",\
+    #        "diff_0_1","diff_1_1","diff_2_1","diff_3_1",\
+    #        "ta_aroonosc_14",\
+    #        "ta_adsoc","ta_obv","ta_atr_14","ta_natr_14","ta_trange"]
+    return [x for x in df.columns if x.startswith('ta_')]
 def get_label_name(df, level):
-    return "label8"
+    return "label3"
 
 
 def build_trains(sym2feats, start, end):
@@ -81,7 +81,9 @@ def merge(sym2feats, start ,end):
         if dfMerged is None:
             dfMerged = df
         else:
+            print dfMerged.shape
             dfMerged = dfMerged.append(df)
+            print dfMerged.shape
     return dfMerged
 
 def cal_cor(df, feat,pos, neg, label):
@@ -116,7 +118,7 @@ def cal_cor(df, feat,pos, neg, label):
 def train(sym2feats, level, start1, end1, start2, end2):
     dfTrain = build_trains(sym2feats, start1, end1)
     dfTest = build_trains(sym2feats, start2, end2)
-    model = GradientBoostingRegressor(n_estimators=100,learning_rate=0.1, max_depth=4, verbose=1)
+    model = GradientBoostingRegressor(n_estimators=50,learning_rate=0.1, max_depth=5, verbose=1)
     model.fit(dfTrain.loc[:,get_feat_names(dfTrain)].values, dfTrain.loc[:,get_label_name(dfTrain,level)].values)
     dfTest["pred"] = model.predict(dfTest.loc[:,get_feat_names(dfTrain)].values)
 
@@ -152,13 +154,29 @@ def main():
     #npMergedPred = model.predict(npMergedFeat)
     #dfMerged["pred"] = npMergedPred
     #dfMerged.to_csv('pred-2016-05-01.csv')
-    for level in (3):
-        dfTest = train(sym2feats, level, '2004-01-01', '2014-01-01', '2014-01-01', '2015-01-01'); dfTestAll = dfTest
-        #dfTest = train(sym2feats, level, '2003-01-01', '2013-01-01', '2013-01-01', '2014-01-01'); dfTestAll = dfTestAll.append(dfTest)
+    dfTestAll = None
+    for level in (3,4):
+        #start1, end1, start2, end2 = '2004-01-01', '2014-01-01', '2014-01-01', '2015-01-01'
+        #dfTest = train(sym2feats, level, start1, end1, start2, end2); 
+        #dfTest.to_csv(os.path.join(local_path, '..', 'data', 'pred', 'pred_%d_%s_%s_%s_%s.csv'%(level, start1, end1, start2, end2)))
+        #start1, end1, start2, end2 = '2003-01-01', '2013-01-01', '2013-01-01', '2014-01-01'
+        #dfTest = train(sym2feats, level, start1, end1, start2, end2); 
+        #dfTest.to_csv(os.path.join(local_path, '..', 'data', 'pred', 'pred_%d_%s_%s_%s_%s.csv'%(level, start1, end1, start2, end2)))
+        #start1, end1, start2, end2 = '2002-01-01', '2012-01-01', '2012-01-01', '2013-01-01'
+        #dfTest = train(sym2feats, level, start1, end1, start2, end2); 
+        #dfTest.to_csv(os.path.join(local_path, '..', 'data', 'pred', 'pred_%d_%s_%s_%s_%s.csv'%(level, start1, end1, start2, end2)))
+        #start1, end1, start2, end2 = '2001-01-01', '2011-01-01', '2011-01-01', '2012-01-01'
+        #dfTest = train(sym2feats, level, start1, end1, start2, end2); 
+        #dfTest.to_csv(os.path.join(local_path, '..', 'data', 'pred', 'pred_%d_%s_%s_%s_%s.csv'%(level, start1, end1, start2, end2)))
+        #start1, end1, start2, end2 = '2000-01-01', '2010-01-01', '2010-01-01', '2011-01-01'
+        #dfTest = train(sym2feats, level, start1, end1, start2, end2); 
+        #dfTest.to_csv(os.path.join(local_path, '..', 'data', 'pred', 'pred_%d_%s_%s_%s_%s.csv'%(level, start1, end1, start2, end2)))
+        dfTest = train(sym2feats, level, '2004-01-01', '2014-01-01', '2014-01-01', '2015-01-01');
+        dfTest = train(sym2feats, level, '2003-01-01', '2013-01-01', '2013-01-01', '2014-01-01'); dfTestAll = dfTestAll.append(dfTest)
+        dfTestAll.to_csv(os.path.join(local_path, '..', 'data', 'pred', 'pred_%d.csv'%(level)))
         #dfTest = train(sym2feats, level, '2002-01-01', '2012-01-01', '2012-01-01', '2013-01-01'); dfTestAll = dfTestAll.append(dfTest)
         #dfTest = train(sym2feats, level, '2001-01-01', '2011-01-01', '2011-01-01', '2012-01-01'); dfTestAll = dfTestAll.append(dfTest)
         #dfTest = train(sym2feats, level,'2000-01-01', '2010-01-01', '2010-01-01', '2011-01-01');  dfTestAll = dfTestAll.append(dfTest)
-        dfTestAll.to_csv(os.path.join(local_path, '..', 'data', 'pred', 'pred_%d.csv'%level))
 
     
     #print '2002-01-01', '2012-01-01', '2012-06-01', '2013-01-01'

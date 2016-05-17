@@ -70,12 +70,31 @@ def format10(open_prices, high_prices, low_prices, close_prices, adjust_prices):
         close_prices[s]= close_prices[s]/open_price_first
         adjust_prices[s]=adjust_prices[s]/open_price_first
 
+def _judge(df, window):
+    df["close_shift"] = df["close"].shift(-1 * window)
+    df["label" + str(window)] = df["close_shift"]/df["close"]
+    return df 
+
+def judge(df):
+    df = _judge(df, 1)
+    df = _judge(df, 2)
+    df = _judge(df, 3)
+    df = _judge(df, 4)
+    df = _judge(df, 5)
+    df = _judge(df, 6)
+    df = _judge(df, 8)
+    df = _judge(df, 10)
+    df = _judge(df, 20)
+    df = _judge(df, 30)
+    df = _judge(df, 60)
+    return df
 def get_all():
     sym2df = {}
     i = 0
     for each in get_file_list(os.path.join(local_path, '..', 'data','ta')):
         symbol = get_stock_from_path(each)
         df = get_stock_data_pd(symbol)
+        #sym2df[symbol] = judge(df) #.dropna()
         sym2df[symbol] = df #.dropna()
         i += 1
         #if i > 5:

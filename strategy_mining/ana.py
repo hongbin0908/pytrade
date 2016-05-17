@@ -29,12 +29,9 @@ def accu(npTestLabel, npPred, threshold):
         print 0.0,
     print "%d\t%d\t%f\t" % (npTrue.size, npTestLabel.size, npTrue.size*1.0/npTestLabel.size)
 def main():
-    for level in (3,):
+    for level in (3,4):
         print "===============level %d =================" % level
-        df = pd.read_csv(os.path.join(root, 'data', 'pred', "pred_%s.csv" % level), index_col = ['sym', 'date'])
-        df = df.sort_index()
-        print df[:]["2013-01-01":"2015-01-01"]
-        print df.shape
+        df = pd.read_csv(os.path.join(root, 'data', 'pred', "pred_%s.csv" % level), index_col = ['date','sym'])
         print metrics.mean_absolute_error(df["label%d"%level].values, df["pred"].values)
         
         accu(df["label%d"%level].values, df["pred"].values, 0.0)
