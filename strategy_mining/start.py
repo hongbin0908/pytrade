@@ -35,7 +35,7 @@ def get_label_name(df, level):
 def build_trains(sym2feats, start, end, isDropNa = True):
     if isDropNa:
         dfTrains = merge(sym2feats, start ,end).dropna()
-    else
+    else:
         dfTrains = merge(sym2feats, start ,end)
     return dfTrains
 
@@ -75,8 +75,8 @@ def merge(sym2feats, start ,end):
             dfMerged = df
         else:
             toAppends.append(df)
-            if len(toAppends) > 5:
-                break
+            #if len(toAppends) > 5:
+            #    break
     dfMerged =  dfMerged.append(toAppends)
     return dfMerged
 
@@ -163,6 +163,7 @@ def train2(sym2feats, level, params, start1, end1, start2, end2):
     ana_cls(dfTest,level, 0.5)
     ana_cls(dfTest,level, 0.55)
     ana_cls(dfTest,level, 0.6)
+    ana_cls(dfTest,level, 0.65)
     ana_cls(dfTest,level, 0.7)
     ana_cls(dfTest,level, 0.8)
     #print metrics.mean_absolute_error(dfTest[get_label_name(dfTest,level)].values, dfTest["pred"].values)
@@ -268,8 +269,8 @@ def main():
             #start1, end1, start2, end2 = '2000-01-01', '2010-01-01', '2010-01-01', '2011-01-01'
             #dfTest = train(sym2feats, level, start1, end1, start2, end2); 
             #dfTest.to_csv(os.path.join(local_path, '..', 'data', 'pred', 'pred_%d_%s_%s_%s_%s.csv'%(level, start1, end1, start2, end2)))
-            dfTest = pred(sym2feats, level, '2006-01-1', '2016-05-18', '2016-05-18', '2016-05-19')
-            dfTest.to_csv(os.path.join(local_path, '..', 'data', 'today', 'today_%d_%d.csv' % (level_params_idx)))
+            dfTest = pred(sym2feats, level, params, '2006-01-1', '2016-05-18', '2016-05-18', '2016-05-19')
+            dfTest.to_csv(os.path.join(local_path, '..', 'data', 'today', 'today_%d_%d.csv' % (level,params_idx)))
             dfTest = train2(sym2feats, level, params, '2004-12-01', '2014-01-01', '2004-01-01', '2005-01-01'); dfTestAll = dfTest
             dfTest = train2(sym2feats, level, params, '2003-01-01', '2013-01-01', '2013-01-01', '2014-01-01'); dfTestAll = dfTestAll.append(dfTest)
             dfTest = train2(sym2feats, level, params, '2002-01-01', '2012-01-01', '2012-01-01', '2013-01-01'); dfTestAll = dfTestAll.append(dfTest)
