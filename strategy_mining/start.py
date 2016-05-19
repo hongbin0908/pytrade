@@ -32,21 +32,12 @@ def get_label_name(df, level):
     return "label" + str(level)
 
 
-def build_trains(sym2feats, start, end):
-    dfTrains = merge(sym2feats, start ,end).dropna()
+def build_trains(sym2feats, start, end, isDropNa = True):
+    if isDropNa:
+        dfTrains = merge(sym2feats, start ,end).dropna()
+    else
+        dfTrains = merge(sym2feats, start ,end)
     return dfTrains
-    #    df = sym2feats[key].dropna()
-    #    npCur = df.loc[start:end,get_feat_names(df)].values
-    #    npCurLabel = df.loc[start:end, ["label8"]].values
-    #    assert len(get_feat_names(df)) == npCur.shape[1]
-    #    if npTrains is None:
-    #        npTrains = npCur
-    #        npLabels = npCurLabel
-    #    else:
-    #        npTrains = np.vstack((npTrains, npCur))
-    #        npLabels = np.vstack((npLabels, npCurLabel))
-    #        assert len(get_feat_names(df)) == npTrains.shape[1]
-    #return npTrains, npLabels.ravel()
 
 
 def ana(npTestLabel, npPred, threshold):
@@ -84,8 +75,8 @@ def merge(sym2feats, start ,end):
             dfMerged = df
         else:
             toAppends.append(df)
-            #if len(toAppends) > 5:
-            #    break
+            if len(toAppends) > 5:
+                break
     dfMerged =  dfMerged.append(toAppends)
     return dfMerged
 
@@ -126,6 +117,25 @@ def ana_cls(dfTest, level, threshold):
         print dfTrueInPos.shape[0]*1.0/dfPos.shape[0]
     else:
         print 0.0
+
+def pred(sym2feats, level, params, start1, end1, start2, end2):
+    dfTrain = build_trains(sym2feats, start1, end1)
+    dfTest = build_trains(sym2feats, start2, end2, isDropNa = False)
+    model = GradientBoostingClassifier(**params)
+    npTrainFeat = dfTrain.loc[:,get_feat_names(dfTrain)].values
+    npTrainLabel = dfTrain.loc[:,get_label_name(dfTrain,level)].values
+    fil = npTrainLabel.copy()
+    npTrainLabel[fil>= 1.0] = 1
+    npTrainLabel[fil<  1.0] = 0
+    model.fit(npTrainFeat, npTrainLabel)
+
+    npTestFeat = dfTest.loc[:,get_feat_names(dfTrain)].values
+    npTestLabel = dfTest.loc[:,get_label_name(dfTrain,level)].values
+    npTestLabel[npTestLabel>=1.0] = 1
+    npTestLabel[npTestLabel<1.0] = 0
+
+    dfTest["pred"] = model.predict_proba(npTestFeat)[:,1]
+    return dfTest
 
 def train2(sym2feats, level, params, start1, end1, start2, end2):
     dfTrain = build_trains(sym2feats, start1, end1)
@@ -258,6 +268,8 @@ def main():
             #start1, end1, start2, end2 = '2000-01-01', '2010-01-01', '2010-01-01', '2011-01-01'
             #dfTest = train(sym2feats, level, start1, end1, start2, end2); 
             #dfTest.to_csv(os.path.join(local_path, '..', 'data', 'pred', 'pred_%d_%s_%s_%s_%s.csv'%(level, start1, end1, start2, end2)))
+            dfTest = pred(sym2feats, level, '2006-01-1', '2016-05-18', '2016-05-18', '2016-05-19')
+            dfTest.to_csv(os.path.join(local_path, '..', 'data', 'today', 'today_%d_%d.csv' % (level_params_idx)))
             dfTest = train2(sym2feats, level, params, '2004-12-01', '2014-01-01', '2004-01-01', '2005-01-01'); dfTestAll = dfTest
             dfTest = train2(sym2feats, level, params, '2003-01-01', '2013-01-01', '2013-01-01', '2014-01-01'); dfTestAll = dfTestAll.append(dfTest)
             dfTest = train2(sym2feats, level, params, '2002-01-01', '2012-01-01', '2012-01-01', '2013-01-01'); dfTestAll = dfTestAll.append(dfTest)
