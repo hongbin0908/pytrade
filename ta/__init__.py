@@ -10,8 +10,8 @@ sys.path.append(root)
 
 import strategy_mining.model_base as base
 
-def diff(df, shink, shift=1):
-    df["diff_%d_%d" % (shink, shift)] = (df["close"]/df["close"].shift(shift)).shift(shink)
+def diff(df, key, shink, shift=1):
+    df["ta_diff_%s_%d_%d" % (key, shink, shift)] = (df[key]/df[key].shift(shift)).shift(shink)
     return df
 
 def adx(df, timeperiod = 14):
@@ -100,10 +100,18 @@ def trange(df):
 
 def cal_all(df):
     df = adx(df, timeperiod = 14)
-    df = diff(df, 0,1) 
-    df = diff(df, 1,1) 
-    df = diff(df, 2,1) 
-    df = diff(df, 3,1) 
+    for i in range(14):
+        df = diff(df, "ta_adx_14", i, 1)
+    for i in range(14):
+        df = diff(df, "ta_mdi_14", i, 1)
+    for i in range(14):
+        df = diff(df, "ta_pdi_14", i, 1)
+    for i in range(14):
+        df = diff(df, "close", i, 1)
+    #df = diff(df, 0,1) 
+    #df = diff(df, 1,1) 
+    #df = diff(df, 2,1) 
+    #df = diff(df, 3,1) 
     df = apo(df, 12, 26, 0)
     df = aroon(df, 14)
     df = ad(df)
