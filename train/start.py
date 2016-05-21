@@ -221,7 +221,20 @@ def train(sym2feats, level, start1, end1, start2, end2):
     #ana(npTestLabel, npPred, 0.04)
     #ana(npTestLabel, npPred, 0.06)
     #ana(npTestLabel, npPred, 0.07)
-    return dfTest
+    return dfTest#
+def get_stock_data_pd(path):
+    df = pd.read_csv(path,  index_col = 'date', parse_dates=True).sort_index()
+    return df
+
+def get_all_from(path):
+    sym2df = {}
+    i = 0
+    for each in get_file_list(path):
+        symbol = get_stock_from_path(each)
+        df = get_stock_data_pd(each)
+        sym2df[symbol] = df #.dropna()
+        i += 1
+    return sym2df
 
 def one_work(idx, path, level, params):
     dir_pred = os.path.join(local_path, '..', 'data', 'pred', str(idx))
@@ -230,23 +243,14 @@ def one_work(idx, path, level, params):
 
     with open(os.path.join(dir_pred, 'desc'), 'w') as fdesc:
         print >> fdesc, "%s,%s,%s" % (str(path), str(level), str(params))
-    sym2feats = get_all(path)
+    sym2feats = get_all_from(path)
     dfTest = pred(sym2feats, level, params, '2006-01-1', '2016-01-01', '2016-05-18', '2016-05-19')
-    dfTest.to_csv(os.path.join(dir_pred, "pred_%s.csv" % "2016-05-18"))
+    dfTest.to_csv(os.path.join(dir_pred, "today_%s.csv" % "2016-05-18"))
     dfTest = train2(sym2feats, level, params, '2004-12-01', '2014-01-01', '2004-01-01', '2005-01-01'); dfTestAll = dfTest
     dfTest = train2(sym2feats, level, params, '2003-01-01', '2013-01-01', '2013-01-01', '2014-01-01'); dfTestAll = dfTestAll.append(dfTest)
     dfTest = train2(sym2feats, level, params, '2002-01-01', '2012-01-01', '2012-01-01', '2013-01-01'); dfTestAll = dfTestAll.append(dfTest)
-    dfTestAll.to_csv(os.path.join(local_path, '..', 'data', 'pred2', 'pred_%s.csv'%(idx)))
+    dfTestAll.to_csv(os.path.join(dir_pred, 'pred.csv'))
 
-def get_all(path):
-    sym2df = {}
-    i = 0
-    for each in get_file_list(path):
-        symbol = get_stock_from_path(each)
-        df = get_stock_data_pd(symbol)
-        sym2df[symbol] = df #.dropna()
-        i += 1
-    return sym2df
 
 def main():
     datas = [
@@ -270,79 +274,23 @@ def main():
     result = []
 
     choris = [
-        (1001, datas[0], lParams[0], levels[0]),
-        (1002, datas[0], lParams[1], levels[0]),
-        (1003, datas[0], lParams[2], levels[0]),
-        (1004, datas[0], lParams[3], levels[0]),
-        (1005, datas[0], lParams[4], levels[0]),
-        (1006, datas[0], lParams[5], levels[0]),
-        (1007, datas[0], lParams[6], levels[0]),
-        (1008, datas[0], lParams[7], levels[0]),
-        (2001, datas[1], lParams[0], levels[0]),
+        (1001, datas[0],levels[0], lParams[0], ),
+        (1002, datas[0],levels[0], lParams[1], ),
+        (1003, datas[0],levels[0], lParams[2], ),
+        (1004, datas[0],levels[0], lParams[3], ),
+        (1005, datas[0],levels[0], lParams[4], ),
+        (1006, datas[0],levels[0], lParams[5], ),
+        (1007, datas[0],levels[0], lParams[6], ),
+        (1008, datas[0],levels[0], lParams[7], ),
+        (2001, datas[1],levels[0], lParams[0], ),
         ]
     for each in choris:
-        result.append(pool.apply_async(one_work, each))
+        result.append(one_work(each[0], each[1], each[2], each[3]))
+        #pool.apply_async(one_work, each)
+    pool.close()
+    pool.join()
     for each in result:
-        each.get()
-    #dfMerged = merge(sym2feats, '2014-01-01', '2099-01-01')
-    #for feat in ["feat_three_outside_move_builder", "feat_three_inside_strike_builder", 'feat_three_star_south_builder', 'feat_three_ad_white_soldier_builder', 'feat_abandoned_baby_builder', 'feat_three_ad_block_builder', 'feat_belt_hold_builder', 'feat_break_away_builder', 'feat_conceal_baby_builder']:
-    #    cal_cor(dfMerged, feat, 100, 0, "label1")
-    #    cal_cor(dfMerged, feat, 100, 0, "label2")
-    #    cal_cor(dfMerged, feat, 100, 0, "label5")
-    #    cal_cor(dfMerged, feat, 100, 0, "label10")
-    #    cal_cor(dfMerged, feat, 100, 0, "label30")
-    #sys.exit(0)
-
-    #dfMerged = merge(sym2feats, '2016-05-01', '2099-01-01')
-    #print dfMerged.head()
-    #dfMerged.to_csv('merged-2016-05-01.csv')
-    #npMergedFeat = dfMerged.loc[:,get_feat_names(dfMerged)].values
-    #model = train(sym2feats, '2006-05-01', '2016-05-01', '2006-05-01', '2016-05-01')
-    #npMergedPred = model.predict(npMergedFeat)
-    #dfMerged["pred"] = npMergedPred
-    #dfMerged.to_csv('pred-2016-05-01.csv')
-    #dfTestAll = None
-
-
-
-            #print "========%d, %s=========" % (level, str(params))
-            #start1, end1, start2, end2 = '2004-01-01', '2014-01-01', '2014-01-01', '2015-01-01'
-            #dfTest = train(sym2feats, level, start1, end1, start2, end2); 
-            #dfTest.to_csv(os.path.join(local_path, '..', 'data', 'pred', 'pred_%d_%s_%s_%s_%s.csv'%(level, start1, end1, start2, end2)))
-            #start1, end1, start2, end2 = '2003-01-01', '2013-01-01', '2013-01-01', '2014-01-01'
-            #dfTest = train(sym2feats, level, start1, end1, start2, end2); 
-            #dfTest.to_csv(os.path.join(local_path, '..', 'data', 'pred', 'pred_%d_%s_%s_%s_%s.csv'%(level, start1, end1, start2, end2)))
-            #start1, end1, start2, end2 = '2002-01-01', '2012-01-01', '2012-01-01', '2013-01-01'
-            #dfTest = train(sym2feats, level, start1, end1, start2, end2); 
-            #dfTest.to_csv(os.path.join(local_path, '..', 'data', 'pred', 'pred_%d_%s_%s_%s_%s.csv'%(level, start1, end1, start2, end2)))
-            #start1, end1, start2, end2 = '2001-01-01', '2011-01-01', '2011-01-01', '2012-01-01'
-            #dfTest = train(sym2feats, level, start1, end1, start2, end2); 
-            #dfTest.to_csv(os.path.join(local_path, '..', 'data', 'pred', 'pred_%d_%s_%s_%s_%s.csv'%(level, start1, end1, start2, end2)))
-            #start1, end1, start2, end2 = '2000-01-01', '2010-01-01', '2010-01-01', '2011-01-01'
-            #dfTest = train(sym2feats, level, start1, end1, start2, end2); 
-            #dfTest.to_csv(os.path.join(local_path, '..', 'data', 'pred', 'pred_%d_%s_%s_%s_%s.csv'%(level, start1, end1, start2, end2)))
-            #dfTest = pred(sym2feats, level, params, '2006-01-1', '2016-05-18', '2016-05-18', '2016-05-19')
-            #dfTest.to_csv(os.path.join(local_path, '..', 'data', 'today', 'today_%d_%d.csv' % (level,params_idx)))
-            #dfTest = train2(sym2feats, level, params, '2004-12-01', '2014-01-01', '2004-01-01', '2005-01-01'); dfTestAll = dfTest
-            #dfTest = train2(sym2feats, level, params, '2003-01-01', '2013-01-01', '2013-01-01', '2014-01-01'); dfTestAll = dfTestAll.append(dfTest)
-            #dfTest = train2(sym2feats, level, params, '2002-01-01', '2012-01-01', '2012-01-01', '2013-01-01'); dfTestAll = dfTestAll.append(dfTest)
-            #dfTestAll.to_csv(os.path.join(local_path, '..', 'data', 'pred', 'pred_%d_%d.csv'%(level, params_idx)))
-            #dfTest = train(sym2feats, level, '2001-01-01', '2011-01-01', '2011-01-01', '2012-01-01'); dfTestAll = dfTestAll.append(dfTest)
-            #dfTest = train(sym2feats, level,'2000-01-01', '2010-01-01', '2010-01-01', '2011-01-01');  dfTestAll = dfTestAll.append(dfTest)
-
-    
-    #print '2002-01-01', '2012-01-01', '2012-06-01', '2013-01-01'
-    #train(sym2feats, '2002-01-01', '2012-01-01', '2012-06-01', '2013-01-01')
-    #print '2002-01-01', '2012-01-01', '2012-01-01', '2012-06-01'
-    #train(sym2feats, '2002-01-01', '2012-01-01', '2012-01-01', '2012-06-01')
-    #print '2003-01-01', '2013-01-01', '2013-01-01', '2014-01-01'
-    #train(sym2feats, '2003-01-01', '2013-01-01', '2013-01-01', '2014-01-01')
-    #print '2004-01-01', '2014-01-01', '2014-01-01', '2015-01-01'
-    #train(sym2feats, '2004-01-01', '2014-01-01', '2014-01-01', '2015-01-01')
-
-
-
-
+        print each.get()
 if __name__ == '__main__':
     main()
 
