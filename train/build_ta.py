@@ -51,11 +51,11 @@ def main2():
     for each in base.get_file_list(os.path.join(local_path, '..', 'data', 'yeod')):
         symbol = base.get_stock_from_path(each)
         df = get_pd(base.get_stock_from_path(each))
-        df = ta.cal2(df)
+        df = ta.call2(df)
         df = judge(df)
         df.to_csv(os.path.join(root, 'data', 'ta2', symbol + ".csv"))
 if __name__ == '__main__':
-    main1()
+    #main1()
     main2()
 
 
