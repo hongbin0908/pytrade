@@ -35,15 +35,6 @@ def format10(open_prices, high_prices, low_prices, close_prices, adjust_prices):
         close_prices[s]= close_prices[s]/open_price_first
         adjust_prices[s]=adjust_prices[s]/open_price_first
 
-def get_all():
-    sym2df = {}
-    i = 0
-    for each in get_file_list(os.path.join(local_path, '..', 'data','ta')):
-        symbol = get_stock_from_path(each)
-        df = get_stock_data_pd(symbol)
-        sym2df[symbol] = df #.dropna()
-        i += 1
-    return sym2df
 
 def get_stock_data_pd(symbol):
     df = pd.read_csv(os.path.join(local_path, '..', 'data', 'ta', symbol+".csv"),  index_col = 'date', parse_dates=True).sort_index()

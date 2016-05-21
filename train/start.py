@@ -223,15 +223,67 @@ def train(sym2feats, level, start1, end1, start2, end2):
     #ana(npTestLabel, npPred, 0.07)
     return dfTest
 
-def one_work(sym2feats, level, params_idx, params):
-    dfTest = pred(sym2feats, level, params, '2006-01-1', '2016-05-18', '2016-05-18', '2016-05-19')
-    dfTest.to_csv(os.path.join(local_path, '..', 'data', 'today', 'today_%d_%d.csv' % (level,params_idx)))
+def one_work(idx, path, level, params):
+    dir_pred = os.path.join(local_path, '..', 'data', 'pred', str(idx))
+    if not os.path.isdir(dir_pred):
+        os.mkdir(dir_pred)
+
+    with open(os.path.join(dir_pred, 'desc'), 'w') as fdesc:
+        print >> fdesc, "%s,%s,%s" % (str(path), str(level), str(params))
+    sym2feats = get_all(path)
+    dfTest = pred(sym2feats, level, params, '2006-01-1', '2016-01-01', '2016-05-18', '2016-05-19')
+    dfTest.to_csv(os.path.join(dir_pred, "pred_%s.csv" % "2016-05-18"))
     dfTest = train2(sym2feats, level, params, '2004-12-01', '2014-01-01', '2004-01-01', '2005-01-01'); dfTestAll = dfTest
     dfTest = train2(sym2feats, level, params, '2003-01-01', '2013-01-01', '2013-01-01', '2014-01-01'); dfTestAll = dfTestAll.append(dfTest)
     dfTest = train2(sym2feats, level, params, '2002-01-01', '2012-01-01', '2012-01-01', '2013-01-01'); dfTestAll = dfTestAll.append(dfTest)
-    dfTestAll.to_csv(os.path.join(local_path, '..', 'data', 'pred', 'pred_%d_%d.csv'%(level, params_idx)))
+    dfTestAll.to_csv(os.path.join(local_path, '..', 'data', 'pred2', 'pred_%s.csv'%(idx)))
+
+def get_all(path):
+    sym2df = {}
+    i = 0
+    for each in get_file_list(path):
+        symbol = get_stock_from_path(each)
+        df = get_stock_data_pd(symbol)
+        sym2df[symbol] = df #.dropna()
+        i += 1
+    return sym2df
+
 def main():
-    sym2feats = get_all()
+    datas = [
+        os.path.join(local_path, '..', 'data','ta1'),
+        os.path.join(local_path, '..', 'data','ta2')
+    ]
+    lParams = [
+        {'verbose':1,'n_estimators':500, 'max_depth':3},                            #0
+        {'verbose':1,'n_estimators':50, 'max_depth':5},
+        {'verbose':0,'n_estimators':500, 'max_depth':4},
+        {'verbose':0,'n_estimators':500, 'max_depth':4},
+        {'verbose':0,'n_estimators':500, 'max_depth':4, 'learning_rate':0.01},
+        {'verbose':0,'n_estimators':500, 'max_depth':4, 'learning_rate':0.2},       #5
+        {'verbose':0,'n_estimators':50, 'max_depth':4},
+        {'verbose':0,'n_estimators':50, 'max_depth':3},
+    ]
+    levels = [3,4,2,1,10.20]
+
+
+    pool = multiprocessing.Pool(processes=10)
+    result = []
+
+    choris = [
+        (1001, datas[0], lParams[0], levels[0]),
+        (1002, datas[0], lParams[1], levels[0]),
+        (1003, datas[0], lParams[2], levels[0]),
+        (1004, datas[0], lParams[3], levels[0]),
+        (1005, datas[0], lParams[4], levels[0]),
+        (1006, datas[0], lParams[5], levels[0]),
+        (1007, datas[0], lParams[6], levels[0]),
+        (1008, datas[0], lParams[7], levels[0]),
+        (2001, datas[1], lParams[0], levels[0]),
+        ]
+    for each in choris:
+        result.append(pool.apply_async(one_work, each))
+    for each in result:
+        each.get()
     #dfMerged = merge(sym2feats, '2014-01-01', '2099-01-01')
     #for feat in ["feat_three_outside_move_builder", "feat_three_inside_strike_builder", 'feat_three_star_south_builder', 'feat_three_ad_white_soldier_builder', 'feat_abandoned_baby_builder', 'feat_three_ad_block_builder', 'feat_belt_hold_builder', 'feat_break_away_builder', 'feat_conceal_baby_builder']:
     #    cal_cor(dfMerged, feat, 100, 0, "label1")
@@ -249,27 +301,10 @@ def main():
     #npMergedPred = model.predict(npMergedFeat)
     #dfMerged["pred"] = npMergedPred
     #dfMerged.to_csv('pred-2016-05-01.csv')
-    dfTestAll = None
-    lParams = [
-            {'verbose':1,'n_estimators':500, 'max_depth':3},
-            {'verbose':1,'n_estimators':50, 'max_depth':5},
-            {'verbose':1,'n_estimators':50, 'max_depth':16},
-            {'verbose':0,'n_estimators':500, 'max_depth':4},
-            {'verbose':0,'n_estimators':500, 'max_depth':4},
-            {'verbose':0,'n_estimators':500, 'max_depth':4, 'learning_rate':0.01},
-            {'verbose':0,'n_estimators':500, 'max_depth':4, 'learning_rate':0.2},
-            {'verbose':0,'n_estimators':50, 'max_depth':4},
-            {'verbose':0,'n_estimators':50, 'max_depth':3},
-            ]
-    levels = [3,4,2,1,10.20]
+    #dfTestAll = None
 
-    pool = multiprocessing.Pool(processes=10)
-    result = []
-    for level in levels:
-        for params_idx , params in enumerate(lParams):
-            result.append(pool.apply_async(one_work, (sym2feats, level,params_idx, params)))
-        for each in result:
-            each.get()
+
+
             #print "========%d, %s=========" % (level, str(params))
             #start1, end1, start2, end2 = '2004-01-01', '2014-01-01', '2014-01-01', '2015-01-01'
             #dfTest = train(sym2feats, level, start1, end1, start2, end2); 
