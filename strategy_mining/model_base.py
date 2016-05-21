@@ -96,6 +96,7 @@ def get_all():
         df = get_stock_data_pd(symbol)
         #sym2df[symbol] = judge(df) #.dropna()
         sym2df[symbol] = df #.dropna()
+        sym2
         i += 1
         #if i > 5:
         #    break

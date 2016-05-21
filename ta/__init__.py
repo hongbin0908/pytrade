@@ -122,10 +122,7 @@ def cal_all(df):
     df = trange(df)
     return df
 
-
 if __name__ == '__main__':
     df = base.get_stock_data_pd("A")
     print cal_all(df).head(10)
-
-    
     #print adx(df).tail(1)
