@@ -285,8 +285,8 @@ def main():
         (2001, datas[1],levels[0], lParams[0], ),
         ]
     for each in choris:
-        result.append(one_work(each[0], each[1], each[2], each[3]))
-        #pool.apply_async(one_work, each)
+        #result.append(one_work(each[0], each[1], each[2], each[3]))
+        pool.apply_async(one_work, each)
     pool.close()
     pool.join()
     for each in result:

@@ -46,6 +46,8 @@ def ana(path):
     accu(df["label%d"%level].values, df["pred"].values, 0.80)
         
 if __name__ == '__main__':
-    ana(os.path.join(root, "data", "pred", "1001"))
+    ana(os.path.join(root, "data", "pred", "1002"))
+    ana(os.path.join(root, "data", "pred", "1007"))
+    ana(os.path.join(root, "data", "pred", "2001"))
 
 
