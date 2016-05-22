@@ -9,6 +9,8 @@ import multiprocessing
 local_path = os.path.dirname(__file__)
 root = os.path.join(local_path, '..')
 sys.path.append(root)
+from model_conf import d_conf
+from models import d_choris
 from model_base import *
 from sklearn import metrics
 from sklearn import linear_model
@@ -78,8 +80,8 @@ def merge(sym2feats, start ,end):
             dfMerged = df
         else:
             toAppends.append(df)
-            #if len(toAppends) > 5:
-            #    break
+            if len(toAppends) > 5:
+                break
     dfMerged =  dfMerged.append(toAppends)
     return dfMerged
 
@@ -245,6 +247,7 @@ def one_work(idx, path, level, params):
         print >> fdesc, "%s,%s,%s" % (str(path), str(level), str(params))
     sym2feats = get_all_from(path)
     dfTest = pred(sym2feats, level, params, '2006-01-1', '2016-01-01', '2016-05-18', '2016-05-19')
+
     dfTest.to_csv(os.path.join(dir_pred, "today_%s.csv" % "2016-05-18"))
     dfTest = train2(sym2feats, level, params, '2004-12-01', '2014-01-01', '2004-01-01', '2005-01-01'); dfTestAll = dfTest
     dfTest = train2(sym2feats, level, params, '2003-01-01', '2013-01-01', '2013-01-01', '2014-01-01'); dfTestAll = dfTestAll.append(dfTest)
@@ -252,46 +255,22 @@ def one_work(idx, path, level, params):
     dfTestAll.to_csv(os.path.join(dir_pred, 'pred.csv'))
 
 
-def main():
-    datas = [
-        os.path.join(local_path, '..', 'data','ta1'),
-        os.path.join(local_path, '..', 'data','ta2')
-    ]
-    lParams = [
-        {'verbose':1,'n_estimators':500, 'max_depth':3},                            #0
-        {'verbose':1,'n_estimators':50, 'max_depth':5},
-        {'verbose':0,'n_estimators':500, 'max_depth':4},
-        {'verbose':0,'n_estimators':500, 'max_depth':4},
-        {'verbose':0,'n_estimators':500, 'max_depth':4, 'learning_rate':0.01},
-        {'verbose':0,'n_estimators':500, 'max_depth':4, 'learning_rate':0.2},       #5
-        {'verbose':0,'n_estimators':50, 'max_depth':4},
-        {'verbose':0,'n_estimators':50, 'max_depth':3},
-    ]
-    levels = [3,4,2,1,10.20]
-
-
-    pool = multiprocessing.Pool(processes=10)
+def main(argv):
+    pool_num = int(argv[1])
+    str_conf = argv[2]
+    l_conf = d_conf[str_conf]
+    pool = multiprocessing.Pool(processes=pool_num)
     result = []
-
-    choris = [
-        (1001, datas[0],levels[0], lParams[0], ),
-        (1002, datas[0],levels[0], lParams[1], ),
-        (1003, datas[0],levels[0], lParams[2], ),
-        (1004, datas[0],levels[0], lParams[3], ),
-        (1005, datas[0],levels[0], lParams[4], ),
-        (1006, datas[0],levels[0], lParams[5], ),
-        (1007, datas[0],levels[0], lParams[6], ),
-        (1008, datas[0],levels[0], lParams[7], ),
-        (2001, datas[1],levels[0], lParams[0], ),
-        ]
-    for each in choris:
-        #result.append(one_work(each[0], each[1], each[2], each[3]))
-        pool.apply_async(one_work, each)
+    for each in l_conf:
+        m = d_choris[each]
+        params = (each, m[0], m[1], m[2])
+        result.append(one_work(params[0], params[1], params[2], params[3]))
+        #pool.apply_async(one_work, params)
     pool.close()
     pool.join()
     for each in result:
         print each.get()
 if __name__ == '__main__':
-    main()
+    main(sys.argv)
 
 
