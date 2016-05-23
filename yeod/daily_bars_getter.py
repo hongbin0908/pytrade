@@ -45,5 +45,5 @@ def main():
     for symbol in symbols:
         result[symbol].get()
 if __name__ == '__main__':
-    get_nasdaq()
-    #main()
+    #get_nasdaq()
+    main()

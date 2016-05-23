@@ -8,6 +8,7 @@ import pandas as pd
 from sklearn import metrics
 local_path = os.path.dirname(__file__)
 root = os.path.join(local_path, '..')
+from model_conf import d_conf
 import model_base as base
 
     
@@ -26,12 +27,12 @@ def read_desc(path):
     fdesc = os.path.join(path, 'desc')
     assert os.path.isfile(fdesc)
     with open(fdesc, 'r') as fddesc:
-        ddesc = fddesc.readline().split(',')
-    level = int(ddesc[1])
-    return {"level":level}
+        ddesc = json.loads(fddesc.readline())
+    return ddesc
 
 def ana(path):
     d_desc = read_desc(path)
+    print d_desc
     level = d_desc["level"]
 
     df = pd.read_csv(os.path.join(path, "pred.csv"), index_col = ['date','sym'])
@@ -45,9 +46,12 @@ def ana(path):
     accu(df["label%d"%level].values, df["pred"].values, 0.75)
     accu(df["label%d"%level].values, df["pred"].values, 0.80)
         
+def main(argv):
+    str_conf = argv[1]
+    l_conf = d_conf[str_conf]
+    for each in l_conf:
+        ana(os.path.join(root, 'data', 'pred', each))
 if __name__ == '__main__':
-    ana(os.path.join(root, "data", "pred", "1002"))
-    ana(os.path.join(root, "data", "pred", "1007"))
-    ana(os.path.join(root, "data", "pred", "2001"))
+    main(sys.argv)
 
 

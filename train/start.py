@@ -4,6 +4,7 @@
 
 #@author 
 import sys,os
+import json
 import numpy as np
 import multiprocessing
 local_path = os.path.dirname(__file__)
@@ -80,8 +81,8 @@ def merge(sym2feats, start ,end):
             dfMerged = df
         else:
             toAppends.append(df)
-            if len(toAppends) > 5:
-                break
+            #if len(toAppends) > 5:
+            #    break
     dfMerged =  dfMerged.append(toAppends)
     return dfMerged
 
@@ -244,11 +245,12 @@ def one_work(idx, path, level, params):
         os.mkdir(dir_pred)
 
     with open(os.path.join(dir_pred, 'desc'), 'w') as fdesc:
-        print >> fdesc, "%s,%s,%s" % (str(path), str(level), str(params))
+        ddesc = {"ta":path, "level":level, "params":params}
+        print >> fdesc, "%s" % (json.dumps(ddesc))
     sym2feats = get_all_from(path)
-    dfTest = pred(sym2feats, level, params, '2006-01-1', '2016-01-01', '2016-05-18', '2016-05-19')
+    dfTest = pred(sym2feats, level, params, '2006-01-1', '2016-01-01', '2016-05-20', '2016-05-23')
 
-    dfTest.to_csv(os.path.join(dir_pred, "today_%s.csv" % "2016-05-18"))
+    dfTest.to_csv(os.path.join(dir_pred, "today_%s.csv" % "2016-05-20"))
     dfTest = train2(sym2feats, level, params, '2004-12-01', '2014-01-01', '2004-01-01', '2005-01-01'); dfTestAll = dfTest
     dfTest = train2(sym2feats, level, params, '2003-01-01', '2013-01-01', '2013-01-01', '2014-01-01'); dfTestAll = dfTestAll.append(dfTest)
     dfTest = train2(sym2feats, level, params, '2002-01-01', '2012-01-01', '2012-01-01', '2013-01-01'); dfTestAll = dfTestAll.append(dfTest)
@@ -264,8 +266,8 @@ def main(argv):
     for each in l_conf:
         m = d_choris[each]
         params = (each, m[0], m[1], m[2])
-        result.append(one_work(params[0], params[1], params[2], params[3]))
-        #pool.apply_async(one_work, params)
+        #result.append(one_work(params[0], params[1], params[2], params[3]))
+        pool.apply_async(one_work, params)
     pool.close()
     pool.join()
     for each in result:
