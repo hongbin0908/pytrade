@@ -37,7 +37,7 @@ def one_work(symbol): # {{{
 #}}}
 
 def main():
-    symbols = get_sp500()
+    symbols = get_sp500()#[:5]
     pool = multiprocessing.Pool(processes =10 )
     result = {}
     for symbol in symbols:

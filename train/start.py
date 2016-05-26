@@ -256,6 +256,29 @@ def one_work(idx, path, level, params):
     dfTest = train2(sym2feats, level, params, '2002-01-01', '2012-01-01', '2012-01-01', '2013-01-01'); dfTestAll = dfTestAll.append(dfTest)
     dfTestAll.to_csv(os.path.join(dir_pred, 'pred.csv'))
 
+def one_work(idx, path, level, params, range_):
+    dir_pred = os.path.join(local_path, '..', 'data', 'pred', str(idx))
+    if not os.path.isdir(dir_pred):
+        os.mkdir(dir_pred)
+
+    with open(os.path.join(dir_pred, 'desc'), 'w') as fdesc:
+        ddesc = {"ta":path, "level":level, "params":params}
+        print >> fdesc, "%s" % (json.dumps(ddesc))
+    sym2feats = get_all_from(path)
+    pred_start, pred_end = range_[0]
+    ltestrange = range_[1]
+    print "======PREDING %s ========" % str((pred_start, pred_end))
+    dfTest = pred(sym2feats, level, params, pred_start, pred_end, '2016-05-25', '2016-05-26')
+    dfTest.to_csv(os.path.join(dir_pred, "today_%s.csv" % "2016-05-25"))
+    dfTestAll = None
+    for each in ltestrange:
+        print "====== TRAING %s =====" % str(each)
+        dfTest = train2(sym2feats, level, params, each[0], each[1], each[2], each[3]); 
+        if dfTestAll is None:
+            dfTestAll = dfTest
+        else:
+            dfTestAll = dfTestAll.append(dfTest)
+    dfTestAll.to_csv(os.path.join(dir_pred, 'pred.csv'))
 
 def main(argv):
     pool_num = int(argv[1])
@@ -265,7 +288,7 @@ def main(argv):
     result = []
     for each in l_conf:
         m = d_choris[each]
-        params = (each, m[0], m[1], m[2])
+        params = (each, m[0], m[1], m[2],m[3])
         #result.append(one_work(params[0], params[1], params[2], params[3]))
         result.append(pool.apply_async(one_work, params))
     pool.close()
@@ -274,5 +297,3 @@ def main(argv):
         print each.get()
 if __name__ == '__main__':
     main(sys.argv)
-
-
