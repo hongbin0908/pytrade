@@ -40,7 +40,7 @@ def get_label_name(df, level):
 
 def build_trains(sym2feats, start, end, isDropNa = True):
     if isDropNa:
-        dfTrains = merge(sym2feats, start ,end).dropna()
+        dfTrains = merge(sym2feats, start ,end).replace([np.inf,-np.inf],np.nan).dropna()
     else:
         dfTrains = merge(sym2feats, start ,end)
     return dfTrains
