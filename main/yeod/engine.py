@@ -8,6 +8,7 @@ import finsymbols
 
 def _single(symbol, data_dir): 
     retry = 3
+    eod = None
     while retry > 0:
         try:
             eod = yahoofinance.download_csv(symbol, date(1970,01,01),date(2099,01,01), 'd')
@@ -17,8 +18,10 @@ def _single(symbol, data_dir):
             print symbol, Exception, ":", ex
             retry -=1
             continue
-        break
-    return len(eod)
+        break   	
+    if not eod is None:
+        return len(eod)
+    return -1
 
 def work(syms,data_dir, processes):
     pool = multiprocessing.Pool(processes = int(processes) )
