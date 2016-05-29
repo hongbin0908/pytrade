@@ -30,16 +30,15 @@ def read_desc(path):
         ddesc = json.loads(fddesc.readline())
     return ddesc
 
-def ana(path):
+def ana(path, start, end):
+    print "--------%s,%s-----" % (start, end)
     d_desc = read_desc(path)
-    print d_desc
     level = d_desc["level"]
-
     df = pd.read_csv(os.path.join(path, "pred.csv"), index_col = ['date','sym'])
-    df = df.sort_index()
+    df = df.sort_index()[start : end]
     accu(df["label%d"%level].values, df["pred"].values, 0.0)
-    accu(df["label%d"%level].values, df["pred"].values, 0.5)
-    accu(df["label%d"%level].values, df["pred"].values, 0.55)
+    #accu(df["label%d"%level].values, df["pred"].values, 0.5)
+    #accu(df["label%d"%level].values, df["pred"].values, 0.55)
     accu(df["label%d"%level].values, df["pred"].values, 0.6)
     accu(df["label%d"%level].values, df["pred"].values, 0.65)
     accu(df["label%d"%level].values, df["pred"].values, 0.70)
@@ -50,7 +49,15 @@ def main(argv):
     str_conf = argv[1]
     l_conf = d_conf[str_conf]
     for each in l_conf:
-        ana(os.path.join(root, 'data', 'pred', each))
+        path =  os.path.join(root, 'data', 'pred', each) 
+        d_desc = read_desc(path)
+        print "===============%s==========" % str(d_desc)
+        ana(path, '2010-01-01', '2016-01=01')
+        ana(path, '2011-01-01', '2016-01=01')
+        ana(path, '2012-01-01', '2016-01=01')
+        ana(path, '2013-01-01', '2016-01=01')
+        ana(path, '2014-01-01', '2016-01=01')
+        ana(path, '2015-01-01', '2016-01=01')
 if __name__ == '__main__':
     main(sys.argv)
 

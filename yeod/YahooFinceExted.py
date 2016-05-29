@@ -29,10 +29,13 @@ from pyalgotrade.tools import yahoofinance
 def __download_instrument_prices_full(instrument):
     url = "http://ichart.finance.yahoo.com/table.csv?s=%s&g=d&ignore=.csv" % instrument
     print url
-    f = urllib2.urlopen(url, timeout=60)
+    f = urllib2.urlopen(url, timeout=300)
     if f.headers['Content-Type'] != 'text/csv':
+        f.close()
         raise Exception("Failed to download data: %s" % f.getcode())
+        
     buff = f.read()
+    f.close()
     # Remove the BOM
     while not buff[0].isalnum():
         buff = buff[1:]

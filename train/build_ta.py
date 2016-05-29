@@ -41,6 +41,13 @@ def get_pd(symbol):
             skiprows=1, index_col = 'date', parse_dates=True).sort_index()
     return df
 
+def get_eod(symbol):
+    names = ["date", 'open', 'high', 'low', 'close', 'volume', 'adjclose']
+    df = pd.read_csv(symbol, \
+            header = None, names = names, \
+            dtype = {"volume":np.float64}, \
+            skiprows=1, index_col = 'date', parse_dates=True).sort_index()
+    return df
 def main1():
     for each in base.get_file_list(os.path.join(local_path, '..', 'data', 'yeod')):
         symbol = base.get_stock_from_path(each)
@@ -61,6 +68,18 @@ def main2():
         if not os.path.isdir(dir_out):
             os.mkdir(dir_out)
         df.to_csv(os.path.join(dir_out, symbol + ".csv"))
+
+def main3():
+    for each in base.get_file_list(os.path.join(local_path, '..', 'data', 'yeod_full')):
+        symbol = base.get_stock_from_path(each)
+        df = get_eod(each)
+        df = ta.cal_all(df)
+        df = judge(df)
+        dir_out = os.path.join(root, 'data', 'ta3')
+        if not os.path.isdir(dir_out):
+            os.mkdir(dir_out)
+        df.to_csv(os.path.join(dir_out, symbol + ".csv"))
 if __name__ == '__main__':
+    main3()
     main1()
     main2()

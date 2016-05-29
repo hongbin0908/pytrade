@@ -146,53 +146,25 @@ def pred(sym2feats, level, params, start1, end1, start2, end2):
 def train2(sym2feats, level, params, start1, end1, start2, end2):
     dfTrain = build_trains(sym2feats, start1, end1)
     dfTest = build_trains(sym2feats, start2, end2)
-    # Fit classifier with out-of-bag estimates
-    #params = {'verbose':1,'n_estimators': 40, 'max_depth': 3, 'subsample': 0.5,
-    #                  'learning_rate': 0.01, 'min_samples_leaf': 1, 'random_state': 3}
-    #params = {'verbose':0,'n_estimators':500, 'max_depth':4 }
     model = GradientBoostingClassifier(**params)
-    npTrainFeat = dfTrain.loc[:,get_feat_names(dfTrain)].values
+    feat_names = get_feat_names(dfTrain)
+    npTrainFeat = dfTrain.loc[:,feat_names].values
     npTrainLabel = dfTrain.loc[:,get_label_name(dfTrain,level)].values
     fil = npTrainLabel.copy()
     npTrainLabel[fil>= 1.0] = 1
     npTrainLabel[fil<  1.0] = 0
     model.fit(npTrainFeat, npTrainLabel)
 
-    npTestFeat = dfTest.loc[:,get_feat_names(dfTrain)].values
+    npTestFeat = dfTest.loc[:,feat_names].values
     npTestLabel = dfTest.loc[:,get_label_name(dfTrain,level)].values
     npTestLabel[npTestLabel>=1.0] = 1
     npTestLabel[npTestLabel<1.0] = 0
 
     dfTest["pred"] = model.predict_proba(npTestFeat)[:,1]
-    acc = model.score(npTestFeat, npTestLabel)
-    print("Accuracy: {:.4f}".format(acc))
-    ana_cls(dfTest,level, 0.5)
-    ana_cls(dfTest,level, 0.55)
-    ana_cls(dfTest,level, 0.6)
-    ana_cls(dfTest,level, 0.65)
-    ana_cls(dfTest,level, 0.7)
-    ana_cls(dfTest,level, 0.8)
-    #print metrics.mean_absolute_error(dfTest[get_label_name(dfTest,level)].values, dfTest["pred"].values)
-    #dfTrain["pred"] = model.predict(dfTrain.loc[:,get_feat_names(dfTrain)].values)
-    #print metrics.mean_absolute_error(dfTrain[get_label_name(dfTrain,level)].values, dfTrain["pred"].values)
-
-    #test_score = np.zeros((n_estimators,),dtype=np.float64)
-    #for i , y_pred in enumerate(model.staged_predict(dfTest[get_feat_names(dfTest)].values)):
-    #    test_score[i] = model.loss_(dfTest[get_label_name(dfTest, level)].values, y_pred)
-    #for i in range(n_estimators):
-    #    print model.train_score_[i], test_score[i]
-
-    #r2_score = metrics.r2_score(npTestLabel, npPred)
-    #mse = metrics.mean_squared_error(npTestLabel, npPred)
-    #print "r2_score:", r2_score, mse
-    #ana(npTestLabel, npPred, 0.0)
-    #ana(npTestLabel, npPred,0.005)
-    #ana(npTestLabel, npPred, 0.01)
-    #ana(npTestLabel, npPred, 0.02)
-    #ana(npTestLabel, npPred, 0.03)
-    #ana(npTestLabel, npPred, 0.04)
-    #ana(npTestLabel, npPred, 0.06)
-    #ana(npTestLabel, npPred, 0.07)
+    dFeatImps = dict(zip( feat_names, model.feature_importances_))
+    for each in sorted(dFeatImps.iteritems(), key = lambda a: a[1], reverse=True):
+            print each
+     
     return dfTest
 
 def train(sym2feats, level, start1, end1, start2, end2):
@@ -267,9 +239,9 @@ def one_work(idx, path, level, params, range_):
     sym2feats = get_all_from(path)
     pred_start, pred_end = range_[0]
     ltestrange = range_[1]
-    print "======PREDING %s ========" % str((pred_start, pred_end))
-    dfTest = pred(sym2feats, level, params, pred_start, pred_end, '2016-05-25', '2016-05-26')
-    dfTest.to_csv(os.path.join(dir_pred, "today_%s.csv" % "2016-05-25"))
+    #print "======PREDING %s ========" % str((pred_start, pred_end))
+    #dfTest = pred(sym2feats, level, params, pred_start, pred_end, '2016-05-25', '2016-05-26')
+    #dfTest.to_csv(os.path.join(dir_pred, "today_%s.csv" % "2016-05-25"))
     dfTestAll = None
     for each in ltestrange:
         print "====== TRAING %s =====" % str(each)

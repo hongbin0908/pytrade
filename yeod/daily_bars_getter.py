@@ -9,6 +9,7 @@ root = os.path.join(local_path, "..", "data", 'yeod')
 if not os.path.exists(root):
     os.makedirs(root)
 
+
 def get_nasdaq():
     syms =  finsymbols.get_nasdaq_symbols()
     print len(syms)
