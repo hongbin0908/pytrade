@@ -38,5 +38,6 @@ def work(syms,data_dir, processes):
         if sym.find('.') > 0:
             continue
         result[sym] = pool.apply_async(_single, (sym, data_dir))
+    print len(result)
     for sym in result:
         print sym, result[sym].get()
