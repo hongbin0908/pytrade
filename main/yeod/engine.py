@@ -41,6 +41,7 @@ def work(syms,data_dir, processes):
         if os.path.isfile(os.path.join(data_dir, sym + "csv")):
             continue
         result[sym] = pool.apply_async(_single, (sym, data_dir))
+    print len(result)
     pool.close()
     pool.join()
     succ = 0; fail = 0
