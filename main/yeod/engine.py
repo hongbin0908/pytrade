@@ -33,7 +33,7 @@ def _single(symbol, data_dir):
 def load_blacklist():
     d = set([])
     with open(os.path.join(local_path, 'blacklist')) as f:
-        for each in f.readline:
+        for each in f.readline():
             d.add(each.strip())
     return d.strip()
 def work(syms,data_dir, processes):
