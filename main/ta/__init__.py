@@ -9,7 +9,6 @@ local_path = os.path.dirname(__file__)
 root = os.path.join(local_path, '..')
 sys.path.append(root)
 
-import strategy_mining.model_base as base
 
 def diff(df, key, shink, shift=1):
     df["ta_diff_%s_%d_%d" % (key, shink, shift)] = (df[key]/df[key].shift(shift)).shift(shink)
@@ -1348,8 +1347,3 @@ def cal_all(df):
 def call2(df):
     df = cdl(df)
     return df
-
-if __name__ == '__main__':
-    df = base.get_stock_data_pd("A")
-    print cal_all(df).head(10)
-    #print adx(df).tail(1)
