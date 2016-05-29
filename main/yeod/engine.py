@@ -7,6 +7,7 @@ from pyalgotrade.tools import yahoofinance
 from urllib2 import  HTTPError
 import multiprocessing
 import finsymbols
+local_path = os.path.dirname(__file__)
 
 def _single(symbol, data_dir): 
     retry = 3
@@ -29,7 +30,14 @@ def _single(symbol, data_dir):
         return len(eod)
     return -1
 
+def load_blacklist():
+    d = set([])
+    with open(os.path.join(local_path, 'blacklist')) as f:
+        for each in f.readline:
+            d.add(each.strip())
+    return d.strip()
 def work(syms,data_dir, processes):
+    blacklist = load_blacklist()
     syms.sort()
     pool = multiprocessing.Pool(processes = int(processes) )
     result = {}
@@ -39,6 +47,8 @@ def work(syms,data_dir, processes):
         if sym.find('.') > 0:
             continue
         if os.path.isfile(os.path.join(data_dir, sym + ".csv")):
+            continue
+        if sym in blacklist:
             continue
         result[sym] = pool.apply_async(_single, (sym, data_dir))
     print len(result)
