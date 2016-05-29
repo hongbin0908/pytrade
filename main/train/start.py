@@ -239,9 +239,6 @@ def one_work(idx, path, level, params, range_):
     sym2feats = get_all_from(path)
     pred_start, pred_end = range_[0]
     ltestrange = range_[1]
-    #print "======PREDING %s ========" % str((pred_start, pred_end))
-    #dfTest = pred(sym2feats, level, params, pred_start, pred_end, '2016-05-25', '2016-05-26')
-    #dfTest.to_csv(os.path.join(dir_pred, "today_%s.csv" % "2016-05-25"))
     dfTestAll = None
     for each in ltestrange:
         print "====== TRAING %s =====" % str(each)
@@ -251,6 +248,9 @@ def one_work(idx, path, level, params, range_):
         else:
             dfTestAll = dfTestAll.append(dfTest)
     dfTestAll.to_csv(os.path.join(dir_pred, 'pred.csv'))
+    print "======PREDING %s ========" % str((pred_start, pred_end))
+    dfTest = pred(sym2feats, level, params, pred_start, pred_end, '2016-05-27', '2016-05-28')
+    dfTest.to_csv(os.path.join(dir_pred, "today_%s.csv" % "2016-05-27"))
 
 def main(argv):
     pool_num = int(argv[1])
