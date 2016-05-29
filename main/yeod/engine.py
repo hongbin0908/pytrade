@@ -16,10 +16,10 @@ def _single(symbol, data_dir):
             with open(os.path.join(data_dir,symbol+".csv"), 'w') as fout:
                 print >> fout, eod
         except Exception,ex:
-            if ex.find('404') > 0:
+            if int(ex.getcode()) == 404:
                 print "404, just break"
                 break
-            print symbol, Exception, ":", ex
+            print symbol, Exception, ":", ex.getcode(), " ", ex
             time.sleep(61)
             retry -=1
             continue
