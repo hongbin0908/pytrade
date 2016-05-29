@@ -17,7 +17,7 @@ def _single(symbol, data_dir):
                 print >> fout, eod
         except Exception,ex:
             if int(ex.getcode()) == 404:
-                print "404, just break"
+                print symbol, "404, just break"
                 break
             print symbol, Exception, ":", ex.getcode(), " ", ex
             time.sleep(61)
@@ -29,6 +29,7 @@ def _single(symbol, data_dir):
     return -1
 
 def work(syms,data_dir, processes):
+    syms.sort()
     pool = multiprocessing.Pool(processes = int(processes) )
     result = {}
     for sym in syms:
