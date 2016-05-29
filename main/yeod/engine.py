@@ -16,9 +16,9 @@ def _single(symbol, data_dir):
             with open(os.path.join(data_dir,symbol+".csv"), 'w') as fout:
                 print >> fout, eod
         except Exception,ex:
-            if int(ex.getcode()) == 404:
-                print symbol, "404, just break"
-                break
+            #if int(ex.getcode()) == 404:
+            #    print symbol, "404, just break"
+            #    break
             print symbol, Exception, ":", ex.getcode(), " ", ex
             time.sleep(61)
             retry -=1
@@ -33,6 +33,10 @@ def work(syms,data_dir, processes):
     pool = multiprocessing.Pool(processes = int(processes) )
     result = {}
     for sym in syms:
+        if sym.find('^') > 0:
+            continue
+        if sym.find('.') > 0:
+            continue
         result[sym] = pool.apply_async(_single, (sym, data_dir))
-    for sym in syms:
+    for sym in result:
         print sym, result[sym].get()
