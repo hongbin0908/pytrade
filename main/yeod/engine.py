@@ -2,6 +2,7 @@
 
 import os, sys
 from datetime import date
+import time
 from pyalgotrade.tools import yahoofinance
 import multiprocessing
 import finsymbols
@@ -15,7 +16,11 @@ def _single(symbol, data_dir):
             with open(os.path.join(data_dir,symbol+".csv"), 'w') as fout:
                 print >> fout, eod
         except Exception,ex:
+            if ex.find('404') > 0:
+                print "404, just break"
+                break
             print symbol, Exception, ":", ex
+            time.sleep(61)
             retry -=1
             continue
         break   	
