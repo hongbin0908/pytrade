@@ -229,6 +229,7 @@ def one_work(idx, path, level, params):
     dfTestAll.to_csv(os.path.join(dir_pred, 'pred.csv'))
 
 def one_work(idx, path, level, params, range_):
+    print idx, path, level, params, range_
     dir_pred = os.path.join(local_path, '..', 'data', 'pred', str(idx))
     if not os.path.isdir(dir_pred):
         os.mkdir(dir_pred)
