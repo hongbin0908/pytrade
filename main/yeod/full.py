@@ -23,6 +23,6 @@ def get_full():
     return list(syms)
 
 def main(argv):
-    engine.work(get_full(), get_data_root(), sys.argv[1])
+    print engine.work(get_full(), get_data_root(), sys.argv[1])
 if __name__ == '__main__':
     main(sys.argv)
