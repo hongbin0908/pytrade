@@ -58,11 +58,19 @@ def get_eod(symbol):
             header = None, names = names, \
             dtype = {"volume":np.float64}, \
             skiprows=1, index_col = 'date', parse_dates=True).sort_index()
-    return df
+    
+    if df["volume"].mean() < 10000:
+        return None
+    if df["close"].mean() < 10:
+        return None
+
+    return df[df["volume"]>0]
 def main1():
     for each in get_file_list(os.path.join(local_path, '..', 'data', 'yeod')):
         symbol = get_stock_from_path(each)
         df = get_eod(each)
+        if df is None:
+            continue
         df = ta.cal_all(df)
         df = judge(df)
         dir_out = os.path.join(root, 'data', 'ta1')
@@ -73,6 +81,8 @@ def main2():
     for each in get_file_list(os.path.join(local_path, '..', 'data', 'yeod')):
         symbol = get_stock_from_path(each)
         df = get_eod(each)
+        if df is None:
+            continue
         df = ta.call2(df)
         df = judge(df)
         dir_out = os.path.join(root, 'data', 'ta2')
@@ -81,9 +91,14 @@ def main2():
         df.to_csv(os.path.join(dir_out, symbol + ".csv"))
 
 def main3():
-    for each in get_file_list(os.path.join(local_path, '..', 'data', 'yeod_full')):
+    l = get_file_list(os.path.join(local_path, '..', 'data', 'yeod_full')); l.sort()
+    #l = l[:5]
+    for each in l:
         symbol = get_stock_from_path(each)
         df = get_eod(each)
+        if df is None:
+            continue
+        print symbol, df.shape
         df = ta.cal_all(df)
         df = judge(df)
 
@@ -95,6 +110,8 @@ def main4():
     for each in get_file_list(os.path.join(local_path, '..', 'data', 'yeod_full')):
         symbol = get_stock_from_path(each)
         df = get_eod(each)
+        if df is None:
+            continue
         df = ta.cal_all(df)
 	df = df[[
 		 'open',
@@ -140,7 +157,7 @@ def main4():
             os.mkdir(dir_out)
         df.to_csv(os.path.join(dir_out, symbol + ".csv"))
 if __name__ == '__main__':
-    main4()
-    main3()
+    #main4()
     main1()
-    main2()
+    #main3()
+    #main2()

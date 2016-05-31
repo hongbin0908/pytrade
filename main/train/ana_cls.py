@@ -15,8 +15,8 @@ import model_base as base
 def accu(npTestLabel, npPred, threshold):
     print "%f\t" % threshold,
     npPos = npPred[npPred >= threshold]
-    npTrueInPos = npTestLabel[(npPred >= threshold) & (npTestLabel==1.0)]
-    npTrue = npTestLabel[npTestLabel == 1.0]
+    npTrueInPos = npTestLabel[(npPred >= threshold) & (npTestLabel>1.0)]
+    npTrue = npTestLabel[npTestLabel > 1.0]
     print "%d\t%d\t" % (npPos.size, npTrueInPos.size),
     if npPos.size > 0:
         print npTrueInPos.size*1.0/npPos.size,
@@ -50,14 +50,17 @@ def main(argv):
     l_conf = d_conf[str_conf]
     for each in l_conf:
         path =  os.path.join(root, 'data', 'pred', each) 
+        if not os.path.isfile(os.path.join(path, "pred.csv")):
+            print path, "NOT exsits"
+            continue
         d_desc = read_desc(path)
         print "===============%s==========" % str(d_desc)
-        ana(path, '2010-01-01', '2016-01=01')
-        ana(path, '2011-01-01', '2016-01=01')
-        ana(path, '2012-01-01', '2016-01=01')
-        ana(path, '2013-01-01', '2016-01=01')
-        ana(path, '2014-01-01', '2016-01=01')
-        ana(path, '2015-01-01', '2016-01=01')
+        ana(path, '2010-01-01', '2016-01-01')
+        ana(path, '2011-01-01', '2016-01-01')
+        ana(path, '2012-01-01', '2016-01-01')
+        ana(path, '2013-01-01', '2016-01-01')
+        ana(path, '2014-01-01', '2016-01-01')
+        ana(path, '2015-01-01', '2016-01-01')
 if __name__ == '__main__':
     main(sys.argv)
 

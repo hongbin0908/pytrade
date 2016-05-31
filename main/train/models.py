@@ -16,6 +16,7 @@ d_params = {
     "M20160522GBC06": {'verbose':0,'n_estimators':50, 'max_depth':4},
     "M20160522GBC07": {'verbose':1,'n_estimators':50, 'max_depth':3},
     "M20160529GBC01": {'verbose':1,'n_estimators':100, 'max_depth':3},
+    "M20160531GBC01": {'verbose':1,'n_estimators':100, 'max_depth':8},
 }
 
 d_label = {
@@ -76,4 +77,6 @@ d_choris = {
     "CF2016052901": (d_ta["T20160527TA01"], d_label["L20160522CL03"], d_params["M20160522GBC07"], d_range["RG2016052601"]),
     "CF2016052902": (d_ta["T20160529TA01"], d_label["L20160522CL03"], d_params["M20160522GBC07"], d_range["RG2016052601"]),
     "CF2016052903": (d_ta["T20160529TA01"], d_label["L20160522CL03"], d_params["M20160529GBC01"], d_range["RG2016052601"]),
+    "CF2016053001": (d_ta["T20160527TA01"], d_label["L20160522CL03"], d_params["M20160529GBC01"], d_range["RG2016052601"]),
+    "CF2016053101": (d_ta["T20160527TA01"], d_label["L20160522CL03"], d_params["M20160531GBC01"], d_range["RG2016052601"]),
 }
