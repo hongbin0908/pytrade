@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 #@author  Bin Hong
+
 import sys,os
 import json
 import numpy as np
@@ -15,39 +16,72 @@ from model_base import *
 from sklearn.ensemble import GradientBoostingClassifier
 
 def get_feat_names(df):
+    """
+    the the columns of features name to train 
+    """
     return [x for x in df.columns if x.startswith('ta_')]
 def get_label_name(df, level):
+    """
+    param level:
+        the level means the days shifted to diff
+        level 3 mean this model is to predict the price of 3days in the future
+    """
     return "label" + str(level)
 
 
-def build_trains(sym2feats, start, end, isDropNa = True):
-    if isDropNa:
-        dfTrains = merge(sym2feats, start ,end).replace([np.inf,-np.inf],np.nan).dropna()
-    else:
-        dfTrains = merge(sym2feats, start ,end)
-    return dfTrains
+def get_stock_data_pd(path):
+    df = pd.read_csv(path,  index_col = 'date', parse_dates=True).sort_index()
+    return df
+
+def get_all_from(path):
+    sym2df = {}
+    for each in get_file_list(path):
+        symbol = get_stock_from_path(each)
+        df = get_stock_data_pd(each)
+        sym2df[symbol] = df 
+    return sym2df
+
+def build_trains(sym2feats, start, end):
+    """
+    param sym2feats:
+        dict from symbol to its features dataframe
+    param start:
+        the first day(include) to merge
+    param end:
+        the last day(exclude) to merge
+    """
+    # sometimes there is inf value in features
+    df = merge(sym2feats, start ,end)\
+            .replace([np.inf,-np.inf],np.nan)\
+            .dropna()
+    return df
 
 def build_preds(sym2feats, start, end):
+    """
+    these some diffs from build_preds to build_trains
+        * when drop inf and na must exclude the labels
+    """
     df = merge(sym2feats, start, end)
-    #print df.shape
     for x in df.columns:
         if x.startswith('label'):
             del df[x]
+    # maybe it would be deleted when build ta
     del df['close_shift']
-    #print df.shape
-    #print df.iloc[1]
     df = df.replace([np.inf,-np.inf],np.nan).dropna()
     print df.shape
     return df
 
 
 def merge(sym2feats, start ,end):
+    """
+    merge the features dataframe and add [sym, date] index.
+    TODO unittested!
+    """
     dfMerged = None
     toAppends = []
     for sym in sym2feats.keys():
         df = sym2feats[sym]
         df = df.loc[start:end,:]
-        #assert False == df.head().isnull().any(axis=1).values[0] 
         index2 = df.index.values
         index1 = []
         for i in range(0,df.shape[0]):
@@ -58,8 +92,7 @@ def merge(sym2feats, start ,end):
             dfMerged = df
         else:
             toAppends.append(df)
-            #if len(toAppends) > 5:
-            #    break
+    # batch merge speeds up!
     dfMerged =  dfMerged.append(toAppends)
     return dfMerged
 
@@ -69,10 +102,10 @@ def pred(sym2feats, level, params, start1, end1, start2, end2):
     dfTest = build_preds(sym2feats, start2, end2)
     model = GradientBoostingClassifier(**params)
     npTrainFeat = dfTrain.loc[:,get_feat_names(dfTrain)].values
-    npTrainLabel = dfTrain.loc[:,get_label_name(dfTrain,level)].values
-    fil = npTrainLabel.copy()
-    npTrainLabel[fil>= 1.0] = 1
-    npTrainLabel[fil<  1.0] = 0
+    npTrainLabel = dfTrain.loc[:,get_label_name(dfTrain,level)].values.copy()
+    npTrainLabel[npTrainLabel != 1.0]
+    npTrainLabel[npTrainLabel >  1.0] = 1
+    npTrainLabel[npTrainLabel <  1.0] = 0
     model.fit(npTrainFeat, npTrainLabel)
 
     npTestFeat = dfTest.loc[:,get_feat_names(dfTrain)].values
@@ -87,39 +120,19 @@ def train2(sym2feats, level, params, start1, end1, start2, end2):
     feat_names = get_feat_names(dfTrain)
     npTrainFeat = dfTrain.loc[:,feat_names].values
     npTrainLabel = dfTrain.loc[:,get_label_name(dfTrain,level)].values.copy()
-    print npTrainLabel.shape
     npTrainLabel[npTrainLabel != 1.0]
-    print npTrainLabel.shape
     npTrainLabel[npTrainLabel >  1.0] = 1
     npTrainLabel[npTrainLabel <  1.0] = 0
     model.fit(npTrainFeat, npTrainLabel)
 
     npTestFeat = dfTest.loc[:,feat_names].values
-    #npTestLabel = dfTest.loc[:,get_label_name(dfTrain,level)].values.copy()
-    #print npTestLabel.shape
-    #npTestLabel[npTestLabel != 1.0]
-    #print npTestLabel.shape
-    #npTestLabel[npTestLabel> 1.0] = 1
-    #npTestLabel[npTestLabel<= 1.0] = 0
 
     dfTest["pred"] = model.predict_proba(npTestFeat)[:,1]
     dFeatImps = dict(zip( feat_names, model.feature_importances_))
     for each in sorted(dFeatImps.iteritems(), key = lambda a: a[1], reverse=True):
             print each
-     
     return dfTest
 
-def get_stock_data_pd(path):
-    df = pd.read_csv(path,  index_col = 'date', parse_dates=True).sort_index()
-    return df
-
-def get_all_from(path):
-    sym2df = {}
-    for each in get_file_list(path):
-        symbol = get_stock_from_path(each)
-        df = get_stock_data_pd(each)
-        sym2df[symbol] = df 
-    return sym2df
 
 
 def one_work(idx, path, level, params, range_):
