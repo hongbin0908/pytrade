@@ -75,7 +75,7 @@ def build_preds(sym2feats, start, end):
 def merge(sym2feats, start ,end):
     """
     merge the features dataframe and add [sym, date] index.
-    TODO unittested!
+    **both** the start and the stop are included!
     """
     dfMerged = None
     toAppends = []

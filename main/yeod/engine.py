@@ -22,7 +22,7 @@ def _single(symbol, data_dir):
                 print symbol, "404, just break"
                 break
             print symbol, Exception, ":", ex.getcode(), " ", ex
-            time.sleep(61)
+            time.sleep(6)
             retry -=1
             continue
         break   	
