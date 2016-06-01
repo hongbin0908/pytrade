@@ -28,6 +28,7 @@ def get_stock_from_path(pathname):
 def _judge(df, window):
     df["close_shift"] = df["close"].shift(-1 * window)
     df["label" + str(window)] = df["close_shift"]/df["close"]
+    del df["close_shift"]
     return df 
 
 def judge(df):
