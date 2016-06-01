@@ -56,17 +56,16 @@ def build_trains(sym2feats, start, end):
             .dropna()
     return df
 
-def build_preds(sym2feats, start, end):
+def build_preds(sym2feats, strDate):
     """
     these some diffs from build_preds to build_trains
         * when drop inf and na must exclude the labels
     """
-    df = merge(sym2feats, start, end)
+    df = merge(sym2feats, strDate, strDate)
     for x in df.columns:
         if x.startswith('label'):
             del df[x]
     # maybe it would be deleted when build ta
-    del df['close_shift']
     df = df.replace([np.inf,-np.inf],np.nan).dropna()
     print df.shape
     return df
@@ -97,9 +96,9 @@ def merge(sym2feats, start ,end):
     return dfMerged
 
 
-def pred(sym2feats, level, params, start1, end1, start2, end2):
+def pred(sym2feats, level, params, start1, end1, datePred):
     dfTrain = build_trains(sym2feats, start1, end1)
-    dfTest = build_preds(sym2feats, start2, end2)
+    dfTest = build_preds(sym2feats, datePred)
     model = GradientBoostingClassifier(**params)
     npTrainFeat = dfTrain.loc[:,get_feat_names(dfTrain)].values
     npTrainLabel = dfTrain.loc[:,get_label_name(dfTrain,level)].values.copy()
@@ -147,10 +146,9 @@ def one_work(idx, path, level, params, range_):
     sym2feats = get_all_from(path)
     pred_start, pred_end = range_[0]
     ltestrange = range_[1]
-    #print "======PREDING %s ========" % str((pred_start, pred_end))
-    #dfTest = pred(sym2feats, level, params, pred_start, pred_end, '2016-05-27', '2016-05-28')
-    #print dfTest.shape
-    #dfTest.to_csv(os.path.join(dir_pred, "today_%s.csv" % "2016-05-27"))
+    print "======PREDING %s ========" % str((pred_start, pred_end))
+    dfTest = pred(sym2feats, level, params, pred_start, pred_end, '2016-05-27')
+    dfTest.to_csv(os.path.join(dir_pred, "today_%s.csv" % "2016-05-27"))
     dfTestAll = None
     for each in ltestrange:
         print "====== TRAING %s =====" % str(each)
