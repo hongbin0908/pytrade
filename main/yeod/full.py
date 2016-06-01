@@ -17,9 +17,9 @@ def get_data_root():
 def get_full():
     syms = set()
     for each in finsymbols.symbols.get_nasdaq_symbols():
-        syms.add(each['symbol'])
+        syms.add(each['symbol'].strip())
     for each in finsymbols.symbols.get_nyse_symbols():
-        syms.add(each['symbol'])
+        syms.add(each['symbol'].strip())
     return list(syms)
 
 def main(argv):

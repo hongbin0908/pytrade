@@ -17,7 +17,7 @@ def get_data_root():
 def get_sp500():
     symbols = []
     for each in finsymbols.symbols.get_sp500_symbols():
-        symbols.append(each['symbol'])
+        symbols.append(each['symbol'].strip())
     return symbols  
 
 def main(argv):
