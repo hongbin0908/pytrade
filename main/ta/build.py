@@ -158,7 +158,7 @@ def main4():
             os.mkdir(dir_out)
         df.to_csv(os.path.join(dir_out, symbol + ".csv"))
 if __name__ == '__main__':
-    #main4()
-    main1()
     #main3()
+    main1()
     #main2()
+    #main4()

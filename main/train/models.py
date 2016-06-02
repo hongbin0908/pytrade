@@ -17,6 +17,13 @@ d_params = {
     "M20160522GBC07": {'verbose':1,'n_estimators':50, 'max_depth':3},
     "M20160529GBC01": {'verbose':1,'n_estimators':100, 'max_depth':3},
     "M20160531GBC01": {'verbose':1,'n_estimators':100, 'max_depth':8},
+    "M_3000_3": {'verbose':1,'n_estimators':3000, 'max_depth':3},
+    "M_3000_6": {'verbose':1,'n_estimators':3000, 'max_depth':6},
+    "M_3000_3_lr001": {'verbose':1,'n_estimators':3000, 'max_depth':3, 'learning_rate':0.01},
+    "M_3000_6_lr001": {'verbose':1,'n_estimators':3000, 'max_depth':6, 'learning_rate':0.01},
+    "M_3000_3_sl5": {'verbose':1,'n_estimators':3000, 'max_depth':3, 'min_samples_leaf':5},
+    "M_3000_3_mf05": {'verbose':1,'n_estimators':3000, 'max_depth':3, 'max_features':0.5},
+    "M_3000_6_mf05": {'verbose':1,'n_estimators':3000, 'max_depth':6, 'max_features':0.5},
 }
 
 d_label = {
@@ -80,5 +87,8 @@ d_choris = {
     "CF2016053001": (d_ta["T20160527TA01"], d_label["L20160522CL03"], d_params["M20160529GBC01"], d_range["RG2016052601"]),
     "CF2016053101": (d_ta["T20160527TA01"], d_label["L20160522CL03"], d_params["M20160531GBC01"], d_range["RG2016052601"]),
     "CF_SP500_50_3": (d_ta["T20160522TA01"], d_label["L20160522CL03"], d_params["M20160522GBC07"], d_range["RG2016052601"]),
+    "CF2016060201": (d_ta["T20160522TA01"], d_label["L20160522CL03"], d_params["M_3000_3"], d_range["RG2016052601"]),
+    "CF2016060202": (d_ta["T20160522TA01"], d_label["L20160522CL02"], d_params["M_3000_3"], d_range["RG2016052601"]),
+    "CF2016060203": (d_ta["T20160522TA01"], d_label["L20160522CL01"], d_params["M_3000_3"], d_range["RG2016052601"]),
 
 }
