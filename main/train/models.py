@@ -79,4 +79,6 @@ d_choris = {
     "CF2016052903": (d_ta["T20160529TA01"], d_label["L20160522CL03"], d_params["M20160529GBC01"], d_range["RG2016052601"]),
     "CF2016053001": (d_ta["T20160527TA01"], d_label["L20160522CL03"], d_params["M20160529GBC01"], d_range["RG2016052601"]),
     "CF2016053101": (d_ta["T20160527TA01"], d_label["L20160522CL03"], d_params["M20160531GBC01"], d_range["RG2016052601"]),
+    "CF_SP500_50_3": (d_ta["T20160522TA01"], d_label["L20160522CL03"], d_params["M20160522GBC07"], d_range["RG2016052601"]),
+
 }
