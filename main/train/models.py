@@ -91,4 +91,10 @@ d_choris = {
     "CF2016060202": (d_ta["T20160522TA01"], d_label["L20160522CL02"], d_params["M_3000_3"], d_range["RG2016052601"]),
     "CF2016060203": (d_ta["T20160522TA01"], d_label["L20160522CL01"], d_params["M_3000_3"], d_range["RG2016052601"]),
 
+    "CF2016060301": (d_ta["T20160522TA01"], d_label["L20160522CL03"], d_params["M_3000_6"], d_range["RG2016052601"]),
+    "CF2016060302": (d_ta["T20160522TA01"], d_label["L20160522CL03"], d_params["M_3000_3_lr001"], d_range["RG2016052601"]),
+    "CF2016060303": (d_ta["T20160522TA01"], d_label["L20160522CL03"], d_params["M_3000_6_lr001"], d_range["RG2016052601"]),
+    "CF2016060304": (d_ta["T20160522TA01"], d_label["L20160522CL03"], d_params["M_3000_3_sl5"], d_range["RG2016052601"]),
+    "CF2016060305": (d_ta["T20160522TA01"], d_label["L20160522CL03"], d_params["M_3000_3_mf05"], d_range["RG2016052601"]),
+    "CF2016060306": (d_ta["T20160522TA01"], d_label["L20160522CL03"], d_params["M_3000_6_mf05"], d_range["RG2016052601"]),
 }

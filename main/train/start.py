@@ -155,9 +155,10 @@ def one_work(idx, path, level, params, range_):
     sym2feats = get_all_from(path)
     pred_start, pred_end = range_[0]
     ltestrange = range_[1]
-    print "======PREDING %s ========" % str((pred_start, pred_end))
-    dfTest = pred(sym2feats, level, params, pred_start, pred_end, '2016-05-27')
-    dfTest.to_csv(os.path.join(dir_pred, "today_%s.csv" % "2016-05-27"))
+    #print "======PREDING %s ========" % str((pred_start, pred_end))
+    #dfTest = pred(sym2feats, level, params, pred_start, pred_end, '2016-05-27')
+    #dfTest.to_csv(os.path.join(dir_pred, "today_%s.csv" % "2016-05-27"))
+
     dfTestAll = None
     for each in ltestrange:
         print "====== TRAING %s =====" % str(each)
