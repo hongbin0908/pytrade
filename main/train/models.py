@@ -17,13 +17,13 @@ d_params = {
     "M20160522GBC07": {'verbose':1,'n_estimators':50, 'max_depth':3},
     "M20160529GBC01": {'verbose':1,'n_estimators':100, 'max_depth':3},
     "M20160531GBC01": {'verbose':1,'n_estimators':100, 'max_depth':8},
-    "M_3000_3": {'verbose':1,'n_estimators':3000, 'max_depth':3},
-    "M_3000_6": {'verbose':1,'n_estimators':3000, 'max_depth':6},
-    "M_3000_3_lr001": {'verbose':1,'n_estimators':3000, 'max_depth':3, 'learning_rate':0.01},
-    "M_3000_6_lr001": {'verbose':1,'n_estimators':3000, 'max_depth':6, 'learning_rate':0.01},
-    "M_3000_3_sl5": {'verbose':1,'n_estimators':3000, 'max_depth':3, 'min_samples_leaf':5},
-    "M_3000_3_mf05": {'verbose':1,'n_estimators':3000, 'max_depth':3, 'max_features':0.5},
-    "M_3000_6_mf05": {'verbose':1,'n_estimators':3000, 'max_depth':6, 'max_features':0.5},
+    "M_3000_3": {'verbose':1,'n_estimators':1000, 'max_depth':3},
+    "M_3000_6": {'verbose':1,'n_estimators':1000, 'max_depth':6},
+    "M_3000_3_lr001": {'verbose':1,'n_estimators':1000, 'max_depth':3, 'learning_rate':0.01},
+    "M_3000_6_lr001": {'verbose':1,'n_estimators':1000, 'max_depth':6, 'learning_rate':0.01},
+    "M_3000_3_sl5": {'verbose':1,'n_estimators':1000, 'max_depth':3, 'min_samples_leaf':5},
+    "M_3000_3_mf05": {'verbose':1,'n_estimators':1000, 'max_depth':3, 'max_features':0.5},
+    "M_3000_6_mf05": {'verbose':1,'n_estimators':1000, 'max_depth':6, 'max_features':0.5},
 }
 
 d_label = {
