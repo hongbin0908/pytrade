@@ -6,16 +6,26 @@
 import sys,os
 import json
 import numpy as np
+import pandas as pd
 import math
 import multiprocessing
 local_path = os.path.dirname(__file__)
 root = os.path.join(local_path, '..')
 sys.path.append(root)
-from model_conf import d_conf
-from models import d_choris
-from model_base import *
+sys.path.append(local_path)
 from sklearn.ensemble import GradientBoostingClassifier
 from sklearn.externals import joblib # to dump model
+
+def get_file_list(rootdir):
+    file_list = []
+    for f in os.listdir(rootdir):
+        if f == None or not f.endswith(".csv"):
+            continue
+        file_list.append(os.path.join(rootdir, f))
+    return file_list
+
+def get_stock_from_path(pathname):
+    return os.path.splitext(os.path.split(pathname)[-1])[0]
 
 def get_feat_names(df):
     """

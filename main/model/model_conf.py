@@ -6,7 +6,6 @@ from sklearn.ensemble import GradientBoostingClassifier
 local_path = os.path.dirname(__file__)
 root = os.path.join(local_path, '..')
 sys.path.append(root)
-import models
 
 d_conf = {
     "conf_20160522": [
