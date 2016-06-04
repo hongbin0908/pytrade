@@ -6,11 +6,12 @@ import os,sys
 import talib
 import pandas as pd
 import numpy as np
+import multiprocessing
 local_path = os.path.dirname(__file__)
 root = os.path.join(local_path, '..')
 sys.path.append(root)
-import ta
 
+import ta
 
 def get_file_list(rootdir):    
     file_list = []
@@ -18,9 +19,7 @@ def get_file_list(rootdir):
         if f == None or not f.endswith(".csv"): 
             continue
         file_list.append(os.path.join(rootdir, f))
-         
     return file_list
-
 
 def get_stock_from_path(pathname):
     return os.path.splitext(os.path.split(pathname)[-1])[0]
@@ -45,6 +44,15 @@ def judge(df):
     df = _judge(df, 30)
     df = _judge(df, 60)
     return df
+
+def filter(df):
+    mean =  np.max(np.abs((df.tail(11)["label1"].head(10).values - 1)))
+    if mean < 0.01:
+        return True
+    if np.max(df.tail(11)["volume"].head(10).values) < 500000:
+        return True
+    return False
+
 def get_pd(symbol):
     names = ["date", 'open', 'high', 'low', 'close', 'volume', 'adjclose']
     df = pd.read_csv(os.path.join(local_path, '..', 'data', 'yeod', symbol+".csv"), \
@@ -52,6 +60,7 @@ def get_pd(symbol):
             dtype = {"volume":np.float64}, \
             skiprows=1, index_col = 'date', parse_dates=True).sort_index()
     return df
+
 
 def get_eod(symbol):
     names = ["date", 'open', 'high', 'low', 'close', 'volume', 'adjclose']
@@ -66,18 +75,38 @@ def get_eod(symbol):
         return None
 
     return df[df["volume"]>0]
-def main1():
-    for each in get_file_list(os.path.join(local_path, '..', 'data', 'yeod')):
-        symbol = get_stock_from_path(each)
-        df = get_eod(each)
-        if df is None:
-            continue
-        df = ta.cal_all(df)
-        df = judge(df)
-        dir_out = os.path.join(root, 'data', 'ta1')
-        if not os.path.isdir(dir_out):
-            os.mkdir(dir_out)
-        df.to_csv(os.path.join(dir_out, symbol + ".csv"))
+
+def _one_work(eod, func, dir_out):
+    symbol = get_stock_from_path(eod)
+    df = get_eod(eod)
+    if df is None:
+        return
+    df = getattr(ta, func)(df)
+    df = judge(df)
+    if not os.path.isdir(dir_out):
+        os.mkdir(dir_out)
+    if not filter(df):
+        df.to_csv(os.path.join(dir_out, symbol+".csv"))
+    else:
+        print symbol, False
+
+def work(pool_num, dir_data, func, dir_out):
+    pool = multiprocessing.Pool(processes=pool_num)
+    result = []
+    for each in get_file_list(dir_data):
+        result.append(pool.apply_async(_one_work, (each, func, dir_out)))
+    pool.close()
+    pool.join()
+    for each in result:
+        print each.get()
+
+def main1(argv):
+    work(int(argv[1]),
+         os.path.join(root, 'data', 'yeod'),
+         "call_all",
+         os.path.join(root, 'data', 'ta1')
+        )
+
 def main2():
     for each in get_file_list(os.path.join(local_path, '..', 'data', 'yeod')):
         symbol = get_stock_from_path(each)
@@ -159,6 +188,6 @@ def main4():
         df.to_csv(os.path.join(dir_out, symbol + ".csv"))
 if __name__ == '__main__':
     #main3()
-    main1()
+    main1(sys.argv)
     #main2()
     #main4()

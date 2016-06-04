@@ -1320,7 +1320,7 @@ def cdl(df):
     return df
 
 
-def cal_all(df):
+def call_all(df):
     df = adx(df, timeperiod = 14)
     for i in range(14):
         df = diff(df, "ta_adx_14", i, 1)
