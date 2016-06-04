@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-#@author 
+#@author Bin Hong
 import os,sys
 import talib
 import pandas as pd
