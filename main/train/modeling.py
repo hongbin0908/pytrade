@@ -106,28 +106,14 @@ def main(argv):
     pool_num = int(argv[1])
     conf_file = argv[2]
     importstr = "import %s as conf" % conf_file
+    import train.model_param_set as params_set
     exec importstr
 
     pool = multiprocessing.Pool(processes=pool_num)
     result = []
-
-    for dir_ta in conf.d_dir_ta:
-        for model in conf.d_model:
-            for label in conf.d_label:
-                for date_range in conf.d_date_range:
-                    name = "%s_%s_%s_%s" % (dir_ta, model, label, date_range)
-                    result.append(pool.apply_async(one_work, (name, conf.d_dir_ta[dir_ta], \
-                                                                    conf.d_model[model], \
-                                                                    conf.d_label[label], \
-                                                                    conf.d_date_range[date_range]
-                                                              )
-                                                  )
-                                  )
-                    #one_work(name, conf.d_dir_ta[dir_ta], \
-                    #                                                conf.d_model[model], \
-                    #                                                conf.d_label[label], \
-                    #                                                conf.d_date_range[date_range]
-                    #                                          )
+    for name in conf.l_params:
+        params = params_set.d_all[name]
+        result.append(pool.apply_async(one_work, (name, params[0], params[1], params[2], params[3])))
     pool.close()
     pool.join()
     for each in result:
