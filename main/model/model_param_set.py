@@ -13,6 +13,12 @@ d_dir_ta =  {"ta1":os.path.join(root, "data", 'ta1')}
 d_model = {
         "GBCv1n500md3":GradientBoostingClassifier(**{'verbose':1,'n_estimators':500, 'max_depth':3}),
         "GBCv1n1000md3":GradientBoostingClassifier(**{'verbose':1,'n_estimators':1000, 'max_depth':3}),
+        "GBCv1n1000md3":GradientBoostingClassifier(**{'verbose':1,'n_estimators':1000, 'max_depth':3}),
+        "GBCv1n1000md9":GradientBoostingClassifier(**{'verbose':1,'n_estimators':1000, 'max_depth':9}),
+        "GBCv1n1000md9":GradientBoostingClassifier(**{'verbose':1,'n_estimators':1000, 'max_depth':9}),
+        "GBCv1n1000md3lr001":GradientBoostingClassifier(**{'verbose':1,'n_estimators':1000, 'max_depth':3, 'learning_rate':0.05}),
+        "GBCv1n1000md3lr02":GradientBoostingClassifier(**{'verbose':1,'n_estimators':1000, 'max_depth':3, 'learning_rate':0.2}),
+        "GBCv1n1000md3mf05":GradientBoostingClassifier(**{'verbose':1,'n_estimators':1000, 'max_depth':3, 'max_features':0.5}),
         }
 
 d_label = {
@@ -27,6 +33,7 @@ d_date_range = {
         "s2003e2012":("2003-01-01", '2012-12-31'),
         "s2004e2013":("2004-01-01", '2013-12-31'),
         "s2005e2014":("2005-01-01", '2014-12-31'),
+        "s2005e2009":("2005-01-01", '2009-12-31'),
         }
 d_all = {}
 for dir_ta in d_dir_ta:
