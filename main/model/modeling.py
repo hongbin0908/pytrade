@@ -42,13 +42,6 @@ def get_all_from(path):
     for each in get_file_list(path):
         symbol = get_stock_from_path(each)
         df = get_stock_data_pd(each)
-        mean =  np.max(np.abs((df.tail(11)["label1"].head(10).values - 1)))
-        if mean < 0.01:
-            print symbol, mean
-            continue
-        if np.max(df.tail(11)["volume"].head(10).values) < 500000:
-            print 2, symbol, mean
-            continue
         sym2df[symbol] = df 
     print len(sym2df)
     return sym2df
