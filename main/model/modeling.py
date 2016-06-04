@@ -116,7 +116,7 @@ def main(argv):
     pool_num = int(argv[1])
     conf_file = argv[2]
     importstr = "import %s as conf" % conf_file
-    import train.model_param_set as params_set
+    import model.model_param_set as params_set
     exec importstr
 
     pool = multiprocessing.Pool(processes=pool_num)
