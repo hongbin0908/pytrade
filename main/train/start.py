@@ -15,6 +15,7 @@ from model_conf import d_conf
 from models import d_choris
 from model_base import *
 from sklearn.ensemble import GradientBoostingClassifier
+from sklearn.externals import joblib # to dump model
 
 def get_feat_names(df):
     """
@@ -105,7 +106,7 @@ def merge(sym2feats, start ,end):
     return dfMerged
 
 
-def pred(sym2feats, level, params, start1, end1, datePred):
+def doPred(sym2feats, level, params, start1, end1, datePred):
     dfTrain = build_trains(sym2feats, start1, end1)
     dfTest = build_preds(sym2feats, datePred)
     model = GradientBoostingClassifier(**params)
@@ -119,7 +120,7 @@ def pred(sym2feats, level, params, start1, end1, datePred):
     npTestFeat = dfTest.loc[:,get_feat_names(dfTrain)].values
 
     dfTest["pred"] = model.predict_proba(npTestFeat)[:,1]
-    return dfTest
+    return model, dfTest
 
 def train2(sym2feats, level, params, start1, end1, start2, end2):
     dfTrain = build_trains(sym2feats, start1, end1)
@@ -139,11 +140,10 @@ def train2(sym2feats, level, params, start1, end1, start2, end2):
     dFeatImps = dict(zip( feat_names, model.feature_importances_))
     for each in sorted(dFeatImps.iteritems(), key = lambda a: a[1], reverse=True):
             print each
-    return dfTest
+    return model, dfTest
 
 
-
-def one_work(idx, path, level, params, range_):
+def one_work(idx, path, level, params, range_, yestday):
     print idx, path, level, params, range_
     dir_pred = os.path.join(local_path, '..', 'data', 'pred', str(idx))
     if not os.path.isdir(dir_pred):
@@ -156,28 +156,33 @@ def one_work(idx, path, level, params, range_):
     pred_start, pred_end = range_[0]
     ltestrange = range_[1]
     print "======PREDING %s ========" % str((pred_start, pred_end))
-    dfTest = pred(sym2feats, level, params, pred_start, pred_end, '2016-06-02')
-    dfTest.to_csv(os.path.join(dir_pred, "today_%s.csv" % "2016-06-02"))
+    model, dfTest = doPred(sym2feats, level, params, pred_start, pred_end, yestday)
+    joblib.dump(model, os.path.join(dir_pred,  "pred.pkl"), compress = 3)
+    dfTest.to_csv(os.path.join(dir_pred, "today_%s.csv" % yestday))
 
     dfTestAll = None
+    idx = 0
     for each in ltestrange:
         print "====== TRAING %s =====" % str(each)
-        dfTest = train2(sym2feats, level, params, each[0], each[1], each[2], each[3]); 
+        model, dfTest = train2(sym2feats, level, params, each[0], each[1], each[2], each[3]); 
         if dfTestAll is None:
             dfTestAll = dfTest
         else:
             dfTestAll = dfTestAll.append(dfTest)
+        joblib.dump(model, os.path.join(dir_pred, "traing_%d.pkl" % idx), compress = 3)
+        idx += 1
     dfTestAll.to_csv(os.path.join(dir_pred, 'pred.csv'))
 
 def main(argv):
     pool_num = int(argv[1])
     str_conf = argv[2]
+    yestday = argv[3]
     l_conf = d_conf[str_conf]
     pool = multiprocessing.Pool(processes=pool_num)
     result = []
     for each in l_conf:
         m = d_choris[each]
-        params = (each, m[0], m[1], m[2],m[3])
+        params = (each, m[0], m[1], m[2],m[3], yestday)
         result.append(pool.apply_async(one_work, params))
         #one_work(params[0], params[1], params[2], params[3], params[4])
     pool.close()
