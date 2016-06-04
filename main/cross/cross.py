@@ -4,6 +4,7 @@
 #@author  Bin Hong
 
 import sys,os
+import json
 from sklearn.externals import joblib # to dump model
 local_path = os.path.dirname(__file__)
 root = os.path.join(local_path, '..')
@@ -11,6 +12,14 @@ sys.path.append(root)
 sys.path.append(local_path)
 
 import model.modeling as  model
+
+def accu(df, label, threshold):
+    npPred  = df["pred"].values
+    npLabel = df[label].values
+    npPos = npPred[npPred >= threshold]
+    npTrueInPos = npLabel[(npPred >= threshold) & (npLabel>1.0)]
+    npTrue = npLabel[npLabel > 1.0]
+    return {"pos": npPos.size, "trueInPos":npTrueInPos.size}
 
 def main(argv):
     conf_file = argv[1]
@@ -32,8 +41,9 @@ def main(argv):
         else:
             dfAll = dfAll.append(df)
     dfAll.to_csv(os.path.join(root, 'data', 'crosses', conf_file+ ".csv"))
-
-
+    dacc =  accu(dfAll, each[2], 0.5)
+    with open(os.path.join(root, "data", "crosses", conf_file + ".acc"), 'w') as fresult:
+        print >> fresult, json.dumps(dacc)
 
 if __name__ == '__main__':
     main(sys.argv)

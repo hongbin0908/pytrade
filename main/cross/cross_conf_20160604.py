@@ -8,7 +8,7 @@ local_path = os.path.dirname(__file__)
 root = os.path.join(local_path, '..')
 sys.path.append(root)
 
-import train.model_param_set as param_set
+import model.model_param_set as param_set
 
 
 ta =  param_set.d_dir_ta
