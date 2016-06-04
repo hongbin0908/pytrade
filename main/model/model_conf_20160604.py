@@ -8,7 +8,6 @@ local_path = os.path.dirname(__file__)
 root = os.path.join(local_path, '..')
 sys.path.append(root)
 
-import train.model_param_set as params
 
 l_params = [
         "ta1_GBCv1n1000md3_l3_s2000e2009",
