@@ -8,6 +8,7 @@ import json
 import numpy as np
 import pandas as pd
 from sklearn.externals import joblib # to dump model
+import cPickle as pkl
 local_path = os.path.dirname(__file__)
 root = os.path.join(local_path, '..')
 sys.path.append(root)
@@ -32,7 +33,8 @@ def main(argv):
     sym2ta = None
     for each in conf.l_params:
         print each
-        df = joblib.load(os.path.join(each[1], "merged.pkl"))
+        with open(os.path.join(each[1], "merged.pkl")) as f:
+            df = pkl.load(f)
         df.sort_index()
         cls = joblib.load(os.path.join(root, 'data', 'models',"model_" + each[0]+ ".pkl"))
         df = df.query('date >="%s" & date <= "%s"' % (each[3][0], each[3][1])) 

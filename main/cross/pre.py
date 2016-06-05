@@ -6,6 +6,7 @@
 import sys,os
 import numpy as np
 from sklearn.externals import joblib # to dump model
+import cPickle as pkl
 local_path = os.path.dirname(__file__)
 root = os.path.join(local_path, '..')
 sys.path.append(root)
@@ -22,7 +23,8 @@ def main(argv):
         df = df.replace([np.inf,-np.inf],np.nan)\
             .dropna()
         print df.shape
-        joblib.dump(df, os.path.join(model_params.d_dir_ta[ta], "merged.pkl"), compress = 3)
+        with open(os.path.join(model_params.d_dir_ta[ta], "merged.pkl"), 'w') as f:
+            pkl.dump(df, f)
 if __name__ == '__main__':
     main(sys.argv)
 
