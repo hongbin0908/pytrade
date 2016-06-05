@@ -16,13 +16,7 @@ sys.path.append(root)
 sys.path.append(local_path)
 
 import model.modeling as  model
-
-def time_me(fn):
-    def _wrapper(*args, **kwargs):
-        start = time.clock()
-        fn(*args, **kwargs)
-        print "%s cost %s second"%(fn.__name__, time.clock() - start)
-    return _wrapper
+from utils import time_me
 
 def accu(df, label, threshold):
     npPred  = df["pred"].values
@@ -36,7 +30,8 @@ def accu(df, label, threshold):
 def get_df(f):
     #with open(merged_file) as f:
     #    df = pkl.load(f)
-    return joblib.load(f)
+    #return joblib.load(f)
+    return df.read_csv(f)
 
 def main(argv):
     conf_file = argv[1]
