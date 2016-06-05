@@ -23,6 +23,15 @@ l_params = [
 
         "ta1_GBCv1n1000md3_l2_s2000e2009",
         "ta1_GBCv1n1000md3_l1_s2000e2009",
+        "ta1_GBCv1n1000md3_l4_s2000e2009",
+        "ta1_GBCv1n1000md3_l5_s2000e2009",
+        "ta1_GBCv1n1000md3_l6_s2000e2009",
+        "ta1_GBCv1n1000md3_l8_s2000e2009",
+        "ta1_GBCv1n1000md3_l10_s2000e2009",
+        "ta1_GBCv1n1000md3_l15_s2000e2009",
+        "ta1_GBCv1n1000md3_l20_s2000e2009",
+        "ta1_GBCv1n1000md3_l30_s2000e2009",
+        "ta1_GBCv1n1000md3_l60_s2000e2009",
 
         "ta2_GBCv1n1000md3_l3_s2000e2009",
         ]
