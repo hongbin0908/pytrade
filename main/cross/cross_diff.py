@@ -36,7 +36,7 @@ def accu(df, label, threshold):
 def get_df(f):
     #with open(merged_file) as f:
     #    df = pkl.load(f)
-    df = joblib.load(merged_file)
+    df = joblib.load(f)
 
 def main(argv):
     conf_file = argv[1]
