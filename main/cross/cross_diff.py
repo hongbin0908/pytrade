@@ -8,6 +8,7 @@ import json
 import time
 import numpy as np
 import pandas as pd
+import multiprocessing
 from sklearn.externals import joblib # to dump model
 import cPickle as pkl
 local_path = os.path.dirname(__file__)
@@ -37,27 +38,39 @@ def get_df(f):
 def get_range(df, start ,end):
     return df.query('date >="%s" & date <= "%s"' % (start, end)) 
 
+def one_work(cls, ta_dir, label, date_range, th):
+    re =  "%s\t%s\t%s\t%s\t%s\t%f\t" % (cls, ta_dir[-4:], label, date_range[0], date_range[1],th)
+    merged_file = os.path.join(ta_dir, "merged.pkl")
+    df = get_df(merged_file)
+    df = get_range(df, date_range[0], date_range[1])
+    cls = joblib.load(os.path.join(root, 'data', 'models',"model_" + cls + ".pkl"))
+    feat_names = model.get_feat_names(df)
+    npFeat = df.loc[:,feat_names].values
+    npPred = cls.predict_proba(npFeat)[:,1]
+    df["pred"] = npPred
+    dacc =  accu(df, label, th)
+    re += "%f\t%f\t%f" % (dacc["trueInPos"], dacc["pos"], dacc["trueInPos"]*1.0 / dacc["pos"])
+    return re
+
 def main(argv):
-    conf_file = argv[1]
+    pool_num = int(argv[1])
+    conf_file = argv[2]
     impstr = "import %s as conf" % conf_file
     exec impstr
     out_file = os.path.join(root, 'data', "crosses", conf_file+".report")
     fout = open(out_file, 'w')
 
-    dfAll = None
-    sym2ta = None
+
+    pool = multiprocessing.Pool(processes=pool_num)
+    result = []
     for each in conf.l_params:
-        print >> fout, "%s\t%s\t%s\t" % (each[0], each[1][-3:], each[2]),
-        merged_file = os.path.join(each[1], "merged.pkl")
-        df = get_df(merged_file)
-        df = get_range(df, each[3][0], each[3][1])
-        cls = joblib.load(os.path.join(root, 'data', 'models',"model_" + each[0]+ ".pkl"))
-        feat_names = model.get_feat_names(df)
-        npFeat = df.loc[:,feat_names].values
-        npPred = cls.predict_proba(npFeat)[:,1]
-        df["pred"] = npPred
-        dacc =  accu(df, each[2], each[4])
-        print>> fout, dacc["trueInPos"], dacc["pos"], dacc["trueInPos"]*1.0 / dacc["pos"]
+        one_work(*each)
+        #result.append(pool.apply_async(one_work, each ))
+    pool.close()
+    pool.join()
+    for each in result:
+        print >> fout, "%s" % each.get()
+    fout.close()
 
 if __name__ == '__main__':
     main(sys.argv)
