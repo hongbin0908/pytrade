@@ -16,6 +16,7 @@ sys.path.append(local_path)
 
 import model.modeling as  model
 import model.model_param_set as model_params
+from utils import time_me
 
 def get_all_from(path):
     sym2df = {}
@@ -38,17 +39,13 @@ def merge(sym2feats):
             toAppends.append(df)
     # batch merge speeds up!
     dfMerged =  dfMerged.append(toAppends)
-    dfMerged = dfMerged.sort_index()
     return dfMerged
-def time_me(fn):
-    def _wrapper(*args, **kwargs):
-        start = time.clock()
-        fn(*args, **kwargs)
-        print "%s cost %s second"%(fn.__name__, time.clock() - start)
-    return _wrapper
+
 @time_me
 def save(df, f):
-    df.to_csv(f)
+    with open(out_file, 'w') as f:
+        pkl.dump(df, f)
+    #df.to_csv(f)
 def main(argv):
     for ta in model_params.d_dir_ta:
         sym2ta = get_all_from(model_params.d_dir_ta[ta])
