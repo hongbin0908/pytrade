@@ -16,6 +16,13 @@ sys.path.append(local_path)
 
 import model.modeling as  model
 
+def time_me(fn):
+    def _wrapper(*args, **kwargs):
+        start = time.clock()
+        fn(*args, **kwargs)
+        print "%s cost %s second"%(fn.__name__, time.clock() - start)
+    return _wrapper
+
 def accu(df, label, threshold):
     npPred  = df["pred"].values
     npLabel = df[label].values
@@ -23,6 +30,12 @@ def accu(df, label, threshold):
     npTrueInPos = npLabel[(npPred >= threshold) & (npLabel>1.0)]
     npTrue = npLabel[npLabel > 1.0]
     return {"pos": npPos.size, "trueInPos":npTrueInPos.size}
+
+@time_me
+def get_df(f):
+    #with open(merged_file) as f:
+    #    df = pkl.load(f)
+    df = joblib.load(merged_file)
 
 def main(argv):
     conf_file = argv[1]
@@ -34,10 +47,7 @@ def main(argv):
     for each in conf.l_params:
         print each
         merged_file = os.path.join(each[1], "merged.pkl")
-        #with open(merged_file) as f:
-        #    df = pkl.load(f)
-        df = joblib.load(merged_file)
-        df.sort_index()
+        df = get_df(merged_file)
         cls = joblib.load(os.path.join(root, 'data', 'models',"model_" + each[0]+ ".pkl"))
         df = df.query('date >="%s" & date <= "%s"' % (each[3][0], each[3][1])) 
         feat_names = model.get_feat_names(df)
