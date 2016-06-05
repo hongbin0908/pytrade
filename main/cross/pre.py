@@ -43,12 +43,13 @@ def merge(sym2feats):
 
 @time_me
 def save(df, f):
-    if df.shape[0] < 5000000:
-        version = 2
-    else:
-        version = 0
-    with open(f, 'wb') as ff:
-        pkl.dump(df, ff,version)
+    df.save(f)
+    #if df.shape[0] < 5000000:
+    #    version = 2
+    #else:
+    #    version = 0
+    #with open(f, 'wb') as ff:
+    #    pkl.dump(df, ff,version)
     #df.to_csv(f)
 def main(argv):
     for ta in model_params.d_dir_ta:

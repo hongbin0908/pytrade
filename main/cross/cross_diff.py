@@ -34,7 +34,8 @@ def get_df(f):
     #return pd.read_csv(f)
     return df
 
-
+def get_range(df, start ,end):
+    return df.query('date >="%s" & date <= "%s"' % (each[3][0], each[3][1])) 
 def main(argv):
     conf_file = argv[1]
     impstr = "import %s as conf" % conf_file
@@ -46,8 +47,9 @@ def main(argv):
         print each
         merged_file = os.path.join(each[1], "merged.pkl")
         df = get_df(merged_file)
+        df = get_range(df, each[3][0], each[3][1])
         cls = joblib.load(os.path.join(root, 'data', 'models',"model_" + each[0]+ ".pkl"))
-        df = df.query('date >="%s" & date <= "%s"' % (each[3][0], each[3][1])) 
+        
         feat_names = model.get_feat_names(df)
         npFeat = df.loc[:,feat_names].values
         npPred = cls.predict_proba(npFeat)[:,1]
