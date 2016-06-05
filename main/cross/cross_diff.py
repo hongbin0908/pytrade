@@ -28,10 +28,11 @@ def accu(df, label, threshold):
 
 @time_me
 def get_df(f):
-    #with open(merged_file) as f:
-    #    df = pkl.load(f)
+    with open(f) as ff:
+        df = pkl.load(ff)
     #return joblib.load(f)
-    return pd.read_csv(f)
+    #return pd.read_csv(f)
+    return df
 
 
 def main(argv):
