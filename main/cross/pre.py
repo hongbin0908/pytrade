@@ -4,6 +4,7 @@
 #@author  Bin Hong
 
 import sys,os
+import time
 import numpy as np
 import pandas as pd
 from sklearn.externals import joblib # to dump model
@@ -39,6 +40,15 @@ def merge(sym2feats):
     dfMerged =  dfMerged.append(toAppends)
     dfMerged = dfMerged.sort_index()
     return dfMerged
+def time_me(fn):
+    def _wrapper(*args, **kwargs):
+        start = time.clock()
+        fn(*args, **kwargs)
+        print "%s cost %s second"%(fn.__name__, time.clock() - start)
+    return _wrapper
+@time_me
+def save(df, f):
+    df.to_csv(f)
 def main(argv):
     for ta in model_params.d_dir_ta:
         sym2ta = get_all_from(model_params.d_dir_ta[ta])
@@ -50,7 +60,8 @@ def main(argv):
         out_file = os.path.join(model_params.d_dir_ta[ta], "merged.pkl")
         #with open(out_file, 'w') as f:
         #    pkl.dump(df, f)
-        joblib.dump(df, out_file, compress = 3)
+        #joblib.dump(df, out_file, compress = 3)
+        save(df, out_file)
 if __name__ == '__main__':
     main(sys.argv)
 
