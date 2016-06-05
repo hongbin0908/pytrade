@@ -29,6 +29,15 @@ d_label = {
         "l3":'label3',
         "l2":'label2',
         "l1":'label1',
+        "l4":'label4',
+        "l5":'label5',
+        'l6':'label6',
+        'l8':'label8',
+        'l10':'label10',
+        'l15':'label15',
+        'l20':'label20',
+        'l30':'label30',
+        'l60':'label60',
         }
 d_date_range = {
         "s2000e2009":("2000-01-01", '2009-12-31'),
