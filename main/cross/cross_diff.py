@@ -33,8 +33,10 @@ def main(argv):
     sym2ta = None
     for each in conf.l_params:
         print each
-        with open(os.path.join(each[1], "merged.pkl")) as f:
-            df = pkl.load(f)
+        merged_file = os.path.join(each[1], "merged.pkl")
+        #with open(merged_file) as f:
+        #    df = pkl.load(f)
+        df = joblib.load(merge_file)
         df.sort_index()
         cls = joblib.load(os.path.join(root, 'data', 'models',"model_" + each[0]+ ".pkl"))
         df = df.query('date >="%s" & date <= "%s"' % (each[3][0], each[3][1])) 
