@@ -83,6 +83,7 @@ def merge(sym2feats, start ,end):
             toAppends.append(df)
     # batch merge speeds up!
     dfMerged =  dfMerged.append(toAppends)
+    dfMerged = dfMerged.sort_index()
     return dfMerged
 
 

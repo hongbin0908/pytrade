@@ -183,6 +183,6 @@ def main4():
         df.to_csv(os.path.join(dir_out, symbol + ".csv"))
 if __name__ == '__main__':
     #main3()
-    #main1(sys.argv)
+    main1(sys.argv)
     main2(sys.argv)
     #main4()

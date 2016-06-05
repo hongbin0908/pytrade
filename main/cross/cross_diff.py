@@ -5,6 +5,8 @@
 
 import sys,os
 import json
+import numpy as np
+import pandas as pd
 from sklearn.externals import joblib # to dump model
 local_path = os.path.dirname(__file__)
 root = os.path.join(local_path, '..')
@@ -30,9 +32,10 @@ def main(argv):
     sym2ta = None
     for each in conf.l_params:
         print each
-        sym2ta = model.get_all_from(each[1])
+        df = pd.read_csv(os.path.join(each[1], "merge", "merged.csv"))
         cls = joblib.load(os.path.join(root, 'data', 'models',"model_" + each[0]+ ".pkl"))
-        df = model.build_trains(sym2ta, each[3][0], each[3][1])
+        df = df[ (df["date"] >= each[3][0]) & (df["date"] <= each[3][1]) ]
+        print df.shape
         feat_names = model.get_feat_names(df)
         npFeat = df.loc[:,feat_names].values
         df["pred"] = cls.predict_proba(npFeat)[:,1]

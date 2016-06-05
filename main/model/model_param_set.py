@@ -9,6 +9,7 @@ local_path = os.path.dirname(__file__)
 root = os.path.join(local_path, '..')
 sys.path.append(root)
 
+
 d_dir_ta =  {
     "ta1":os.path.join(root, "data", 'ta1'),
     "ta2":os.path.join(root, "data", 'ta2'),
