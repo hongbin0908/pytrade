@@ -107,18 +107,13 @@ def main1(argv):
          os.path.join(root, 'data', 'ta1')
         )
 
-def main2():
-    for each in get_file_list(os.path.join(local_path, '..', 'data', 'yeod')):
-        symbol = get_stock_from_path(each)
-        df = get_eod(each)
-        if df is None:
-            continue
-        df = ta.call2(df)
-        df = judge(df)
-        dir_out = os.path.join(root, 'data', 'ta2')
-        if not os.path.isdir(dir_out):
-            os.mkdir(dir_out)
-        df.to_csv(os.path.join(dir_out, symbol + ".csv"))
+def main2(argv):
+    work(int(argv[1]),
+         os.path.join(root, 'data', 'yeod_full'),
+         "call_all",
+         os.path.join(root, 'data', 'ta2')
+        )
+
 
 def main3():
     l = get_file_list(os.path.join(local_path, '..', 'data', 'yeod_full')); l.sort()
@@ -188,6 +183,6 @@ def main4():
         df.to_csv(os.path.join(dir_out, symbol + ".csv"))
 if __name__ == '__main__':
     #main3()
-    main1(sys.argv)
-    #main2()
+    #main1(sys.argv)
+    main2(sys.argv)
     #main4()

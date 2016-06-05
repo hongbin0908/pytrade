@@ -24,35 +24,20 @@ def accu(df, label, threshold):
 def main(argv):
     conf_file = argv[1]
     impstr = "import %s as conf" % conf_file
-    print impstr
     exec impstr
 
     dfAll = None
+    sym2ta = None
     for each in conf.l_params:
         print each
-        cls = joblib.load(os.path.join(root, 'data', 'models',"model_" + each[0]+ ".pkl"))
         sym2ta = model.get_all_from(each[1])
+        cls = joblib.load(os.path.join(root, 'data', 'models',"model_" + each[0]+ ".pkl"))
         df = model.build_trains(sym2ta, each[3][0], each[3][1])
         feat_names = model.get_feat_names(df)
         npFeat = df.loc[:,feat_names].values
         df["pred"] = cls.predict_proba(npFeat)[:,1]
-        if dfAll is None:
-            dfAll = df
-        else:
-            dfAll = dfAll.append(df)
-    dfAll.to_csv(os.path.join(root, 'data', 'crosses', conf_file+ ".csv"))
-    dacc =  accu(dfAll, each[2], 0.0)
-    print dacc["trueInPos"], dacc["pos"], dacc["trueInPos"]*1.0 / dacc["pos"]
-    dacc =  accu(dfAll, each[2], 0.5)
-    print dacc["trueInPos"], dacc["pos"], dacc["trueInPos"]*1.0 / dacc["pos"]
-    dacc =  accu(dfAll, each[2], 0.6)
-    print dacc["trueInPos"], dacc["pos"], dacc["trueInPos"]*1.0 / dacc["pos"]
-    dacc =  accu(dfAll, each[2], 0.7)
-    print dacc["trueInPos"], dacc["pos"], dacc["trueInPos"]*1.0 / dacc["pos"]
-    dacc =  accu(dfAll, each[2], 0.8)
-    print dacc["trueInPos"], dacc["pos"], dacc["trueInPos"]*1.0 / dacc["pos"]
-    #with open(os.path.join(root, "data", "crosses", conf_file + ".acc"), 'w') as fresult:
-    #    print >> fresult, json.dumps(dacc)
+        dacc =  accu(df, each[2], each[4])
+        print dacc["trueInPos"], dacc["pos"], dacc["trueInPos"]*1.0 / dacc["pos"]
 
 if __name__ == '__main__':
     main(sys.argv)

@@ -9,7 +9,10 @@ local_path = os.path.dirname(__file__)
 root = os.path.join(local_path, '..')
 sys.path.append(root)
 
-d_dir_ta =  {"ta1":os.path.join(root, "data", 'ta1')}
+d_dir_ta =  {
+    "ta1":os.path.join(root, "data", 'ta1'),
+    "ta2":os.path.join(root, "data", 'ta2'),
+    }
 d_model = {
         "GBCv1n500md3":GradientBoostingClassifier(**{'verbose':1,'n_estimators':500, 'max_depth':3}),
         "GBCv1n1000md3":GradientBoostingClassifier(**{'verbose':1,'n_estimators':1000, 'max_depth':3}),

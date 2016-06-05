@@ -23,4 +23,6 @@ l_params = [
 
         "ta1_GBCv1n1000md3_l2_s2000e2009",
         "ta1_GBCv1n1000md3_l1_s2000e2009",
+
+        "ta2_GBCv1n1000md3_l3_s2000e2009",
         ]
