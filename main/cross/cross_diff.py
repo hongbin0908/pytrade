@@ -26,6 +26,7 @@ def accu(df, label, threshold):
     npTrue = npLabel[npLabel > 1.0]
     return {"pos": npPos.size, "trueInPos":npTrueInPos.size}
 
+@time_me
 def get_df(f):
     with open(f, "rb") as ff:
         df = pkl.load(ff)
@@ -35,6 +36,7 @@ def get_df(f):
 
 def get_range(df, start ,end):
     return df.query('date >="%s" & date <= "%s"' % (start, end)) 
+
 def main(argv):
     conf_file = argv[1]
     impstr = "import %s as conf" % conf_file
@@ -45,7 +47,7 @@ def main(argv):
     dfAll = None
     sym2ta = None
     for each in conf.l_params:
-        print >> fout, each,
+        print >> fout, "%s\t%s\t%s\t" % (each[0], each[1][-3:], each[2]),
         merged_file = os.path.join(each[1], "merged.pkl")
         df = get_df(merged_file)
         df = get_range(df, each[3][0], each[3][1])
