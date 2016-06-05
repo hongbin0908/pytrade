@@ -31,7 +31,8 @@ def get_df(f):
     #with open(merged_file) as f:
     #    df = pkl.load(f)
     #return joblib.load(f)
-    return df.read_csv(f)
+    return pd.read_csv(f)
+
 
 def main(argv):
     conf_file = argv[1]
