@@ -44,7 +44,7 @@ def merge(sym2feats):
 @time_me
 def save(df, f):
     with open(f, 'w') as ff:
-        pkl.dump(df, ff)
+        pkl.dump(df, ff,-1)
     #df.to_csv(f)
 def main(argv):
     for ta in model_params.d_dir_ta:
