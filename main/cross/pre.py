@@ -41,6 +41,7 @@ def merge(sym2feats):
     dfMerged =  dfMerged.append(toAppends)
     return dfMerged
 
+@time_me
 def save(df, f):
     with open(f, 'wb') as ff:
         pkl.dump(df, ff,1)

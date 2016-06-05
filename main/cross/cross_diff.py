@@ -26,6 +26,7 @@ def accu(df, label, threshold):
     npTrue = npLabel[npLabel > 1.0]
     return {"pos": npPos.size, "trueInPos":npTrueInPos.size}
 
+@time_me
 def get_df(f):
     with open(f) as ff:
         df = pkl.load(ff)
