@@ -64,8 +64,8 @@ def main(argv):
     pool = multiprocessing.Pool(processes=pool_num)
     result = []
     for each in conf.l_params:
-        one_work(*each)
-        #result.append(pool.apply_async(one_work, each ))
+        #one_work(*each)
+        result.append(pool.apply_async(one_work, each ))
     pool.close()
     pool.join()
     for each in result:
