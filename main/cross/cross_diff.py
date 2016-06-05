@@ -34,6 +34,7 @@ def get_df(f):
     #return pd.read_csv(f)
     return df
 
+@time_me
 def get_range(df, start ,end):
     return df.query('date >="%s" & date <= "%s"' % (start, end)) 
 def main(argv):
