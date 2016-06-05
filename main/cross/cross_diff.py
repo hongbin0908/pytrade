@@ -35,7 +35,7 @@ def get_df(f):
     return df
 
 def get_range(df, start ,end):
-    return df.query('date >="%s" & date <= "%s"' % (each[3][0], each[3][1])) 
+    return df.query('date >="%s" & date <= "%s"' % (start, end) 
 def main(argv):
     conf_file = argv[1]
     impstr = "import %s as conf" % conf_file
