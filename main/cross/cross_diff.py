@@ -32,13 +32,14 @@ def main(argv):
     sym2ta = None
     for each in conf.l_params:
         print each
-        df = pd.read_csv(os.path.join(each[1], "merge", "merged.csv"))
+        df = joblib.load(os.path.join(each[1], "merged.pkl"))
+        df.sort_index()
         cls = joblib.load(os.path.join(root, 'data', 'models',"model_" + each[0]+ ".pkl"))
-        df = df[ (df["date"] >= each[3][0]) & (df["date"] <= each[3][1]) ]
-        print df.shape
+        df = df.query('date >="%s" & date <= "%s"' % (each[3][0], each[3][1])) 
         feat_names = model.get_feat_names(df)
         npFeat = df.loc[:,feat_names].values
-        df["pred"] = cls.predict_proba(npFeat)[:,1]
+        npPred = cls.predict_proba(npFeat)[:,1]
+        df["pred"] = npPred
         dacc =  accu(df, each[2], each[4])
         print dacc["trueInPos"], dacc["pos"], dacc["trueInPos"]*1.0 / dacc["pos"]
 
