@@ -38,6 +38,7 @@ def get_df(f):
 def get_range(df, start ,end):
     return df.query('date >="%s" & date <= "%s"' % (start, end)) 
 
+@time_me
 def one_work(cls, ta_dir, label, date_range, th):
     re =  "%s\t%s\t%s\t%s\t%s\t%f\t" % (cls, ta_dir[-4:], label, date_range[0], date_range[1],th)
     merged_file = os.path.join(ta_dir, "merged.pkl")
@@ -49,7 +50,11 @@ def one_work(cls, ta_dir, label, date_range, th):
     npPred = cls.predict_proba(npFeat)[:,1]
     df["pred"] = npPred
     dacc =  accu(df, label, th)
-    re += "%f\t%f\t%f" % (dacc["trueInPos"], dacc["pos"], dacc["trueInPos"]*1.0 / dacc["pos"])
+    re += "%d\t%d\t" % (dacc["trueInPos"], dacc["pos"])
+    if dacc["pos"] > 0:
+        re += "%f" % (dacc["trueInPos"]*1.0 / dacc["pos"])
+    else :
+        re += "0.0"
     return re
 
 def main(argv):
@@ -66,10 +71,11 @@ def main(argv):
     for each in conf.l_params:
         #one_work(*each)
         result.append(pool.apply_async(one_work, each ))
-    pool.close()
-    pool.join()
+    #pool.close()
+    #pool.join()
     for each in result:
         print >> fout, "%s" % each.get()
+        print each , "done!"
     fout.close()
 
 if __name__ == '__main__':
