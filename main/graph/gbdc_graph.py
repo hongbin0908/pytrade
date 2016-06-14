@@ -32,10 +32,11 @@ def main(argv):
     mkdir_p(out_dir)
     dot_data = StringIO()
     for estimator in cls.estimators_:
+        dotfile = os.path.join(out_dir, '%d.dot' % idx)
         export_graphviz(estimator[0], out_file=os.path.join(out_dir, '%d.dot' % idx))
-        #graph = pydot.graph_from_dot_data(dot_data.getvalue())
-        #print graph
-        #graph[0].write_pdf(os.path.join(out_dir, "%d.png" % idx))
+        graph = pydot.graph_from_dot_file(dotfile)
+        print graph
+        graph.write_pdf(os.path.join(out_dir, "%d.png" % idx))
         idx += 1
 if __name__ == '__main__':
     main(sys.argv)
