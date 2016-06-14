@@ -53,7 +53,6 @@ def main(argv):
     print dacc["trueInPos"], dacc["pos"], dacc["trueInPos"]*1.0 / dacc["pos"]
     #with open(os.path.join(root, "data", "crosses", conf_file + ".acc"), 'w') as fresult:
     #    print >> fresult, json.dumps(dacc)
-
 if __name__ == '__main__':
     main(sys.argv)
     

@@ -21,6 +21,6 @@ def get_sp500():
     return symbols  
 
 def main(argv):
-    engine.work(get_sp500(), get_data_root(), sys.argv[1])
+    return engine.work(get_sp500(), get_data_root(), argv[1])
 if __name__ == '__main__':
     main(sys.argv)

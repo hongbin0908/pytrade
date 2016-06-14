@@ -87,6 +87,19 @@ def atr(df, timeperiod = 14):
 def natr(df, timeperiod = 14):
     """
     Normalized Average True Range (Volatility Indicators)
+    
+    DESCRIPTION
+    
+    Normalized Average True Range (NATR) attempts
+    to normalize the average true range values across instruments by
+     using the formula below.
+    
+    FORMULA
+    
+    NATR = ATR(n) / Close * 100
+    
+    Where: ATR(n) = Average True Range over 'n'
+    periods
     """
     df["ta_natr_" + str(timeperiod)] = talib.NATR(df.high.values, df.low.values, df.close.values, timeperiod)
     return df

@@ -13,6 +13,8 @@ local_path = os.path.dirname(__file__)
 root = os.path.join(local_path, '..')
 sys.path.append(root)
 sys.path.append(local_path)
+import model.modeling as  model
+from utils import time_me
 
 def get_all_from(path):
     sym2df = {}
@@ -37,9 +39,18 @@ def merge(sym2feats):
     dfMerged =  dfMerged.append(toAppends)
     return dfMerged
 
+@time_me
 def save(df, f):
+    df.to_hdf(f, "df", format='table', complevel=9, complib='lzo')
+    return
+    store=pd.HDFStore(f,"w", complevel=9, complib='zlib')
+    store.put("df", df, format="table", append=False)
+    store.close()
+    return 
+    df.to_pickle(f)
+    return
     if df.shape[0] < 5000000:
-        version = 2
+        version = 0
     else:
         version = 0
     with open(f, 'wb') as ff:
@@ -51,6 +62,8 @@ def main(argv):
     taName = argv[1]
     sym2ta = get_all_from(os.path.join(root, 'data', taName))
     df = merge(sym2ta)
+    df = df[df['ta_natr_14']  > 1.0]
+    print df.shape
     out_file = os.path.join(root, 'data', taName, "merged_wth_na.pkl")
     save(df, out_file)
 

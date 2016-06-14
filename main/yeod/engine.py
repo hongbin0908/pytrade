@@ -58,4 +58,4 @@ def work(syms,data_dir, processes):
     for each in result:
         if result[each] > 0: succ += 1
         else: fail += 1
-    return succ, fail
+    return fail

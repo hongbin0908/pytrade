@@ -46,6 +46,8 @@ def judge(df):
     return df
 
 def filter(df):
+    return False
+
     mean =  np.max(np.abs((df.tail(11)["label1"].head(10).values - 1)))
     if mean < 0.01:
         return True
@@ -95,6 +97,7 @@ def work(pool_num, dir_data, func, dir_out):
     result = []
     for each in get_file_list(dir_data):
         result.append(pool.apply_async(_one_work, (each, func, dir_out)))
+        #_one_work(each, func, dir_out)
     pool.close()
     pool.join()
     for each in result:
@@ -112,6 +115,18 @@ def main2(argv):
          os.path.join(root, 'data', 'yeod_full'),
          "call_all",
          os.path.join(root, 'data', 'ta2')
+        )
+def main_dow(argv):
+    work(int(argv[1]),
+         os.path.join(root, 'data', 'eod_dow'),
+         "call_all",
+         os.path.join(root, 'data', 'ta_dow')
+        )
+def main_tech(argv):
+    work(int(argv[1]),
+         os.path.join(root, 'data', 'yeod_tech'),
+         "call_all",
+         os.path.join(root, 'data', 'tatech')
         )
 
 
@@ -182,7 +197,8 @@ def main4():
             os.mkdir(dir_out)
         df.to_csv(os.path.join(dir_out, symbol + ".csv"))
 if __name__ == '__main__':
-    #main3()
-    main1(sys.argv)
+    main_tech(sys.argv)
+    #main_dow(sys.argv)
+    #main1(sys.argv)
     #main2(sys.argv)
     #main4()

@@ -27,10 +27,15 @@ def accu(df, label, threshold):
     npTrue = npLabel[npLabel > 1.0]
     return {"pos": npPos.size, "trueInPos":npTrueInPos.size}
 
+def filter_(df):
+    df = df[df['ta_natr_14']  > 1.0]
+    return df
+
 @time_me
 def get_df(f):
-    with open(f, "rb") as ff:
-        df = pkl.load(ff)
+    return pd.read_hdf(f, 'df')
+    #with open(f, "rb") as ff:
+    #    df = pkl.load(ff)
     #return joblib.load(f)
     #return pd.read_csv(f)
     return df
@@ -42,7 +47,7 @@ def get_range(df, start ,end):
 def one_work(cls, ta_dir, label, date_range, th):
     re =  "%s\t%s\t%s\t%s\t%s\t%f\t" % (cls, ta_dir[-4:], label, date_range[0], date_range[1],th)
     merged_file = os.path.join(ta_dir, "merged.pkl")
-    df = get_df(merged_file)
+    df = filter_(get_df(merged_file))
     df = get_range(df, date_range[0], date_range[1])
     cls = joblib.load(os.path.join(root, 'data', 'models',"model_" + cls + ".pkl"))
     feat_names = model.get_feat_names(df)

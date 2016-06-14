@@ -45,7 +45,7 @@ def merge(sym2feats):
 def save(df, f):
 
     if df.shape[0] < 5000000:
-        version = 2
+        version = 0
     else:
         version = 0
     with open(f, 'wb') as ff:
