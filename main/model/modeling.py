@@ -85,7 +85,6 @@ def merge(sym2feats, start ,end):
     dfMerged = dfMerged.sort_index()
     return dfMerged
 
-
 def one_work(name, dir_ta, model, label, date_range):
     if os.path.isfile(os.path.join(root, 'data', 'models', "model_%s.pkl" % name)):
         print "%s already exists!" % name

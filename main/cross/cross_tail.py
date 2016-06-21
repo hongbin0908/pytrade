@@ -27,7 +27,8 @@ def accu(df, label, threshold):
     npPred = df2["pred"].values
     npLabel = df2[label].values
     npTrueInPos = npLabel[npLabel>1.0]
-    return {"pos": npLabel.size, "trueInPos":npTrueInPos.size}
+    res = {"rate":df2["pred"].values[-1], "pos": npLabel.size, "trueInPos":npTrueInPos.size}
+    return res
 
 def filter_(df):
     df = df[df['ta_natr_14']  > 1.0]
@@ -58,14 +59,18 @@ def one_work(cls, ta_dir, label, date_range, th):
     cls = joblib.load(os.path.join(root, 'data', 'models',"model_" + cls + ".pkl"))
     feat_names = model.get_feat_names(df)
     npFeat = df.loc[:,feat_names].values
-    npPred = cls.predict_proba(npFeat)[:,1]
-    df["pred"] = npPred
-    dacc =  accu(df, label, th)
-    re += "%d\t%d\t" % (dacc["trueInPos"], dacc["pos"])
+    for i, npPred in enumerate(cls.staged_predict_proba(npFeat)):
+        if i == 540:
+            break
+    #npPred = cls.predict_proba(npFeat)
+    df["pred"] = npPred[:,1]
+    dacc = accu(df, label, th)
+    re += "%f\t%d\t%d\t" % (dacc["rate"],dacc["trueInPos"], dacc["pos"])
     if dacc["pos"] > 0:
         re += "%f" % (dacc["trueInPos"]*1.0 / dacc["pos"])
     else :
         re += "0.0"
+    print re
     return re
 
 def main(argv):

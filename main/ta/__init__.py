@@ -1357,6 +1357,104 @@ def call_all(df):
     df = trange(df)
     return df
 
+def call_ta1s2(df):
+    df =call_all(df)
+    talist = ["open", "high", "low", "close", "volume"]
+
+    with open(os.path.join(root, "data", "models", "model_ta1_GBCv1n400md3lr001_l5_s2000e2009_importance"), 'r') as f:
+        lines = f.readlines()
+        for i in range(0, 10):
+            talist.append(lines[i].split(",")[0].strip())
+    df = df[talist]
+    return df
+def call_ta1s3(df):
+    df =call_all(df)
+    talist = ["open", "high", "low", "close", "volume"]
+
+    with open(os.path.join(root, "data", "models", "model_ta1_GBCv1n400md3lr001_l5_s2000e2009_importance"), 'r') as f:
+        lines = f.readlines()
+        for i in range(0, 30):
+            talist.append(lines[i].split(",")[0].strip())
+    df = df[talist]
+    return df
+
+def call_ta1s4(df):
+    df =call_all(df)
+    talist = ["open", "high", "low", "close", "volume"]
+
+    with open(os.path.join(root, "data", "models", "model_ta1_GBCv1n400md3lr001_l5_s2000e2009_importance"), 'r') as f:
+        lines = f.readlines()
+        for i in range(0, 30):
+            talist.append(lines[i].split(",")[0].strip())
+    df = df[talist]
+    del df["ta_natr_14"]
+    del df["ta_atr_14"]
+    for i  in range(7, 22):
+        df = atr(df, timeperiod = i)
+        df = natr(df, timeperiod = i)
+    return df
+
+def call_ta1s5(df):
+    df =call_all(df)
+    talist = ["open", "high", "low", "close", "volume"]
+
+    with open(os.path.join(root, "data", "models", "model_ta1_GBCv1n400md3lr001_l5_s2000e2009_importance"), 'r') as f:
+        lines = f.readlines()
+        for i in range(0, 30):
+            talist.append(lines[i].split(",")[0].strip())
+    df = df[talist]
+    for i  in range(7, 22):
+        if i == 14:
+            continue
+        df = adx(df, timeperiod = i)
+    return df
+
+def call_ta1s6(df):
+    df =call_all(df)
+    talist = ["open", "high", "low", "close", "volume"]
+
+    with open(os.path.join(root, "data", "models", "model_ta1_GBCv1n400md3lr001_l5_s2000e2009_importance"), 'r') as f:
+        lines = f.readlines()
+        for i in range(0, 30):
+            talist.append(lines[i].split(",")[0].strip())
+    df = df[talist]
+    del df["ta_atr_14"]
+    return df
+
+def call_ta1s1(df):
+    df = call_all(df)
+    talist = ["open", "high", "low", "close", "volume",
+             "ta_natr_14","ta_atr_14",
+             "ta_diff_close_0_1",
+             "ta_ad",
+             "ta_obv",
+             "ta_apo_12_26_0",
+             "ta_diff_close_13_1",
+             "ta_diff_close_6_1", 
+             "ta_adsoc",
+             "ta_diff_close_7_1",
+             "ta_diff_close_1_1",
+             "ta_diff_close_8_1",
+             "ta_mdi_14",
+             "ta_pdi_14",
+             "ta_diff_ta_pdi_14_9_1",
+             "ta_diff_ta_pdi_14_1_1",
+             "ta_diff_ta_pdi_14_0_1",
+             "ta_adx_14",
+             "ta_adxr_14",
+             "ta_diff_close_12_1",
+             "ta_diff_ta_pdi_14_4_1",
+             "ta_diff_close_5_1",
+             "ta_diff_close_9_1",
+             "ta_diff_close_4_1",
+             "ta_diff_close_3_1",
+             "ta_diff_close_2_1",
+             "ta_diff_ta_mdi_14_7_1",
+             "ta_diff_close_11_1",
+             "ta_diff_ta_pdi_14_8_1",
+             "ta_diff_close_10_1"]
+    df = df[talist]
+    return df
 def call2(df):
     df = cdl(df)
     return df

@@ -13,10 +13,10 @@ from pred import pred
 
 def main(argv):
     sp500.main(["",10])
-    assert 0 == sp500.main(["",10])
-    tabuild.main1(["",10])
-    tamerge.main(["", "ta1"])
-    pred.main(["","ta1_GBCv1n1000md3lr001_l5_s2000e2009", "ta1", "2016-06-13" ])
+    assert 0 == sp500.main(["",1])
+    #tabuild.main1(["",10])
+    #tamerge.main(["", "ta1s4"])
+    pred.main(["","ta1s4_GBCv1n320md3lr001_l5_s2000e2009", "ta1s4", "2016-06-17" ])
     
 if __name__ == '__main__':
     main(sys.argv)
