@@ -41,7 +41,7 @@ def merge(sym2feats):
 
 @time_me
 def save(df, f):
-    df.to_hdf(f, "df", format='table', complevel=9, complib='lzo')
+    df.to_pickle(f)
     return
     store=pd.HDFStore(f,"w", complevel=9, complib='zlib')
     store.put("df", df, format="table", append=False)

@@ -18,7 +18,9 @@ root = os.path.join(local_path, '..')
 sys.path.append(root)
 sys.path.append(local_path)
 
+import model.modeling as  model
 import pred.pred as pred
+
 def mkdir_p(path):
     try:
         os.makedirs(path)
@@ -31,12 +33,16 @@ def main(argv):
     out_dir = os.path.join(root, 'data', 'graph',  "clsName")
     mkdir_p(out_dir)
     dot_data = StringIO()
+    ta = pd.read_csv(os.path.join(root, 'data', 'ta1', 'AA.csv'))
+    names = model.get_feat_names(ta)
+
     for estimator in cls.estimators_:
         dotfile = os.path.join(out_dir, '%d.dot' % idx)
-        export_graphviz(estimator[0], out_file=os.path.join(out_dir, '%d.dot' % idx))
+        export_graphviz(estimator[0], feature_names = names, out_file=os.path.join(out_dir, '%d.dot' % idx))
         graph = pydot.graph_from_dot_file(dotfile)
         print graph
-        graph.write_pdf(os.path.join(out_dir, "%d.png" % idx))
+        graph.write_pdf(os.path.join(out_dir, "%d.pdf" % idx))
+        #Image(graph.create_png())
         idx += 1
 if __name__ == '__main__':
     main(sys.argv)
