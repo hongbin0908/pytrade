@@ -27,9 +27,10 @@ def get_cls(clsName):
     cls = joblib.load(os.path.join(root, 'data', 'models',"model_" + clsName + ".pkl"))
     #print cls
     return cls
-def select_(dfTa, top, start, end):
+def select_(dfTa, top, thresh, start, end):
     dfTa = dfTa.loc[dfTa['date'] >= start]
     dfTa = dfTa.loc[dfTa['date'] <= end]
+    dfTa = dfTa.loc[dfTa['pred'] >= thresh]
     #print dfTa.head()
     dfTa = dfTa.sort_values(["date", "pred"],ascending = False)
     dfTa = dfTa.groupby('date').head(top)
@@ -51,6 +52,7 @@ def main(argv):
     start = argv[3]
     end = argv[4]
     top = argv[5]
+    thresh = float(argv[6])
     dfTa = get_df(taName)
     cls = get_cls(clsName)
     feat_names = model.get_feat_names(dfTa)
@@ -58,7 +60,7 @@ def main(argv):
     npPred = cls.predict_proba(npFeat)[:,1]
     dfTa["pred"] = npPred
 
-    accu(select_(dfTa, int(top), start, end), "label5")
+    accu(select_(dfTa, int(top), thresh, start, end), "label5")
 
 
 
