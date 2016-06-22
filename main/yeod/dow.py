@@ -9,7 +9,7 @@ sys.path.append(os.path.join(root,'..'))
 from main.yeod import engine
 
 def get_data_root():
-    data_root = os.path.join(root, "data", 'dow')
+    data_root = os.path.join(root, "data", 'eod', 'dow')
     if not os.path.exists(data_root):
         os.makedirs(data_root)
     return data_root

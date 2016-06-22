@@ -18,7 +18,7 @@ import model.modeling as  model
 
 def get_df(taName):
     filePath = os.path.join(root, 'data', taName, "merged.pkl")
-    dfTa = pd.read_hdf(filePath)
+    dfTa = pd.read_pickle(filePath)
     #print "index: ", dfTa.index
     #print "columns: ", dfTa.columns
     return dfTa

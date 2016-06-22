@@ -13,10 +13,10 @@ sys.path.append(root)
 
 import ta
 
-def get_file_list(rootdir):    
+def get_file_list(rootdir):
     file_list = []
-    for f in os.listdir(rootdir):   
-        if f == None or not f.endswith(".csv"): 
+    for f in os.listdir(rootdir):
+        if f == None or not f.endswith(".csv"):
             continue
         file_list.append(os.path.join(rootdir, f))
     return file_list
@@ -31,18 +31,8 @@ def _judge(df, window):
     return df 
 
 def judge(df):
-    df = _judge(df, 1)
-    df = _judge(df, 2)
-    df = _judge(df, 3)
-    df = _judge(df, 4)
-    df = _judge(df, 5)
-    df = _judge(df, 6)
-    df = _judge(df, 8)
-    df = _judge(df, 10)
-    df = _judge(df, 15)
-    df = _judge(df, 20)
-    df = _judge(df, 30)
-    df = _judge(df, 60)
+    for i in range(1, 52):
+        df = _judge(df, i)
     return df
 
 def filter(df):
@@ -65,17 +55,12 @@ def get_pd(symbol):
 
 
 def get_eod(symbol):
-    names = ["date", 'open', 'high', 'low', 'close', 'volume', 'adjclose']
-    df = pd.read_csv(symbol, \
-            header = None, names = names, \
-            dtype = {"volume":np.float64}, \
-            skiprows=1, index_col = 'date', parse_dates=True).sort_index()
-    
+    df = pd.read_csv(symbol)
     if df["volume"].mean() < 10000:
         return None
     if df["close"].mean() < 10:
         return None
-
+    print df.head()
     return df[df["volume"]>0]
 
 def _one_work(eod, func, dir_out):
@@ -96,13 +81,18 @@ def work(pool_num, dir_data, func, dir_out):
     pool = multiprocessing.Pool(processes=pool_num)
     result = []
     for each in get_file_list(dir_data):
-        result.append(pool.apply_async(_one_work, (each, func, dir_out)))
-        #_one_work(each, func, dir_out)
+        #result.append(pool.apply_async(_one_work, (each, func, dir_out)))
+        _one_work(each, func, dir_out)
     pool.close()
     pool.join()
     for each in result:
         print each.get()
 
+def main_reg_dow_call1(argv):
+    work(int(argv[1]),
+         os.path.join(root, 'data','reg','dow'),
+         'call1',
+         os.path.join(root, 'data', 'ta', 'dowcall1'))
 def main1(argv):
     work(int(argv[1]),
          os.path.join(root, 'data', 'yeod'),
@@ -167,6 +157,14 @@ def main_dow(argv):
          "call_all",
          os.path.join(root, 'data', 'tadow')
         )
+
+def main_dows6(argv):
+    work(int(argv[1]),
+         os.path.join(root, 'data', 'dow'),
+         "call_ta1s6",
+         os.path.join(root, 'data', 'tadows6')
+        )
+
 def main_tech(argv):
     work(int(argv[1]),
          os.path.join(root, 'data', 'yeod_tech'),
@@ -246,7 +244,7 @@ if __name__ == '__main__':
     #main_ta1s5(sys.argv)
     #main_ta1s6(sys.argv)
     #main_tech(sys.argv)
-    main_dow(sys.argv)
+    main_reg_dow_call1(sys.argv)
     #main1(sys.argv)
     #main2(sys.argv)
     #main4()

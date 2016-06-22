@@ -8,7 +8,6 @@ import json
 import time
 import numpy as np
 import pandas as pd
-import multiprocessing
 from sklearn.externals import joblib # to dump model
 import cPickle as pkl
 local_path = os.path.dirname(__file__)
@@ -38,7 +37,7 @@ cache = {}
 def get_df(f):
     if f in cache:
         return cache[f]
-    df =  pd.read_hdf(f, 'df')
+    df =  pd.read_pickle(f)
     cache[f] = df
     #with open(f, "rb") as ff:
     #    df = pkl.load(ff)
@@ -61,8 +60,8 @@ def one_work(cls, ta_dir, label, date_range, th):
     #prent npPred
     res = ""
     for i, npPred in enumerate(m.staged_predict_proba(npFeat)):
-        if i % 10 != 0:
-            continue
+        #if i % 1 != 0:
+        #    continue
         re =  "%s\t%s\t%s\t%s\t%s\t%f\t" % (cls, ta_dir[-4:], label, date_range[0], date_range[1],th)
         df["pred"] = npPred[:,1]
         dacc =  accu(df, label, th)
@@ -77,24 +76,14 @@ def one_work(cls, ta_dir, label, date_range, th):
     return re
 
 def main(argv):
-    pool_num = int(argv[1])
-    conf_file = argv[2]
+    conf_file = argv[1]
     impstr = "import %s as conf" % conf_file
     exec impstr
     out_file = os.path.join(root, 'data', "crosses", conf_file+".report")
     fout = open(out_file, 'w')
 
-
-    pool = multiprocessing.Pool(processes=pool_num)
-    result = []
-    for each in conf.l_params:
-        #one_work(*each)
-        result.append(pool.apply_async(one_work, each ))
-    #pool.close()
-    #pool.join()
-    for each in result:
-        print >> fout, "%s" % each.get()
-        print each , "done!"
+    res = one_work(*conf.params)
+    print >> fout, "%s" % res
     fout.close()
 
 if __name__ == '__main__':

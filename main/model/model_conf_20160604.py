@@ -46,6 +46,10 @@ l_params = [
         "ta1s3_GBCv1n300md3lr001_l5_s2000e2009",
 
         "tadow_GBCv1n400md3lr001_l5_s2000e2009",
+        "tadow_GBCv1n400md3lr001_l10_s2000e2009",
+        "tadow_GBCv1n400md3lr001_l10_s2000e2009",
+        "tadow_GBCv1n400md3lr001_l5_s1700e2009",
+
 
         "ta1s4_GBCv1n500md3lr001_l5_s2000e2009",
         "ta1s4_GBCv1n320md3lr001_l5_s2000e2009",
