@@ -64,12 +64,12 @@ def main(argv):
     df = merge(sym2ta)
     df = df[df['ta_NATR_14']  > 1.0]
     print df.shape
-    out_file = os.path.join(root, 'data', taName, "merged_wth_na.pkl")
+    out_file = os.path.join(root, 'data', 'ta', taName, "merged_wth_na.pkl")
     save(df, out_file)
 
     df = df.replace([np.inf,-np.inf],np.nan)\
         .dropna()
-    out_file = os.path.join(root, 'data', taName, "merged.pkl")
+    out_file = os.path.join(root, 'data', 'ta', taName, "merged.pkl")
     save(df, out_file)
 
 if __name__ == '__main__':
