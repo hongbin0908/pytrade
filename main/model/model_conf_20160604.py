@@ -10,6 +10,11 @@ sys.path.append(root)
 
 
 l_params = [
+
+        "tadowcall1_GBCv1n1000md3lr001_l5_s2000e2009",
+        "tadowcall1_GBCv1n1000md3lr001_l10_s2000e2009",
+        "tadowcall1_GBCv1n1000md3lr001_l5_s1970e2009",
+
         "ta1s1_GBCv1n1000md3lr001_l5_s2000e2009",
         "ta1s1_GBCv1n1000md3lr001_l5_s2006e2015",
 

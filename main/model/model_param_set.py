@@ -23,6 +23,8 @@ d_dir_ta =  {
     "ta3":os.path.join(root, "data", 'ta_dow'),
     "tadow":os.path.join(root, "data", 'tadow'),
     "tatech":os.path.join(root, "data", 'tatech'),
+    "tadowcall1":os.path.join(root, "data", 'ta', 'dowcall1'),
+
     }
 d_model = {
         "DC":DecisionTreeClassifier(),
@@ -31,15 +33,15 @@ d_model = {
         "GBCv1n1000md3":GradientBoostingClassifier(**{'verbose':1,'n_estimators':1000, 'max_depth':3}),
         "GBCv1n1000md9":GradientBoostingClassifier(**{'verbose':1,'n_estimators':1000, 'max_depth':9}),
         "GBCv1n1000md9":GradientBoostingClassifier(**{'verbose':1,'n_estimators':1000, 'max_depth':9}),
-        "GBCv1n1000md3lr001":GradientBoostingClassifier(**{'verbose':1,'n_estimators':1000, 'max_depth':3, 'learning_rate':0.05}),
-        "GBCv1n5000md3lr001":GradientBoostingClassifier(**{'verbose':1,'n_estimators':5000, 'max_depth':3, 'learning_rate':0.05}),
-        "GBCv1n70md3lr001":GradientBoostingClassifier(**{'verbose':1,'n_estimators':70, 'max_depth':3, 'learning_rate':0.05}),
-        "GBCv1n500md3lr001":GradientBoostingClassifier(**{'verbose':1,'n_estimators':500, 'max_depth':3, 'learning_rate':0.05}),
-        "GBCv1n400md3lr001":GradientBoostingClassifier(**{'verbose':1,'n_estimators':400, 'max_depth':3, 'learning_rate':0.05}),
-        "GBCv1n300md3lr001":GradientBoostingClassifier(**{'verbose':1,'n_estimators':300, 'max_depth':3, 'learning_rate':0.05}),
-        "GBCv1n320md3lr001":GradientBoostingClassifier(**{'verbose':1,'n_estimators':300, 'max_depth':3, 'learning_rate':0.05}),
-        "GBCv1n2000md3lr001":GradientBoostingClassifier(**{'verbose':1,'n_estimators':2000, 'max_depth':3, 'learning_rate':0.05}),
-        "GBCv1n5000md4lr001":GradientBoostingClassifier(**{'verbose':1,'n_estimators':5000, 'max_depth':4, 'learning_rate':0.05}),
+        "GBCv1n1000md3lr001":GradientBoostingClassifier(**{'verbose':1,'n_estimators':1000, 'max_depth':3, 'learning_rate':0.01}),
+        "GBCv1n5000md3lr001":GradientBoostingClassifier(**{'verbose':1,'n_estimators':5000, 'max_depth':3, 'learning_rate':0.01}),
+        "GBCv1n70md3lr001":GradientBoostingClassifier(**{'verbose':1,'n_estimators':70, 'max_depth':3, 'learning_rate':0.01}),
+        "GBCv1n500md3lr001":GradientBoostingClassifier(**{'verbose':1,'n_estimators':500, 'max_depth':3, 'learning_rate':0.01}),
+        "GBCv1n400md3lr001":GradientBoostingClassifier(**{'verbose':1,'n_estimators':400, 'max_depth':3, 'learning_rate':0.01}),
+        "GBCv1n300md3lr001":GradientBoostingClassifier(**{'verbose':1,'n_estimators':300, 'max_depth':3, 'learning_rate':0.01}),
+        "GBCv1n320md3lr001":GradientBoostingClassifier(**{'verbose':1,'n_estimators':300, 'max_depth':3, 'learning_rate':0.01}),
+        "GBCv1n2000md3lr001":GradientBoostingClassifier(**{'verbose':1,'n_estimators':2000, 'max_depth':3, 'learning_rate':0.01}),
+        "GBCv1n5000md4lr001":GradientBoostingClassifier(**{'verbose':1,'n_estimators':5000, 'max_depth':4, 'learning_rate':0.01}),
         "GBCv1n1000md3lr02":GradientBoostingClassifier(**{'verbose':1,'n_estimators':1000, 'max_depth':3, 'learning_rate':0.2}),
         "GBCv1n1000md3mf05":GradientBoostingClassifier(**{'verbose':1,'n_estimators':1000, 'max_depth':3, 'max_features':0.5}),
         }
