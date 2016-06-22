@@ -60,7 +60,7 @@ def save(df, f):
 @time_me
 def main(argv):
     taName = argv[1]
-    sym2ta = get_all_from(os.path.join(root, 'data', taName))
+    sym2ta = get_all_from(os.path.join(root, 'data', 'ta', taName))
     df = merge(sym2ta)
     df = df[df['ta_natr_14']  > 1.0]
     print df.shape
