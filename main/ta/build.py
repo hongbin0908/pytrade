@@ -81,8 +81,8 @@ def work(pool_num, dir_data, func, dir_out):
     pool = multiprocessing.Pool(processes=pool_num)
     result = []
     for each in get_file_list(dir_data):
-        #result.append(pool.apply_async(_one_work, (each, func, dir_out)))
-        _one_work(each, func, dir_out)
+        result.append(pool.apply_async(_one_work, (each, func, dir_out)))
+        #_one_work(each, func, dir_out)
     pool.close()
     pool.join()
     for each in result:
