@@ -18,7 +18,7 @@ import model.modeling as  model
 
 def get_df(taName):
     filePath = os.path.join(root, 'data', taName, "merged.pkl")
-    dfTa = pd.read_pickle(filePath)
+    dfTa = pd.read_hdf(filePath)
     #print "index: ", dfTa.index
     #print "columns: ", dfTa.columns
     return dfTa
@@ -31,9 +31,9 @@ def select_(dfTa, top, thresh, start, end):
     dfTa = dfTa.loc[dfTa['date'] >= start]
     dfTa = dfTa.loc[dfTa['date'] <= end]
     dfTa = dfTa.loc[dfTa['pred'] >= thresh]
-    #print dfTa.head()
     dfTa = dfTa.sort_values(["date", "pred"],ascending = False)
     dfTa = dfTa.groupby('date').head(top)
+    print dfTa.head()
     return dfTa
 
 def pre_rank(df):
@@ -43,7 +43,7 @@ def pre_rank(df):
 def accu(df, label):
     npLabel = df[label].values
     npTrue = npLabel[(npLabel>1.0)]
-    print npTrue.size*1.0 / npLabel.size
+    print npTrue.size, npLabel.size, npTrue.size*1.0/npLabel.size
 
 
 def main(argv):
@@ -57,6 +57,12 @@ def main(argv):
     cls = get_cls(clsName)
     feat_names = model.get_feat_names(dfTa)
     npFeat = dfTa.loc[:,feat_names].values
+
+    #for i, npPred in enumerate(cls.staged_predict_proba(npFeat)):
+    #    if i == 540:
+    #        break
+
+    #dfTa["pred"] = npPred[:,1]
     npPred = cls.predict_proba(npFeat)[:,1]
     dfTa["pred"] = npPred
 
