@@ -163,9 +163,9 @@ def main2(argv):
         )
 def main_dow(argv):
     work(int(argv[1]),
-         os.path.join(root, 'data', 'eod_dow'),
+         os.path.join(root, 'data', 'dow'),
          "call_all",
-         os.path.join(root, 'data', 'ta_dow')
+         os.path.join(root, 'data', 'tadow')
         )
 def main_tech(argv):
     work(int(argv[1]),
@@ -242,11 +242,11 @@ def main4():
             os.mkdir(dir_out)
         df.to_csv(os.path.join(dir_out, symbol + ".csv"))
 if __name__ == '__main__':
-    main_ta1s4(sys.argv)
+    #main_ta1s4(sys.argv)
     #main_ta1s5(sys.argv)
     #main_ta1s6(sys.argv)
     #main_tech(sys.argv)
-    #main_dow(sys.argv)
+    main_dow(sys.argv)
     #main1(sys.argv)
     #main2(sys.argv)
     #main4()
