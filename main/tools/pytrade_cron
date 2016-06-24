@@ -1,4 +1,0 @@
-# Run system activity accounting tool every 10 minutes
-#* 9 * * * root /bin/bash -x /home/work/workplace/pytrade/tools/check_daily_bars_getter.sh
-#* 10 * * * work /bin/bash /home/work/workplace/pytrade/strategy_mining/run.sh
-1 * * * * root cd /root/trade/pytrade/tools; python stock_getter.py  > /tmp/stock_getter.py.log

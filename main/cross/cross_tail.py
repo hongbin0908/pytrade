@@ -31,7 +31,6 @@ def accu(df, label, threshold):
     return res
 
 def filter_(df):
-    df = df[df['ta_natr_14']  > 1.0]
     return df
 
 cache = {}
@@ -39,7 +38,7 @@ cache = {}
 def get_df(f):
     if f in cache:
         return cache[f]
-    df =  pd.read_hdf(f, 'df')
+    df =  pd.read_pickle(f)
     cache[f] = df
     #with open(f, "rb") as ff:
     #    df = pkl.load(ff)
@@ -60,7 +59,7 @@ def one_work(cls, ta_dir, label, date_range, th):
     feat_names = model.get_feat_names(df)
     npFeat = df.loc[:,feat_names].values
     for i, npPred in enumerate(cls.staged_predict_proba(npFeat)):
-        if i == 540:
+        if i == 322:
             break
     #npPred = cls.predict_proba(npFeat)
     df["pred"] = npPred[:,1]

@@ -1,55 +1,123 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-#@author Bin Hong
+
+#@author  Bin Hong
+
 import sys,os
-from sklearn.ensemble import GradientBoostingClassifier
 local_path = os.path.dirname(__file__)
 root = os.path.join(local_path, '..')
 sys.path.append(root)
 
-d_conf = {
-    "conf_20160522": [
-                    "CF2016052201",
-                    "CF2016052202",
-                    "CF2016052203",
-                    "CF2016052207",
-                    "CF2016052208",
-                    "CF2016052209",
-                    "CF2016052302",
-                    "CF2016052303",
-                    "CF2016052304"],
-    "conf_20160526": [
-                    "CF2016052201",
-                    "CF2016052601"],
-    "conf_20160527": [
-                    "CF2016052201",
-                    "CF2016052701"],
-    "conf_20160529": [
-                    "CF2016052201",
-                    "CF2016052901",
-                     ],
-    "conf_2016052902": [
-                    "CF2016052902",
-                    "CF2016052901",
-                    "CF2016052903",
-                     ],
-    "conf_20160530": [
-                    #"CF2016052901",
-                    #"CF2016053001",
-                    #"CF2016053101",
-                     ],
-    "conf_sp500_50_3": ["CF_SP500_50_3"],
-    "conf_diff_label": ["CF2016060201", "CF2016060202", "CF2016060203"],
-    "conf_select_params": [
-            "CF2016060201",
-            "CF2016060301",
-            "CF2016060302",
-            "CF2016060303",
-            "CF2016060304",
-            "CF2016060305",
-            "CF2016060306",
-        ],
-    "conf_single_500_3_3": [
-                    "CF2016052201",
-                    ],
-    }
+
+l_params = [
+        #"ta1s1_GBCv1n1000md3lr001_l5_s2000e2009",
+        #"tadowcall1_GBCv1n1000md3lr001_l5_s2000e2009",
+        #"tadowcall1_GBCv1n1000md3lr001_l10_s2000e2009",
+
+        #"tadowcall1_GBCv1n1000md3lr001_l5_s1700e2009",
+        "tadowcall1_GBCv1n322md3lr001_l5_s1700e2009",
+
+
+        #"ta1s1_GBCv1n1000md3lr001_l5_s2000e2009",
+        #"ta1s1_GBCv1n1000md3lr001_l5_s2006e2015",
+
+        #"taselect_GBCv1n1000md3lr001_l5_s2006e2015",
+        #"taselect_GBCv1n1000md3lr001_l5_s2005e2014",
+        #"taselect_GBCv1n1000md3lr001_l5_s2004e2013",
+        #"taselect_GBCv1n1000md3lr001_l5_s2003e2012",
+        #"taselect_GBCv1n1000md3lr001_l5_s2002e2011",
+        #"taselect_GBCv1n1000md3lr001_l5_s2001e2010",
+        #"taselect_GBCv1n1000md3lr001_l5_s2000e2009",
+        #
+        #"taselect_GBCv1n2000md3lr001_l5_s2006e2015",
+        #"taselect_GBCv1n2000md3lr001_l5_s2005e2014",
+        #"taselect_GBCv1n2000md3lr001_l5_s2004e2013",
+        #"taselect_GBCv1n2000md3lr001_l5_s2003e2012",
+        #"taselect_GBCv1n2000md3lr001_l5_s2002e2011",
+        #"taselect_GBCv1n2000md3lr001_l5_s2001e2010",
+        #"taselect_GBCv1n2000md3lr001_l5_s2000e2009",
+        #
+        #"taselect_GBCv1n1000md3lr001_l5_s2006e2015",
+        #"taselect_GBCv1n2000md3lr001_l5_s2006e2015",
+        #"taselect_GBCv1n1000md3lr001_l5_s2000e2009",
+        #"taselect_GBCv1n500md3lr001_l5_s2000e2009",
+        #"taselect_GBCv1n2000md3lr001_l5_s2000e2009",
+        #
+        #"ta1_DC_l5_s2000e2009",
+        #
+        #"ta1_GBCv1n1000md3lr001_l5_s1700e2009",
+        #"ta1_GBCv1n1000md3lr001_l5_s2000e2009",
+        #"ta1_GBCv1n70md3lr001_l5_s2000e2009",
+        #"ta1_GBCv1n400md3lr001_l5_s2000e2009",
+        #"ta1s2_GBCv1n400md3lr001_l5_s2000e2009",
+        #"ta1s3_GBCv1n400md3lr001_l5_s2000e2009",
+        #"ta1s3_GBCv1n300md3lr001_l5_s2000e2009",
+        #
+        #"tadow_GBCv1n400md3lr001_l5_s2000e2009",
+        #"tadow_GBCv1n400md3lr001_l10_s2000e2009",
+        #"tadow_GBCv1n400md3lr001_l10_s2000e2009",
+        #"tadow_GBCv1n400md3lr001_l5_s1700e2009",
+        #
+        #
+        #"ta1s4_GBCv1n500md3lr001_l5_s2000e2009",
+        #"ta1s4_GBCv1n320md3lr001_l5_s2000e2009",
+        #"ta1s4_GBCv1n320md3lr001_l5_s2001e2010",
+        #"ta1s4_GBCv1n320md3lr001_l5_s2002e2011",
+        #"ta1s4_GBCv1n320md3lr001_l5_s2003e2012",
+        #"ta1s4_GBCv1n320md3lr001_l5_s2004e2013",
+        #"ta1s4_GBCv1n320md3lr001_l5_s2005e2014",
+        #"ta1s4_GBCv1n320md3lr001_l5_s2006e2015",
+        #"ta1s5_GBCv1n500md3lr001_l5_s2000e2009",
+        #"ta1s4_GBCv1n500md3lr001_l5_s2000e2009",
+        #"ta1s5_GBCv1n320md3lr001_l5_s2000e2009",
+        #"ta1s5_GBCv1n320md3lr001_l5_s2001e2010",
+        #"ta1s5_GBCv1n320md3lr001_l5_s2002e2011",
+        #"ta1s5_GBCv1n320md3lr001_l5_s2003e2012",
+        #"ta1s5_GBCv1n320md3lr001_l5_s2004e2013",
+        #"ta1s5_GBCv1n320md3lr001_l5_s2005e2014",
+        #"ta1s5_GBCv1n320md3lr001_l5_s2006e2015",
+        #"ta1_GBCv1n1000md3lr001_l5_s2001e2010",
+        #"ta1_GBCv1n1000md3lr001_l5_s2002e2011",
+        #"ta1_GBCv1n1000md3lr001_l5_s2003e2012",
+        #"ta1_GBCv1n1000md3lr001_l5_s2004e2013",
+        #"ta1_GBCv1n1000md3lr001_l5_s2005e2014",
+        #"ta1_GBCv1n1000md3lr001_l5_s2006e2015",
+        #"ta1_GBCv1n1000md3lr001_l5_s2010e2015",
+        #"ta1_GBCv1n1000md3lr001_l5_s2014e2015",
+        #"ta1_GBCv1n5000md3lr001_l5_s2000e2009",
+        #"ta1_GBCv1n5000md4lr001_l5_s2000e2009",
+        #"ta1_GBCv1n1000md3lr02_l5_s2000e2009",
+        #"ta1_GBCv1n1000md3mf05_l5_s2000e2009",
+        #
+        #"tatech_GBCv1n1000md3_l5_s2000e2009",
+        #
+        #"ta1_GBCv1n500md3_l3_s2005e2009",
+        #"ta1_GBCv1n500md3_l3_s2000e2009",
+        #"ta1_GBCv1n1000md3_l3_s2000e2009",
+        #"ta1_GBCv1n1000md3_l3_s2001e2010",
+        #"ta1_GBCv1n1000md3_l3_s2002e2011",
+        #"ta1_GBCv1n1000md3_l3_s2003e2012",
+        #"ta1_GBCv1n1000md3_l3_s2004e2013",
+        #"ta1_GBCv1n1000md3_l3_s2005e2014",
+        #
+        #"ta1_GBCv1n1000md3_l3_s2005e2009",
+        #
+        #"ta1_GBCv1n1000md3_l2_s2000e2009",
+        #"ta1_GBCv1n1000md3_l1_s2000e2009",
+        #"ta1_GBCv1n1000md3_l4_s2000e2009",
+        #"ta1_GBCv1n1000md3_l5_s2000e2009",
+        #"ta1_GBCv1n1000md3_l6_s2000e2009",
+        #"ta1_GBCv1n1000md3_l8_s2000e2009",
+        #"ta1_GBCv1n1000md3_l10_s2000e2009",
+        #"ta1_GBCv1n1000md3_l15_s2000e2009",
+        #"ta1_GBCv1n1000md3_l20_s2000e2009",
+        #"ta1_GBCv1n1000md3_l30_s2000e2009",
+        #"ta1_GBCv1n1000md3_l60_s2000e2009",
+        #
+        #
+        #"ta3_GBCv1n1000md3_l5_s2000e2009",
+        #"ta3_GBCv1n1000md3_l3_s2000e2009",
+        #
+        #"ta2_GBCv1n1000md3_l3_s2000e2009",
+
+        ]

@@ -17,7 +17,7 @@ import model.modeling as  model
 
 
 def get_df(taName):
-    filePath = os.path.join(root, 'data', taName, "merged.pkl")
+    filePath = os.path.join(root, 'data', 'ta', taName, "merged.pkl")
     dfTa = pd.read_pickle(filePath)
     #print "index: ", dfTa.index
     #print "columns: ", dfTa.columns
@@ -27,9 +27,7 @@ def get_cls(clsName):
     cls = joblib.load(os.path.join(root, 'data', 'models',"model_" + clsName + ".pkl"))
     #print cls
     return cls
-def select_(dfTa, top, thresh, start, end):
-    dfTa = dfTa.loc[dfTa['date'] >= start]
-    dfTa = dfTa.loc[dfTa['date'] <= end]
+def select_(dfTa, top, thresh):
     dfTa = dfTa.loc[dfTa['pred'] >= thresh]
     dfTa = dfTa.sort_values(["date", "pred"],ascending = False)
     dfTa = dfTa.groupby('date').head(top)
@@ -45,6 +43,8 @@ def accu(df, label):
     npTrue = npLabel[(npLabel>1.0)]
     print npTrue.size, npLabel.size, npTrue.size*1.0/npLabel.size
 
+def get_range(df, start ,end):
+    return df.query('date >="%s" & date <= "%s"' % (start, end))
 
 def main(argv):
     clsName = argv[1]
@@ -54,19 +54,19 @@ def main(argv):
     top = argv[5]
     thresh = float(argv[6])
     dfTa = get_df(taName)
+    dfTa = get_range(dfTa, start, end)
     cls = get_cls(clsName)
     feat_names = model.get_feat_names(dfTa)
     npFeat = dfTa.loc[:,feat_names].values
-
-    #for i, npPred in enumerate(cls.staged_predict_proba(npFeat)):
-    #    if i == 540:
-    #        break
-
-    #dfTa["pred"] = npPred[:,1]
-    npPred = cls.predict_proba(npFeat)[:,1]
-    dfTa["pred"] = npPred
-
-    accu(select_(dfTa, int(top), thresh, start, end), "label5")
+    print npFeat
+    for i, npPred in enumerate(cls.staged_predict_proba(npFeat)):
+        if i == 322:
+            break
+    dfTa["pred"] = npPred[:,1]
+    #npPred = cls.predict_proba(npFeat)[:,1]
+    #dfTa["pred"] = npPred
+    print dfTa.sort_values(["pred"])[["date", "sym", "label5","pred"]].tail(200)
+    accu(select_(dfTa, int(top), thresh), "label5")
 
 
 

@@ -11,12 +11,13 @@ import pandas as pd
 from sklearn.externals import joblib # to dump model
 import cPickle as pkl
 local_path = os.path.dirname(__file__)
-root = os.path.join(local_path, '..')
+root = os.path.join(local_path, '..', '..')
 sys.path.append(root)
 sys.path.append(local_path)
 
-import model.modeling as  model
-from utils import time_me
+import main.base as base
+from main.utils import time_me
+import main.ta as ta
 
 def accu(df, label, threshold):
     if threshold > 0:
@@ -29,7 +30,6 @@ def accu(df, label, threshold):
     return {"pos": npLabel.size, "trueInPos":npTrueInPos.size}
 
 def filter_(df):
-    df = df[df['ta_natr_14']  > 1.0]
     return df
 
 cache = {}
@@ -50,11 +50,10 @@ def get_range(df, start ,end):
 
 @time_me
 def one_work(cls, ta_dir, label, date_range, th):
-    merged_file = os.path.join(ta_dir, "merged.pkl")
-    df = filter_(get_df(merged_file))
+    df = ta.get_merged(ta_dir)
     df = get_range(df, date_range[0], date_range[1])
     m = joblib.load(os.path.join(root, 'data', 'models',"model_" + cls + ".pkl"))
-    feat_names = model.get_feat_names(df)
+    feat_names = base.get_feat_names(df)
     npFeat = df.loc[:,feat_names].values
     #npPred = cls.predict_proba(npFeat)[:,1]
     #prent npPred
