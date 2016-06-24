@@ -41,8 +41,8 @@ def get_eod(symbol):
 def _one_work(from_, to_, sym):
     sympath = os.path.join(from_, sym + ".csv")
     df = get_eod(sympath)
-    first = df["adjclose"].values[0]
-    df["adjclose"] = df["adjclose"]/first
+    #first = df["adjclose"].values[0]
+    #df["adjclose"] = df["adjclose"]/first
     df["open"] = df["open"] * df["adjclose"]/df["close"]
     df["high"] = df["high"] * df["adjclose"]/df["close"]
     df["low"]  = df["low"]   * df["adjclose"]/df["close"]

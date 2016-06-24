@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2.7
 # -*- coding: utf-8 -*-
 
 #@author Bin Hong
@@ -8,10 +8,10 @@ import pandas as pd
 import numpy as np
 import multiprocessing
 local_path = os.path.dirname(__file__)
-root = os.path.join(local_path, '..')
+root = os.path.join(local_path, '..', '..')
 sys.path.append(root)
 
-import ta
+import main.ta as ta
 
 def get_file_list(rootdir):
     file_list = []
@@ -28,7 +28,7 @@ def _judge(df, window):
     df["close_shift"] = df["close"].shift(-1 * window)
     df["label" + str(window)] = df["close_shift"]/df["close"]
     del df["close_shift"]
-    return df 
+    return df
 
 def judge(df):
     for i in range(1, 52):
@@ -60,7 +60,6 @@ def get_eod(symbol):
         return None
     if df["close"].mean() < 10:
         return None
-    print df.head()
     return df[df["volume"]>0]
 
 def _one_work(eod, func, dir_out):
@@ -73,11 +72,13 @@ def _one_work(eod, func, dir_out):
     if not os.path.isdir(dir_out):
         os.mkdir(dir_out)
     if not filter(df):
-        df.to_csv(os.path.join(dir_out, symbol+".csv"))
+        df.to_pickle(os.path.join(dir_out, symbol+".pkl"))
     else:
         print symbol, False
 
 def work(pool_num, dir_data, func, dir_out):
+    if not os.path.exists(dir_out):
+        os.makedirs(dir_out)
     pool = multiprocessing.Pool(processes=pool_num)
     result = []
     for each in get_file_list(dir_data):
@@ -85,166 +86,17 @@ def work(pool_num, dir_data, func, dir_out):
         #_one_work(each, func, dir_out)
     pool.close()
     pool.join()
-    for each in result:
-        print each.get()
+    #for each in result:
+    #    print each.get()
 
-def main_reg_dow_call1(argv):
-    work(int(argv[1]),
-         os.path.join(root, 'data','reg','dow'),
-         'call1',
-         os.path.join(root, 'data', 'ta', 'dowcall1'))
-def main1(argv):
-    work(int(argv[1]),
-         os.path.join(root, 'data', 'yeod'),
-         "call_all",
-         os.path.join(root, 'data', 'ta1')
-        )
-
-def main_select(argv):
-    work(int(argv[1]),
-         os.path.join(root, 'data', 'yeod'),
-         "call_select",
-         os.path.join(root, 'data', 'taselect')
-        )
-def main_ta1s1(argv):
-    work(int(argv[1]),
-         os.path.join(root, 'data', 'yeod'),
-         "call_ta1s1",
-         os.path.join(root, 'data', 'ta1s1')
-        )
-
-def main_ta1s2(argv):
-    work(int(argv[1]),
-         os.path.join(root, 'data', 'yeod'),
-         "call_ta1s2",
-         os.path.join(root, 'data', 'ta1s2')
-        )
-def main_ta1s3(argv):
-    work(int(argv[1]),
-         os.path.join(root, 'data', 'yeod'),
-         "call_ta1s3",
-         os.path.join(root, 'data', 'ta1s3')
-        )
-def main_ta1s4(argv):
-    work(int(argv[1]),
-         os.path.join(root, 'data', 'yeod'),
-         "call_ta1s4",
-         os.path.join(root, 'data', 'ta1s4')
-        )
-
-def main_ta1s5(argv):
-    work(int(argv[1]),
-         os.path.join(root, 'data', 'yeod'),
-         "call_ta1s5",
-         os.path.join(root, 'data', 'ta1s5')
-        )
-def main_ta1s6(argv):
-    work(int(argv[1]),
-         os.path.join(root, 'data', 'yeod'),
-         "call_ta1s6",
-         os.path.join(root, 'data', 'ta1s6')
-        )
-
-def main2(argv):
-    work(int(argv[1]),
-         os.path.join(root, 'data', 'yeod_full'),
-         "call_all",
-         os.path.join(root, 'data', 'ta2')
-        )
-def main_dow(argv):
-    work(int(argv[1]),
-         os.path.join(root, 'data', 'dow'),
-         "call_all",
-         os.path.join(root, 'data', 'tadow')
-        )
-
-def main_dows6(argv):
-    work(int(argv[1]),
-         os.path.join(root, 'data', 'dow'),
-         "call_ta1s6",
-         os.path.join(root, 'data', 'tadows6')
-        )
-
-def main_tech(argv):
-    work(int(argv[1]),
-         os.path.join(root, 'data', 'yeod_tech'),
-         "call_all",
-         os.path.join(root, 'data', 'tatech')
-        )
-
-
-def main3():
-    l = get_file_list(os.path.join(local_path, '..', 'data', 'yeod_full')); l.sort()
-    #l = l[:5]
-    for each in l:
-        symbol = get_stock_from_path(each)
-        df = get_eod(each)
-        if df is None:
-            continue
-        print symbol, df.shape
-        df = ta.cal_all(df)
-        df = judge(df)
-
-        dir_out = os.path.join(root, 'data', 'ta3')
-        if not os.path.isdir(dir_out):
-            os.mkdir(dir_out)
-        df.to_csv(os.path.join(dir_out, symbol + ".csv"))
-def main4():
-    for each in get_file_list(os.path.join(local_path, '..', 'data', 'yeod_full')):
-        symbol = get_stock_from_path(each)
-        df = get_eod(each)
-        if df is None:
-            continue
-        df = ta.cal_all(df)
-	df = df[[
-		 'open',
-		 'high',
-		 'low',
-		 'close',
-		 'volume',
-		 'adjclose',
-		 'ta_diff_close_0_1',
-         'ta_atr_14',
-         'ta_diff_close_1_1', 
-         'ta_trange', 
-         'ta_mdi_14',
-         'ta_natr_14',
-                 'ta_diff_ta_mdi_14_0_1', 
-                 'ta_aroon_up_14', 
-                 'ta_adsoc', 
-                 'ta_diff_close_2_1', 
-                 'ta_diff_close_11_1', 
-                 'ta_diff_ta_pdi_14_0_1', 
-                 'ta_diff_close_3_1', 
-                 'ta_diff_close_5_1', 
-                 'ta_diff_close_6_1', 
-                 'ta_diff_close_4_1', 
-                 'ta_pdi_14', 
-                 'ta_diff_ta_pdi_14_4_1', 
-                 'ta_diff_close_9_1', 
-                 'ta_diff_ta_pdi_14_3_1', 
-                 'ta_diff_close_10_1', 
-                 'ta_adxr_14', 
-                 'ta_aroon_down_14', 
-                 'ta_obv', 
-                 'ta_ad', 
-                 'ta_apo_12_26_0', 
-                 'ta_diff_ta_pdi_14_2_1', 
-                 'ta_diff_close_12_1', 
-                 'ta_diff_ta_pdi_14_1_1', 
-                 'ta_aroonosc_14',
-]]
-        df = judge(df)
-        dir_out = os.path.join(root, 'data', 'ta4')
-        if not os.path.isdir(dir_out):
-            os.mkdir(dir_out)
-        df.to_csv(os.path.join(dir_out, symbol + ".csv"))
+def main(argv):
+    eod = argv[0]
+    ta = argv[1]
+    pool_num = int(argv[2])
+    work(pool_num,
+         os.path.join(root, 'data', 'yeod', eod),
+         ta,
+         os.path.join(root, 'data', 'ta', ta+"_"+eod)
+    )
 if __name__ == '__main__':
-    #main_ta1s4(sys.argv)
-    #main_ta1s5(sys.argv)
-    #main_ta1s6(sys.argv)
-    #main_tech(sys.argv)
-    main_reg_dow_call1(sys.argv)
-    #main1(sys.argv)
-    #main2(sys.argv)
-    #main4()
+    main(sys.argv[1:])
