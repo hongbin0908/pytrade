@@ -51,8 +51,9 @@ def one_work(name, dir_ta, model, label, date_range):
             print >> fipt, each[0], ",", each[1]
 
 def main(argv):
+    conf_file = argv[0]
     pool_num = int(argv[1])
-    conf_file = argv[2]
+
 
     importstr = "import %s as conf" % conf_file
     exec importstr
@@ -74,4 +75,4 @@ def main(argv):
         print each.get()
 
 if __name__ == '__main__':
-    main(sys.argv)
+    main(sys.argv[1:])
