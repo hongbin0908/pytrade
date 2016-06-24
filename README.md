@@ -1,6 +1,6 @@
 ## pytrade
 
-my trading system depending on pyalgotrade
+my trading system depending on machine learning
 
 
 ## install
