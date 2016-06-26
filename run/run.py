@@ -14,11 +14,12 @@ from main.yeod import yeod
 from main.ta import build
 from main.utils import time_me
 from main.model import modeling as model
-
+from main.pred import pred
 @time_me
 def main(argv):
     yeod.main(["dow", 5])
     build.main(["dow", 'call1',5])
-    model.main(['model_conf',1])
+    last_date = base.last_date()
+    pred.main(['call1s1_dow_GBCv1n1000md3lr001_l5_s1700e2009', 'call1s1_dow', last_date, last_date, 'label5'])
 if __name__ == '__main__':
     main(sys.argv[1:])

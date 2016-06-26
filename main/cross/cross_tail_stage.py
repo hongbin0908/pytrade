@@ -16,7 +16,6 @@ sys.path.append(root)
 sys.path.append(local_path)
 
 import main.base as base
-from main.utils import time_me
 import main.ta as ta
 
 def accu(df, label, threshold):
@@ -29,26 +28,9 @@ def accu(df, label, threshold):
     npTrueInPos = npLabel[npLabel>1.0]
     return {"pos": npLabel.size, "trueInPos":npTrueInPos.size}
 
-def filter_(df):
-    return df
-
-cache = {}
-@time_me
-def get_df(f):
-    if f in cache:
-        return cache[f]
-    df =  pd.read_pickle(f)
-    cache[f] = df
-    #with open(f, "rb") as ff:
-    #    df = pkl.load(ff)
-    #return joblib.load(f)
-    #return pd.read_csv(f)
-    return df
-
 def get_range(df, start ,end):
     return df.query('date >="%s" & date <= "%s"' % (start, end)) 
 
-@time_me
 def one_work(cls, ta_dir, label, date_range, th):
     df = ta.get_merged(ta_dir)
     df = get_range(df, date_range[0], date_range[1])

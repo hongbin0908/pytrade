@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2.7
 # -*- coding: utf-8 -*-
 
 #@author  Bin Hong
@@ -12,12 +12,12 @@ import multiprocessing
 from sklearn.externals import joblib # to dump model
 import cPickle as pkl
 local_path = os.path.dirname(__file__)
-root = os.path.join(local_path, '..')
+root = os.path.join(local_path, '..', '..')
 sys.path.append(root)
 sys.path.append(local_path)
 
-import model.modeling as  model
-from utils import time_me
+import main.base as base
+import main.ta as ta
 
 def accu(df, label, threshold):
     if threshold > 0:
@@ -34,7 +34,7 @@ def filter_(df):
     return df
 
 cache = {}
-@time_me
+
 def get_df(f):
     if f in cache:
         return cache[f]
@@ -49,19 +49,20 @@ def get_df(f):
 def get_range(df, start ,end):
     return df.query('date >="%s" & date <= "%s"' % (start, end)) 
 
-@time_me
 def one_work(cls, ta_dir, label, date_range, th):
     re =  "%s\t%s\t%s\t%s\t%s\t%f\t" % (cls, ta_dir[-4:], label, date_range[0], date_range[1],th)
-    merged_file = os.path.join(ta_dir, "merged.pkl")
-    df = filter_(get_df(merged_file))
+    df = ta.get_merged(ta_dir)
     df = get_range(df, date_range[0], date_range[1])
     cls = joblib.load(os.path.join(root, 'data', 'models',"model_" + cls + ".pkl"))
-    feat_names = model.get_feat_names(df)
+    feat_names = base.get_feat_names(df)
     npFeat = df.loc[:,feat_names].values
-    for i, npPred in enumerate(cls.staged_predict_proba(npFeat)):
-        if i == 322:
-            break
-    #npPred = cls.predict_proba(npFeat)
+    #for i, npPred in enumerate(cls.staged_predict_proba(npFeat)):
+    #
+    #if i == 322:
+    #        break
+    
+    
+    npPred = cls.predict_proba(npFeat)
     df["pred"] = npPred[:,1]
     dacc = accu(df, label, th)
     re += "%f\t%d\t%d\t" % (dacc["rate"],dacc["trueInPos"], dacc["pos"])

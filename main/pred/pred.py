@@ -1,6 +1,10 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2.7
 # -*- coding: utf-8 -*-
 #@author  Bin Hong
+
+"""
+./pred/pred.py  call1s1_dow_GBCv1n322md3lr001_l5_s1700e2009 call1s1_dow 2016-01-01 2016-12-31  label5
+"""
 
 import sys,os
 import json
@@ -11,32 +15,40 @@ import multiprocessing
 import cPickle as pkl
 from sklearn.externals import joblib # to dump model
 local_path = os.path.dirname(__file__)
-root = os.path.join(local_path, '..')
+root = os.path.join(local_path, '..', '..')
 sys.path.append(root)
 sys.path.append(local_path)
-import model.modeling as  model
-from utils import time_me
+
+from main.utils import time_me
+import main.ta as ta
+import main.base as base
+
 def get_cls(clsName):
     return joblib.load(os.path.join(root, 'data', 'models', "model_" + clsName + ".pkl"))
-@time_me
 def get_ta(taName):
-    return pd.read_hdf(os.path.join(root, 'data', taName, 'merged_wth_na.pkl'), "df")
-    return pkl.load(open(os.path.join(root, 'data', taName, 'merged_wth_na.pkl'))) 
+    return ta.get_merged_with_na(os.path.join(root, 'data', 'ta', taName))
+
 def main(argv):
-    clsName = argv[1]
-    taName = argv[2]
-    date_ = argv[3]
+    clsName = argv[0]
+    taName = argv[1]
+    start = argv[2]
+    end = argv[3]
+    label = argv[4]
+
+    if end == "<0":
+        end = "2099-12-31"
 
     cls = get_cls(clsName)
     ta = get_ta(taName)
-    ta = ta.query('date == "%s"' % date_)
-    np.set_printoptions(threshold='nan')
-    print ta[['sym', 'date','ta_adx_14']].values
+    ta = ta[ (ta.date >= start) & (ta.date<=end) ]
+    #np.set_printoptions(threshold='nan')
 
-    npFeat = ta.loc[:, model.get_feat_names(ta)].values
+    npFeat = ta.loc[:, base.get_feat_names(ta)].values
     npPred = cls.predict_proba(npFeat)[:,1]
     ta["pred"] = npPred
     ta.sort_values("pred", inplace = True, ascending = False)
-    ta.to_csv(os.path.join(root, 'data', 'pred', 'pred_' + clsName + "_" + taName + "_" + date_ + ".csv"))
+    ta.to_csv(os.path.join(base.dir_preds(), base.fname_pred(clsName, taName,start,end)))
+    ta[["date", "sym", "pred", label]].to_csv(os.path.join(base.dir_preds(), base.fname_pred_s(clsName, taName, start, end)))
+    
 if __name__ == '__main__':
-    main(sys.argv)
+    main(sys.argv[1:])

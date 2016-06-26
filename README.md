@@ -21,7 +21,15 @@ my trading system depending on machine learning
 
     sudo make install
 
-    sudo easy_install-2.7 TA-Lib
+    sudo pip2.7 install TA-Lib
+    
+    sudo pip2.7 install numpy
+    
+    sudo pip2.7 install pandas
+    
+    sudo pip2.7 install scikit-learn
+    
+    
 
 ## usage
 

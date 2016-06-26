@@ -1,6 +1,13 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2.7
 # -*- coding: utf-8 -*-
 #@author  Bin Hong
+
+"""
+$ ./paper/paper.py  tadowcall1_GBCv1n322md3lr001_l5_s1700e2009 call1_dow 2010-01-01 2016-12-31 2 0.62
+
+151 211 0.715639810427
+"""
+
 
 import sys,os
 import json
@@ -9,29 +16,25 @@ import pandas as pd
 from sklearn.externals import joblib # to dump model
 
 local_path = os.path.dirname(__file__)
-root = os.path.join(local_path, '..')
+root = os.path.join(local_path, '..', '..')
 sys.path.append(root)
 sys.path.append(local_path)
 
-import model.modeling as  model
+import main.base as base
+import main.ta as ta
 
 
 def get_df(taName):
-    filePath = os.path.join(root, 'data', 'ta', taName, "merged.pkl")
-    dfTa = pd.read_pickle(filePath)
-    #print "index: ", dfTa.index
-    #print "columns: ", dfTa.columns
+    dfTa = ta.get_merged(os.path.join(root, 'data', 'ta', taName))
     return dfTa
 
 def get_cls(clsName):
     cls = joblib.load(os.path.join(root, 'data', 'models',"model_" + clsName + ".pkl"))
-    #print cls
     return cls
 def select_(dfTa, top, thresh):
     dfTa = dfTa.loc[dfTa['pred'] >= thresh]
     dfTa = dfTa.sort_values(["date", "pred"],ascending = False)
     dfTa = dfTa.groupby('date').head(top)
-    print dfTa.head()
     return dfTa
 
 def pre_rank(df):
@@ -56,22 +59,13 @@ def main(argv):
     dfTa = get_df(taName)
     dfTa = get_range(dfTa, start, end)
     cls = get_cls(clsName)
-    feat_names = model.get_feat_names(dfTa)
+    feat_names = base.get_feat_names(dfTa)
     npFeat = dfTa.loc[:,feat_names].values
-    print npFeat
-    for i, npPred in enumerate(cls.staged_predict_proba(npFeat)):
-        if i == 322:
-            break
+    #for i, npPred in enumerate(cls.staged_predict_proba(npFeat)):
+    #    if i == 322:
+    #        break
+    npPred = cls.predict_proba(npFeat)
     dfTa["pred"] = npPred[:,1]
-    #npPred = cls.predict_proba(npFeat)[:,1]
-    #dfTa["pred"] = npPred
-    print dfTa.sort_values(["pred"])[["date", "sym", "label5","pred"]].tail(200)
     accu(select_(dfTa, int(top), thresh), "label5")
-
-
-
-
-
-
 if __name__ == '__main__':
     main(sys.argv)

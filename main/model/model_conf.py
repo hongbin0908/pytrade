@@ -16,6 +16,7 @@ l_params = [
 
         #"tadowcall1_GBCv1n1000md3lr001_l5_s1700e2009",
         "tadowcall1_GBCv1n322md3lr001_l5_s1700e2009",
+        "call1s1_dow_GBCv1n322md3lr001_l5_s1700e2009",
 
 
         #"ta1s1_GBCv1n1000md3lr001_l5_s2000e2009",

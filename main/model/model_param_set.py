@@ -24,12 +24,13 @@ d_dir_ta =  {
     "tadow":os.path.join(root, "data", 'tadow'),
     "tatech":os.path.join(root, "data", 'tatech'),
     "tadowcall1":os.path.join(root, "data", 'ta', 'call1_dow'),
+    "call1s1_dow":os.path.join(root, "data", 'ta', 'call1s1_dow'),
     }
 
 d_model = {
     # good
     "GBCv1n1000md3lr001":GradientBoostingClassifier(**{'verbose':1,'n_estimators':1000, 'max_depth':3, 'learning_rate':0.01}),
-    "GBCv1n322md3lr001":GradientBoostingClassifier(**{'verbose':1,'n_estimators':1000, 'max_depth':3, 'learning_rate':0.01}),
+    "GBCv1n322md3lr001":GradientBoostingClassifier(**{'verbose':1,'n_estimators':322, 'max_depth':3, 'learning_rate':0.01}),
 
 
     "DC":DecisionTreeClassifier(),
