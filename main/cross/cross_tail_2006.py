@@ -17,7 +17,7 @@ import model.model_param_set as param_set
 ta =  param_set.d_dir_ta
 
 l_params = [
-        ("tadowcall1_GBCv1n1000md3lr001_l5_s2000e2009" , ta["tadowcall1"], "label5", ("2010-01-01", '2016-12-31'),  1000),
+        ("tadowcall1_GBCv1n322md3lr001_l5_s1700e2009" , ta["tadowcall1"], "label5", ("2010-01-01", '2016-12-31'),  200),
 
 
         #("ta1_GBCv1n1000md3lr001_l5_s2000e2009" , ta["ta1"], "label5", ("2016-01-01", '2016-12-31'),  100),

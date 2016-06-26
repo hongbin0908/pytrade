@@ -1228,11 +1228,16 @@ def WMA(real, *args, **kwargs): # real signature unknown; NOTE: unreliably resto
 def call1s1(df):
     df = call1(df)
     talist = ["date", "open", "high", "low", "close", "volume"]
-    with open(os.path.join(root, 'data', 'models', 'model_tadowcall1_GBCv1n1000md3lr001_l5_s1700e2009_importance')) as f:
+    with open(os.path.join(root, 'data', 'models', 'model_tadowcall1_GBCv1n322md3lr001_l5_s1700e2009_importance')) as f:
+        i = 0
         for line in f.readlines():
             tokens = line.split(",")
             feat = tokens[0].strip()
             talist.append(feat)
+            i+=1
+            if i > 106:
+                break
+    print "len of talist:", len(talist)
     df = df[talist]
     return df
 def calltest1(df):
@@ -1565,7 +1570,6 @@ def merge(sym2feats):
 
 @time_me
 def get_merged_with_na(ta):
-    print "xxxxx"
     sym2ta = base.get_all_from(ta)
     df = merge(sym2ta)
     df = df[df['ta_NATR_14']>1.0]
