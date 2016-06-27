@@ -15,6 +15,8 @@ from main.ta import build
 from main.utils import time_me
 from main.model import modeling as model
 from main.pred import pred
+import main.base as base
+
 @time_me
 def main(argv):
     yeod.main(["dow", 5])
