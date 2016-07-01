@@ -25,6 +25,7 @@ d_dir_ta =  {
     "tatech":os.path.join(root, "data", 'tatech'),
     "tadowcall1":os.path.join(root, "data", 'ta', 'call1_dow'),
     "call1s1_dow":os.path.join(root, "data", 'ta', 'call1s1_dow'),
+    "call1s1_sp500":os.path.join(root, "data", 'ta', 'call1s1_sp500'),
     }
 
 d_model = {
