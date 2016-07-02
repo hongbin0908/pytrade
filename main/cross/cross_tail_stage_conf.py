@@ -18,5 +18,5 @@ ta =  param_set.d_dir_ta
 
 #params = ("tadowcall1_GBCv1n1000md3lr001_l5_s1700e2009" , ta["tadowcall1"], "label5", ("2010-01-01", '2016-12-31'),  200)
 #params = ("call1s1_dow_GBCv1n322md3lr001_l5_s1700e2009" , ta["call1s1_dow"], "label5", ("2010-01-01", '2016-12-31'),  200)
-params = ("call1s1_dow_GBCv1n322md3lr001_l5_s1700e2009" , ta["call1s1_sp500"], "label5", ("2010-01-01", '2016-12-31'),  1000)
+params = ("call1s1_sp500_GBCv1n1000md3lr001_l5_s1700e2009" , ta["call1s1_sp500"], "label5", ("2010-01-01", '2016-12-31'),  1000)
 
