@@ -47,7 +47,9 @@ def pre_rank(df):
 def accu(df, label):
     npLabel = df[label].values
     npTrue = npLabel[(npLabel>1.0)]
-    print npTrue.size, npLabel.size, npTrue.size*1.0/npLabel.size
+    if npLabel.size > 0:
+        print npTrue.size, npLabel.size, npTrue.size*1.0/npLabel.size
+    else:print 0, 0, 0
 
 def splay(df,top,thresh):
     df["ym"] = df.date.str.slice(0,7)
