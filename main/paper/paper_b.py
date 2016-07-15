@@ -49,24 +49,23 @@ def accu(df, label):
     npTrue = npLabel[(npLabel>1.0)]
     print npTrue.size, npLabel.size, npTrue.size*1.0/npLabel.size
 
-def splay(df,top,thresh):
-    df["ym"] = df.date.str.slice(0,7)
+def splay(df1, df2,top):
+    df["ym"] = df1.date.str.slice(0,7)
     #df2 = df.loc[df['pred'] >= thresh]
-    df2 = df.sort_values(["pred"],ascending=False).head(thresh)
     df2 = df2.sort_values(["date", "pred"],ascending = False)
     df2 = df2.groupby('date').head(top)
     df2 = df2.reset_index(drop=True)
     df2["ym"] = df2.date.str.slice(0,7)
-    df = df[["ym", "pred"]]
+    df1 = df1[["ym", "pred"]]
     df2 = df2[["ym", "pred"]]
     df2 = df2.groupby("ym").count()
-    df = df.groupby("ym").count()
-    df =  df.join(df2, lsuffix="_df1")
-    for i, row in df.iterrows():
+    df1 = df1.groupby("ym").count()
+    df1 =  df1.join(df2, lsuffix="_df1")
+    for i, row in df1.iterrows():
         if row["pred"] > 1:  
             pass
         else:
-            print i, row
+            print i, row["ym_df1"],row["pred"]
 
 def get_range(df, start ,end):
     return df.query('date >="%s" & date <= "%s"' % (start, end))
@@ -83,6 +82,7 @@ def main(argv):
 
     ta_father = os.path.join(root, 'data', 'ta_batch', taName + "-" + str(batch))
     dfAll = None
+    dfOver = None
     num  = 0
     for d in sorted(os.listdir(ta_father)):
         if d == None or not os.path.isdir(os.path.join(ta_father, d)):
@@ -109,9 +109,14 @@ def main(argv):
         #npPred = cls.predict_proba(npFeat)
         dfTa["pred"] = npPred[:,1]
         dfTa = dfTa.sort_values(['pred'], ascending = False)
-        print dfTa[["date","sym", "pred"]].head(1)
         print "%.2f" % (len(dfTa[dfTa["label5"] > 1.0])*1.0/len(dfTa)) ,
+        if dfOver is None:
+            dfOver = dfTa
+        else:
+            dfOver = dfOver.append(dfTa)
         dfTa = select_(dfTa, int(top), thresh)
+        print dfTa[["date","sym", "pred"]].head(1)
+        print dfTa[["date","sym", "pred"]].tail(1)
         accu(dfTa, "label5")
         if dfAll is None:
             dfAll = dfTa
@@ -123,6 +128,6 @@ def main(argv):
     print "%.2f" % (len(dfAll[dfAll["label5"] > 1.0])*1.0/len(dfAll)),
     print num*thresh
     accu(select_(dfAll, int(top), num*thresh), "label5")
-    splay(dfAll,int(top), batch*thresh)
+    splay(dfOver,dfAll,int(top))
 if __name__ == '__main__':
     main(sys.argv[1:])
