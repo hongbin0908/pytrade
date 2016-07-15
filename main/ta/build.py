@@ -24,6 +24,7 @@ def get_file_list(rootdir):
 def get_stock_from_path(pathname):
     return os.path.splitext(os.path.split(pathname)[-1])[0]
 
+#{{{ judge
 def _judge(df, window):
     df["close_shift"] = df["close"].shift(-1 * window)
     df["label" + str(window)] = df["close_shift"]/df["close"]
@@ -31,19 +32,17 @@ def _judge(df, window):
     return df
 
 def judge(df):
-    for i in range(1, 52):
+    for i in range(1, 6):
         df = _judge(df, i)
     return df
+# }}}
 
-def filter(df):
-    return False
-
-    mean =  np.max(np.abs((df.tail(11)["label1"].head(10).values - 1)))
-    if mean < 0.01:
-        return True
-    if np.max(df.tail(11)["volume"].head(10).values) < 500000:
-        return True
-    return False
+#{{{ judge2
+def judge2(df):
+    for i in range(1, 6):
+        df["labelii"+str(i)] = df["label"+str(i)] / df["ta_index_hdiff_close_%d" % i].shift(-1*i)
+    return df
+# }}}
 
 def get_pd(symbol):
     names = ["date", 'open', 'high', 'low', 'close', 'volume', 'adjclose']
@@ -69,12 +68,11 @@ def _one_work(eod, func, dir_out):
         return
     df = getattr(ta, func)(df)
     df = judge(df)
+    if 'ta_index_hdiff_close_1' in df.columns:
+        df = judge2(df)
     if not os.path.isdir(dir_out):
         os.mkdir(dir_out)
-    if not filter(df):
-        df.to_pickle(os.path.join(dir_out, symbol+".pkl"))
-    else:
-        print symbol, False
+    df.to_pickle(os.path.join(dir_out, symbol+".pkl"))
 
 def work(pool_num, dir_data, func, dir_out):
     if not os.path.exists(dir_out):
@@ -82,8 +80,10 @@ def work(pool_num, dir_data, func, dir_out):
     pool = multiprocessing.Pool(processes=pool_num)
     result = []
     for each in get_file_list(dir_data):
-        result.append(pool.apply_async(_one_work, (each, func, dir_out)))
-        #_one_work(each, func, dir_out)
+        if pool_num <= 1:
+            _one_work(each, func, dir_out)
+        else:
+            result.append(pool.apply_async(_one_work, (each, func, dir_out)))
     pool.close()
     pool.join()
     #for each in result:
