@@ -108,6 +108,7 @@ def main(argv):
             dfAll = dfAll.append(dfTa)
         dfTa = dfTa.sort(['pred'], ascending = False)
         print dfTa[["date","sym", "pred"]].head(1)
+        print len(dfTa[dfTa.label > 1.0])*1.0/len(dfTa),
         accu(select_(dfTa, int(top), thresh), "label5")
         #splay(dfTa,int(top), thresh)
     dfAll = dfAll.sort(['pred'], ascending = False)
