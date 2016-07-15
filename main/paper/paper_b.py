@@ -65,7 +65,7 @@ def splay(df1, df2,top):
         if row["pred"] > 1:  
             pass
         else:
-            print i, row["ym_df1"],row["pred"]
+            print i, row["pred"]
 
 def get_range(df, start ,end):
     return df.query('date >="%s" & date <= "%s"' % (start, end))
