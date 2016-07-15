@@ -27,6 +27,21 @@ def hdiff(df, key, hole):
     return df
 
 
+def call1s4(df):
+    opens =   df['open'].values
+    highs =   df['high'].values
+    lows =    df['low'].values
+    closes =  df['close'].values
+    volumes = df['volume'].values
+    df = call1s3(df)
+    for i in [104,208]:
+        df['ta_PLUS_DM_%d' % i] = talib.PLUS_DM(highs,lows,i)
+        df['ta_TRIX_%d'%i] = talib.TRIX(closes,i)
+        df['ta_ADXR_%d' % i] = talib.ADXR(highs, lows, closes, i)
+        df['ta_ADX_%d' % i] = talib.ADX(highs, lows, closes, i)
+        df['ta_NATR_%d'%i] = talib.NATR(highs, lows, closes, i)
+
+    return df
 def call1s3(df):
     opens =   df['open'].values
     highs =   df['high'].values
