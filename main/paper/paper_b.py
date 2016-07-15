@@ -90,6 +90,8 @@ def main(argv):
         print d
         num += 1
         dfTa = base.get_merged(os.path.join(ta_father,d))
+        if dfTa is None:
+            continue
         dfTa = get_range(dfTa, start, end)
         if not os.path.isfile(os.path.join(root, 'data', 'models_batch',modelName,d,"model.pkl")):
             continue
