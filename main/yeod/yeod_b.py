@@ -31,6 +31,10 @@ def get_sp500Top10():
     df = df.sort("Market Cap", ascending=False)
     return [each["Symbol"].strip() for i,each in df.head(10).iterrows()]
 
+def get_sp500Top200():
+    df = pd.read_csv(os.path.join(root, "constituents-financials.csv"))
+    df = df.sort("Market Cap", ascending=False)
+    return [each["Symbol"].strip() for i,each in df.head(200).iterrows()]
 def get_sp500Top100():
     df = pd.read_csv(os.path.join(root, "constituents-financials.csv"))
     df = df.sort("Market Cap", ascending=False)
