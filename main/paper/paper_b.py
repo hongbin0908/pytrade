@@ -109,12 +109,13 @@ def main(argv):
         #npPred = cls.predict_proba(npFeat)
         dfTa["pred"] = npPred[:,1]
         dfTa = dfTa.sort_values(['pred'], ascending = False)
-        print "%.2f" % (len(dfTa[dfTa["label5"] > 1.0])*1.0/len(dfTa)) ,
         if dfOver is None:
             dfOver = dfTa
         else:
             dfOver = dfOver.append(dfTa)
+        print "%.2f" % (len(dfTa[dfTa["label5"] > 1.0])*1.0/len(dfTa)) 
         dfTa = select_(dfTa, int(top), thresh)
+        dfTa = dfTa.sort_values(["pred"])
         print dfTa[["date","sym", "pred"]].head(1)
         print dfTa[["date","sym", "pred"]].tail(1)
         accu(dfTa, "label5")
@@ -126,8 +127,7 @@ def main(argv):
     dfAll = dfAll.sort_values(['pred'], ascending = False)
     print dfAll[["date", "sym", "pred"]].head()
     print "%.2f" % (len(dfAll[dfAll["label5"] > 1.0])*1.0/len(dfAll)),
-    print num*thresh
-    accu(select_(dfAll, int(top), num*thresh), "label5")
+    accu(select_(dfAll, int(top), 100000), "label5")
     splay(dfOver,dfAll,int(top))
 if __name__ == '__main__':
     main(sys.argv[1:])
