@@ -88,6 +88,7 @@ def main(argv):
     for d in os.listdir(ta_father):
         if d == None or not os.path.isdir(os.path.join(ta_father, d)):
             continue
+        print d
         
         dfTa = base.get_merged(os.path.join(ta_father,d))
         dfTa = get_range(dfTa, start, end)
