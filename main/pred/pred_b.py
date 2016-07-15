@@ -40,7 +40,7 @@ def main(argv):
     model_father = os.path.join(root, 'data', 'models_batch', clsName)
     for d in sorted(os.listdir(model_father)):
         print d
-        cls = joblib.load(os.path.join(model_father, d, "model_pkl"))
+        cls = joblib.load(os.path.join(model_father, d, "model.pkl"))
         ta = base.get_merged_with_na(os.path.join(root, 'data', 'ta_batch', taName, d))
 
         dfFeat = ta.loc[:, base.get_feat_names(ta)]
