@@ -66,8 +66,8 @@ def one_work(in_dir, out_dir, model, label, start, end, isrepeat, sample):
     
     if isrepeat ==1 :
         toAppends = []
-        for i in range(1,10):
-            dfTmp = dfTrain[dfTrain.label5>=1+i/100.0]
+        for i in range(1,3):
+            dfTmp = dfTrain[dfTrain.label5>=1+i/20.0]
             toAppends.append(dfTmp)
         print dfTrain.shape
         dfTrain = dfTrain.append(toAppends)
