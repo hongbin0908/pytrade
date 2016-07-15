@@ -51,6 +51,8 @@ def one_work(in_dir, out_dir, model, label, start, end, isrepeat, sample):
         print "%s already exists!" % os.path.join(out_dir,name)
         return
     dfTa = base.get_merged(in_dir)
+    if dfTa is None:
+        return None
     dfTrain = build_trains(dfTa, start, end)
 
     if sample > 0:
