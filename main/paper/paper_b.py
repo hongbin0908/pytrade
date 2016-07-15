@@ -91,6 +91,8 @@ def main(argv):
         num += 1
         dfTa = base.get_merged(os.path.join(ta_father,d))
         dfTa = get_range(dfTa, start, end)
+        if not os.path.isfile(os.path.join(root, 'data', 'models_batch',modelName,d,"model.pkl")):
+            continue
         cls = joblib.load(os.path.join(root, 'data', 'models_batch',modelName,d,"model.pkl"))
         feat_names = base.get_feat_names(dfTa)
         npFeat = dfTa.loc[:,feat_names].values
