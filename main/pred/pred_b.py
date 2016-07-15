@@ -44,7 +44,7 @@ def main(argv):
         ta = base.get_merged_with_na(os.path.join(root, 'data', 'ta_batch', taName, d))
 
         dfFeat = ta.loc[:, base.get_feat_names(ta)]
-        print dfFeat.count()
+        dfFeat = dfFeat[(dfFeat['date'] >= start) & (dfFeat['date'] <= end)]
         npFeat = dfFeat.values
         #npPred = cls.predict_proba(npFeat)
         for i, npPred in enumerate(cls.staged_predict_proba(npFeat)):
