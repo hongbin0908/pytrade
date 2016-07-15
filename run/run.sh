@@ -11,8 +11,8 @@ cd "$SCRIPT_PATH"/../
 
 yestday=$1
  
-#rm -rf ./data/yeod/*
-./main/yeod/yeod.py  sp500Top50  1
-./main/ta/build.py  sp500Top50  call1s1 1
-
+rm -rf ./data/yeod_batch/sp500top100
+./main/yeod/yeod_b.py sp500Top100 50 10
+./main/ta/build_b.py sp500Top100 50 call1s3 10
+./main/pred/pred_b.py 
 popd  > /dev/null # return the directory orignal
