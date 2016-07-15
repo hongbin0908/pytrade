@@ -50,7 +50,7 @@ def accu(df, label):
     print npTrue.size, npLabel.size, npTrue.size*1.0/npLabel.size
 
 def splay(df1, df2,top):
-    df["ym"] = df1.date.str.slice(0,7)
+    df1["ym"] = df1.date.str.slice(0,7)
     #df2 = df.loc[df['pred'] >= thresh]
     df2 = df2.sort_values(["date", "pred"],ascending = False)
     df2 = df2.groupby('date').head(top)
