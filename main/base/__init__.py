@@ -127,7 +127,7 @@ def last_trade_date():
     """
     get the last trade date
     """
-    df = yeod_dow_sym('MSFT')
+    df = pd.read_csv(os.path.join(root, 'data', 'yeod', "index_dow", '^DJI.csv'))
     return df.date.max()
 
 
