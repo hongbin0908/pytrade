@@ -110,6 +110,7 @@ def main(argv):
     ta_father = os.path.join(root, 'data', 'ta_batch', taName + "-" + str(batch))
     pool = multiprocessing.Pool(processes = pool_num)
     for d in sorted(os.listdir(ta_father)):
+        print d
         if d == None or not os.path.isdir(os.path.join(ta_father,d)):
             continue
         if pool_num <= 1:
