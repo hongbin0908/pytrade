@@ -1,0 +1,10 @@
+#./main/model/model_work.py  call1s1_sp500Top50 GBCv1n500md3lr001 label5 1700-01-01 2009-12-31 0 0
+./main/model/model_work.py  call1s1_sp500Top10   GBCv1n1000md3lr001 label5 1700-01-01 2009-12-31 0 0
+./main/model/model_work.py  call1s1_sp500Top1020 GBCv1n1000md3lr001 label5 1700-01-01 2009-12-31 0 0
+./main/model/model_work.py  call1s1_sp500Top2030 GBCv1n1000md3lr001 label5 1700-01-01 2009-12-31 0 0
+./main/model/model_work.py  call1s1_sp500Top3040 GBCv1n1000md3lr001 label5 1700-01-01 2009-12-31 0 0
+./main/model/model_work.py  call1s1_sp500Top4050 GBCv1n1000md3lr001 label5 1700-01-01 2009-12-31 0 0
+#./main/model/model_work.py  call1s1_sp500Top30 GBCv1n500md3lr001 label5 1700-01-01 2009-12-31 0 0
+#./main/model/model_work.py  call1s1_dow GBCv1n400md3lr001 label5 1700-01-01 2009-12-31 1 5
+#./main/model/model_work.py  call1s1_dow GBCv1n400md3lr001 label5 1700-01-01 2009-12-31 1 0
+#./main/model/model_work.py  call1s1_dow GBCv1n400md3lr001 label5 1700-01-01 2015-12-31 0 0

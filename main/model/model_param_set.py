@@ -31,7 +31,10 @@ d_dir_ta =  {
 d_model = {
     # good
     "GBCv1n1000md3lr001":GradientBoostingClassifier(**{'verbose':1,'n_estimators':1000, 'max_depth':3, 'learning_rate':0.01}),
+
     "GBCv1n322md3lr001":GradientBoostingClassifier(**{'verbose':1,'n_estimators':322, 'max_depth':3, 'learning_rate':0.01}),
+    "GBCv1n200md3lr001":GradientBoostingClassifier(**{'verbose':1,'n_estimators':200, 'max_depth':3, 'learning_rate':0.01}),
+    "GBCv1n1md3lr001":GradientBoostingClassifier(**{'verbose':1,'n_estimators':1, 'max_depth':3, 'learning_rate':0.01}),
 
 
     "DC":DecisionTreeClassifier(),

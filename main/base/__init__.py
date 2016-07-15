@@ -12,6 +12,8 @@ import numpy as np
 import pandas as pd
 import math
 import multiprocessing
+import datetime as dt
+import time
 local_path = os.path.dirname(__file__)
 root = os.path.join(local_path, '..', '..')
 sys.path.append(root)
@@ -48,9 +50,21 @@ def get_range(df, start ,end):
     """
     return df[(df.date>=start) & (df.date<=end)]
 
+def merge(sym2feats):
+    dfMerged = None
+    toAppends = []
+    for sym in sym2feats.keys():
+        df = sym2feats[sym]
+        if dfMerged is None:
+            dfMerged = df
+        else:
+            toAppends.append(df)
+    # batch merge speeds up!
+    dfMerged =  dfMerged.append(toAppends)
+    return dfMerged
 
 def get_merged_with_na(ta):
-    sym2ta = base.get_all_from(ta)
+    sym2ta = get_all_from(ta)
     df = merge(sym2ta)
     df = df[df['ta_NATR_14']>1.0]
     return df
@@ -63,6 +77,11 @@ def get_merged(ta):
     return df
 
 
+def dir_ta(taName):
+    p = os.path.join(root, 'data', 'ta', taName)
+    if not os.path.exists(p):
+        os.makedirs(p)
+    return p
 def dir_preds():
     p = os.path.join(root, 'data','preds')
     if not os.path.exists(p):
@@ -85,6 +104,14 @@ def yeod_dow_sym(sym):
     p = os.path.join(dir_yeod_dow(), sym + ".csv")
     return pd.read_csv(p)
 
+def yeod(field, sym):
+    p = os.path.join(root, 'data', 'yeod', field, sym + ".csv")
+    return pd.read_csv(p)
+
+def ta(field, sym):
+    p = os.path.join(root, 'data', 'ta', field, sym + ".pkl")
+    return pd.read_pickle(p)
+
 def fname_pred(cls, ta, start, end):
     return cls + "_" + ta + "_" + start + "_"+end + ".csv"
 def fname_pred_s(cls, ta, start, end):
@@ -96,3 +123,10 @@ def last_trade_date():
     """
     df = yeod_dow_sym('MSFT')
     return df.date.max()
+
+
+def strDate2num(str):
+    df =dt.datetime.strptime(str, "%Y-%m-%d")
+    return df
+    #time_sec_float = time.mktime(df.timetuple())
+    #return time_sec_float

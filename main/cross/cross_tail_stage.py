@@ -20,7 +20,7 @@ import main.ta as ta
 
 def accu(df, label, threshold):
     if threshold > 0:
-        df2 = df.sort_values("pred", ascending = False)[:threshold]
+        df2 = df.sort("pred", ascending = False)[:threshold]
     else:
         df2 = df
     npPred = df2["pred"].values
@@ -31,19 +31,20 @@ def accu(df, label, threshold):
 def get_range(df, start ,end):
     return df.query('date >="%s" & date <= "%s"' % (start, end)) 
 
-def one_work(cls, ta_dir, label, date_range, th):
-    df = ta.get_merged(ta_dir)
+def one_work(cls, taName, label, date_range, th):
+    df = base.get_merged(base.dir_ta(taName))
     df = get_range(df, date_range[0], date_range[1])
     m = joblib.load(os.path.join(root, 'data', 'models',"model_" + cls + ".pkl"))
+    s = joblib.load(os.path.join(root, 'data', 'models',"scaler_" + cls + ".pkl"))
     feat_names = base.get_feat_names(df)
     npFeat = df.loc[:,feat_names].values
     #npPred = cls.predict_proba(npFeat)[:,1]
     #prent npPred
     res = ""
-    for i, npPred in enumerate(m.staged_predict_proba(npFeat)):
+    for i, npPred in enumerate(m.staged_predict_proba(s.transform(npFeat))):
         #if i % 1 != 0:
         #    continue
-        re =  "%s\t%s\t%s\t%s\t%s\t%f\t" % (cls, ta_dir[-4:], label, date_range[0], date_range[1],th)
+        re =  "%s\t%s\t%s\t%s\t%s\t%f\t" % (cls, taName, label, date_range[0], date_range[1],th)
         df["pred"] = npPred[:,1]
         dacc =  accu(df, label, th)
         re += "%d\t%d\t%d\t" % (i, dacc["trueInPos"], dacc["pos"])

@@ -20,20 +20,20 @@ sys.path.append(root)
 sys.path.append(local_path)
 
 from main.utils import time_me
-import main.ta as ta
 import main.base as base
 
 def get_cls(clsName):
     return joblib.load(os.path.join(root, 'data', 'models', "model_" + clsName + ".pkl"))
 def get_ta(taName):
-    return ta.get_merged_with_na(os.path.join(root, 'data', 'ta', taName))
+    return base.get_merged_with_na(os.path.join(root, 'data', 'ta', taName))
 
 def main(argv):
     clsName = argv[0]
-    taName = argv[1]
-    start = argv[2]
-    end = argv[3]
-    label = argv[4]
+    stage = int(argv[1])
+    taName = argv[2]
+    start = argv[3]
+    end = argv[4]
+    label = argv[5]
 
     if end == "<0":
         end = "2099-12-31"
@@ -41,14 +41,19 @@ def main(argv):
     cls = get_cls(clsName)
     ta = get_ta(taName)
     ta = ta[ (ta.date >= start) & (ta.date<=end) ]
-    #np.set_printoptions(threshold='nan')
 
-    npFeat = ta.loc[:, base.get_feat_names(ta)].values
-    npPred = cls.predict_proba(npFeat)[:,1]
-    ta["pred"] = npPred
-    ta.sort_values("pred", inplace = True, ascending = False)
+    dfFeat = ta.loc[:, base.get_feat_names(ta)]
+    print dfFeat.tail(1)
+    npFeat = dfFeat.values
+    #npPred = cls.predict_proba(npFeat)
+    for i, npPred in enumerate(cls.staged_predict_proba(npFeat)):
+        if i == stage:
+            break
+    ta["pred"] = npPred[:,1]
+    ta.sort("pred", inplace = True, ascending = False)
+    print ta[["date","sym", "pred"]].head(10)
     ta.to_csv(os.path.join(base.dir_preds(), base.fname_pred(clsName, taName,start,end)))
     ta[["date", "sym", "pred", label]].to_csv(os.path.join(base.dir_preds(), base.fname_pred_s(clsName, taName, start, end)))
-    
+
 if __name__ == '__main__':
     main(sys.argv[1:])
