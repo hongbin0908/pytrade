@@ -114,6 +114,7 @@ def main(argv):
     dfAll = dfAll.sort_values(['pred'], ascending = False)
     print dfAll[["date", "sym", "pred"]].head()
     print "%.2f" % (len(dfAll[dfAll["label5"] > 1.0])*1.0/len(dfAll)),
+    print batch * thresh
     accu(select_(dfAll, int(top), batch*thresh), "label5")
     splay(dfAll,int(top), batch*thresh)
 if __name__ == '__main__':
