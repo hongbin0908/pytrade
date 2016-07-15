@@ -83,10 +83,12 @@ def main(argv):
 
     ta_father = os.path.join(root, 'data', 'ta_batch', taName + "-" + str(batch))
     dfAll = None
+    num  = 0
     for d in os.listdir(ta_father):
         if d == None or not os.path.isdir(os.path.join(ta_father, d)):
             continue
-        
+        print d
+        num += 1
         dfTa = base.get_merged(os.path.join(ta_father,d))
         dfTa = get_range(dfTa, start, end)
         cls = joblib.load(os.path.join(root, 'data', 'models_batch',modelName,d,"model.pkl"))
@@ -114,8 +116,8 @@ def main(argv):
     dfAll = dfAll.sort_values(['pred'], ascending = False)
     print dfAll[["date", "sym", "pred"]].head()
     print "%.2f" % (len(dfAll[dfAll["label5"] > 1.0])*1.0/len(dfAll)),
-    print batch * thresh
-    accu(select_(dfAll, int(top), batch*thresh), "label5")
+    print num*thresh
+    accu(select_(dfAll, int(top), num*thresh), "label5")
     splay(dfAll,int(top), batch*thresh)
 if __name__ == '__main__':
     main(sys.argv[1:])
