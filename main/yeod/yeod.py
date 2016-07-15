@@ -26,6 +26,7 @@ def get_dow():
                 "XOM", ]
     return symbols
 
+
 def get_sp500Top100():
     df = pd.read_csv(os.path.join(root, "constituents-financials.csv"))
     df = df.sort("Market Cap", ascending=False)
@@ -34,7 +35,6 @@ def get_sp500Top50():
     df = pd.read_csv(os.path.join(root, "constituents-financials.csv"))
     df = df.sort("Market Cap", ascending=False)
     return [each["Symbol"].strip() for i,each in df.head(50).iterrows()]
-
 def get_sp500Top30():
     df = pd.read_csv(os.path.join(root, "constituents-financials.csv"))
     df = df.sort("Market Cap", ascending=False)
@@ -76,7 +76,6 @@ def get_data_root(target):
 
 @time_me
 def main(argv):
-    print "xxxx"
     target = argv[0]
     pool_num = int(argv[1])
     symbols = eval("get_%s" % target)()
