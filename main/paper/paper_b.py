@@ -35,8 +35,8 @@ def get_scaler(clsName):
 
 def select_(dfTa, top, thresh):
     #dfTa = dfTa.loc[dfTa['pred'] >= thresh]
-    dfTa = dfTa.sort(["pred"], ascending = False).head(thresh)
-    dfTa = dfTa.sort(["date", "pred"],ascending = False)
+    dfTa = dfTa.sort_values(["pred"], ascending = False).head(thresh)
+    dfTa = dfTa.sort_values(["date", "pred"],ascending = False)
     dfTa = dfTa.groupby('date').head(top)
     return dfTa
 
@@ -52,8 +52,8 @@ def accu(df, label):
 def splay(df,top,thresh):
     df["ym"] = df.date.str.slice(0,7)
     #df2 = df.loc[df['pred'] >= thresh]
-    df2 = df.sort(["pred"],ascending=False).head(thresh)
-    df2 = df2.sort(["date", "pred"],ascending = False)
+    df2 = df.sort_values(["pred"],ascending=False).head(thresh)
+    df2 = df2.sort_values(["date", "pred"],ascending = False)
     df2 = df2.groupby('date').head(top)
     df2 = df2.reset_index(drop=True)
     df2["ym"] = df2.date.str.slice(0,7)
@@ -106,13 +106,14 @@ def main(argv):
             dfAll = dfTa
         else:
             dfAll = dfAll.append(dfTa)
-        dfTa = dfTa.sort(['pred'], ascending = False)
+        dfTa = dfTa.sort_values(['pred'], ascending = False)
         print dfTa[["date","sym", "pred"]].head(1)
-        print len(dfTa[dfTa["label5"] > 1.0])*1.0/len(dfTa),
+        print "%.2f" % len(dfTa[dfTa["label5"] > 1.0])*1.0/len(dfTa),
         accu(select_(dfTa, int(top), thresh), "label5")
         #splay(dfTa,int(top), thresh)
-    dfAll = dfAll.sort(['pred'], ascending = False)
+    dfAll = dfAll.sort_values(['pred'], ascending = False)
     print dfAll[["date", "sym", "pred"]].head()
+    print "%.2f" % len(dfAll[dfAll["label5"] > 1.0])*1.0/len(dfAll),
     accu(select_(dfAll, int(top), batch*thresh), "label5")
     splay(dfAll,int(top), batch*thresh)
 if __name__ == '__main__':
