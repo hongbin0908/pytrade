@@ -76,6 +76,8 @@ def get_merged_with_na(ta):
 
 def get_merged(ta):
     df = get_merged_with_na(ta)
+    if df is None:
+        return df
     df = df.replace([np.inf,-np.inf],np.nan)\
         .dropna()
     return df
