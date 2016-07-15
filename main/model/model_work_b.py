@@ -44,27 +44,8 @@ def one_work(in_dir, out_dir, model, label, start, end, isrepeat, sample):
     if not os.path.exists(out_dir):
         os.makedirs(out_dir)
     cls = params_set.d_model[model]
-    if isrepeat == 1:
-        if sample > 0:
-            name = "model_%s_%s_%s_%s_%s.re.pkl" % (model,label, start, end,sample)
-            #scalerName = "scaler_%s_%s_%s_%s_%s_%s.re.pkl" % (taName,model,label, start, end,sample)
-        else:
-            name = "model_%s_%s_%s_%s.re.pkl" % (model,label, start, end)
-            #scalerName = "scaler_%s_%s_%s_%s_%s.re.pkl" % (taName,model,label, start, end)
-    elif isrepeat == 2:
-        if sample > 0:
-            name = "model_%s_%s_%s_%s_%s.se.pkl" % (model,label, start, end,sample)
-            #scalerName = "scaler_%s_%s_%s_%s_%s_%s.se.pkl" % (taName,model,label, start, end,sample)
-        else:
-            name = "model_%s_%s_%s_%s.re.pkl" % (model,label, start, end)
-            #scalerName = "scaler_%s_%s_%s_%s_%s.re.pkl" % (taName,model,label, start, end)
-    else:
-        if sample > 0:
-            name = "model_%s_%s_%s_%s_%s.pkl" % (model,label, start, end,sample)
-            #scalerName = "scaler_%s_%s_%s_%s_%s_%s.pkl" % (taName,model,label, start, end,sample)
-        else:
-            name = "model_%s_%s_%s_%s.pkl" % (model,label, start, end)
-            #scalerName = "scaler_%s_%s_%s_%s_%s.pkl" % (taName,model,label, start, end)
+    name = "model.pkl" 
+    #scalerName = "scaler_%s_%s_%s_%s_%s_%s.re.pkl" % (taName,model,label, start, end,sample)
 
     if os.path.isfile(os.path.join(out_dir,  name)):
         print "%s already exists!" % name
@@ -133,7 +114,7 @@ def main(argv):
             continue
         if pool_num <= 1:
             one_work(os.path.join(ta_father,d), 
-                os.path.join(root, 'data', "models_batch", taName + "-" + str(batch), str(d)),
+                os.path.join(root, 'data', "models_batch", clsName + "-" + taName + "-" + str(batch) + "-"+ labelName + "-" + start + "-" + end + "-" + str(isrepeat) + "-" + str(sample), str(d)),
                 clsName, 
                 labelName, 
                 start, 
@@ -142,7 +123,7 @@ def main(argv):
                 sample)
         else:
             pool.apply_async(one_work, (os.path.join(ta_father,d), 
-                os.path.join(root, 'data', "models_batch", taName + "-" + str(batch), str(d)),
+                os.path.join(root, 'data', "models_batch", clsName + "-" + taName + "-" + str(batch) + "-"+ labelName + "-" + start + "-" + end + "-" + str(isrepeat) + "-" + str(sample), str(d)),
                 clsName, 
                 labelName, 
                 start, 
