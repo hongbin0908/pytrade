@@ -108,12 +108,12 @@ def main(argv):
             dfAll = dfAll.append(dfTa)
         dfTa = dfTa.sort_values(['pred'], ascending = False)
         print dfTa[["date","sym", "pred"]].head(1)
-        print len(dfTa[dfTa["label5"] > 1.0])*1.0/len(dfTa) ,
+        print "%.2f" % (len(dfTa[dfTa["label5"] > 1.0])*1.0/len(dfTa)) ,
         accu(select_(dfTa, int(top), thresh), "label5")
         #splay(dfTa,int(top), thresh)
     dfAll = dfAll.sort_values(['pred'], ascending = False)
     print dfAll[["date", "sym", "pred"]].head()
-    print len(dfAll[dfAll["label5"] > 1.0])*1.0/len(dfAll),
+    print "%.2f" % (len(dfAll[dfAll["label5"] > 1.0])*1.0/len(dfAll)),
     accu(select_(dfAll, int(top), batch*thresh), "label5")
     splay(dfAll,int(top), batch*thresh)
 if __name__ == '__main__':
