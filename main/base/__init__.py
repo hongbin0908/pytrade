@@ -67,7 +67,8 @@ def merge(sym2feats):
 def get_merged_with_na(ta):
     sym2ta = get_all_from(ta)
     df = merge(sym2ta)
-    df = df[df['ta_NATR_14']>1.0]
+    if len(df) > 0:
+        df = df[df['ta_NATR_14']>1.0]
     return df
 
 
