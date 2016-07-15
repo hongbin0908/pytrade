@@ -48,7 +48,7 @@ def one_work(in_dir, out_dir, model, label, start, end, isrepeat, sample):
     #scalerName = "scaler_%s_%s_%s_%s_%s_%s.re.pkl" % (taName,model,label, start, end,sample)
 
     if os.path.isfile(os.path.join(out_dir,  name)):
-        print "%s already exists!" % name
+        print "%s already exists!" % os.path.join(out_dir,name)
         return
     dfTa = base.get_merged(in_dir)
     dfTrain = build_trains(dfTa, start, end)
@@ -108,7 +108,7 @@ def main(argv):
     sample = int(argv[7])
     pool_num = int(argv[8])
     ta_father = os.path.join(root, 'data', 'ta_batch', taName + "-" + str(batch))
-    pool = multiprocessing.Pool(processes = pool_num )
+    pool = multiprocessing.Pool(processes = pool_num)
     for d in os.listdir(ta_father):
         if d == None or not os.path.isdir(os.path.join(ta_father,d)):
             continue
