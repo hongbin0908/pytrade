@@ -60,7 +60,8 @@ def merge(sym2feats):
         else:
             toAppends.append(df)
     # batch merge speeds up!
-    dfMerged =  dfMerged.append(toAppends)
+    if len(toAppends) > 0:
+        dfMerged =  dfMerged.append(toAppends)
     return dfMerged
 
 def get_merged_with_na(ta):
