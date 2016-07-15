@@ -84,7 +84,7 @@ def main(argv):
     ta_father = os.path.join(root, 'data', 'ta_batch', taName + "-" + str(batch))
     dfAll = None
     num  = 0
-    for d in os.listdir(ta_father):
+    for d in sorted(os.listdir(ta_father)):
         if d == None or not os.path.isdir(os.path.join(ta_father, d)):
             continue
         print d
