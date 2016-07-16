@@ -103,6 +103,7 @@ def main(argv):
             npFeatScaler = scaler.transform(npFeat)
         else:
             npFeatScaler = npFeat
+        print npFeatScaler.shape
         for i, npPred in enumerate(cls.staged_predict_proba(npFeatScaler)):
             if i == stage:
                 break
