@@ -9,7 +9,6 @@ local_path = os.path.dirname(__file__)
 root = os.path.join(local_path,'..')
 sys.path.append(root)
 
-
 from main.yeod import yeod
 from main.yeod import yeod_b
 from main.ta import build
@@ -19,15 +18,20 @@ from main.pred import pred_b
 from main.paper import paper_b
 import main.base as base
 
+ta = "call1s4"
+eod = "sp500Top100"
+batch=50
+model = "GBCv1n1000md3lr001-%s-sp500Top100-%d-label5-1700-01-01-2009-12-31-0-0" % (ta, batch)
 @time_me
 def main(argv):
-    #shutil.rmtree(os.path.join(root, "data", "yeod_batch", "sp500Top100-50"))
+    #shutil.rmtree(os.path.join(root, "data", "yeod_batch", "%s-%d" % (eod, batch)), ignore_errors=False)
     yeod.main(["index_dow", 1])
-    yeod_b.main(["sp500Top100", 50, 10])
-    build_b.main(["sp500Top100", 50 ,'call1s3',10])
-    paper_b.main(["GBCv1n1000md3lr001-call1s3-sp500Top100-50-label5-1700-01-01-2009-12-31-0-0", 650, "call1s3-sp500Top100", 50, "2010-06-01", "2016-06-31", 2, 400])
+    yeod_b.main([eod, batch, 10])
+    build_b.main([eod, batch ,ta,10])
+    paper_b.main([model, 650, "%s-%s" % (ta,eod), batch, "2010-06-01", "2016-06-31", 2, 400])
     last_date = base.last_trade_date()
-    pred_b.main(["GBCv1n1000md3lr001-call1s3-sp500Top100-50-label5-1700-01-01-2009-12-31-0-0", 650, "call1s3-sp500Top100-50",
+    pred_b.main([model, 650, "%s-%s-%d" % (ta, eod, batch),
         last_date, last_date, "label5"])
 if __name__ == '__main__':
     main(sys.argv[1:])
+
