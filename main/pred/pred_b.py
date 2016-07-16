@@ -43,6 +43,7 @@ def main(argv):
         cls = joblib.load(os.path.join(model_father, d, "model.pkl"))
         ta = base.get_merged_with_na(os.path.join(root, 'data', 'ta_batch', taName, d))
 
+        print ta.sort_values(["date"]).tail(1)
         ta = ta[(ta['date'] >= start) & (ta['date'] <= end)]
         dfFeat = ta.loc[:, base.get_feat_names(ta)]
         npFeat = dfFeat.values
