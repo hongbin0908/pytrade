@@ -46,6 +46,8 @@ def main(argv):
         print ta.sort_values(["date"]).tail(1)
         ta = ta[(ta['date'] >= start) & (ta['date'] <= end)]
         dfFeat = ta.loc[:, base.get_feat_names(ta)]
+        dfFeat = dfFeat.replace([np.inf,-np.inf],np.nan)\
+            .dropna()
         npFeat = dfFeat.values
         #npPred = cls.predict_proba(npFeat)
         for i, npPred in enumerate(cls.staged_predict_proba(npFeat)):

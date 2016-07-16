@@ -28,9 +28,9 @@ def main(argv):
     yeod.main(["index_dow", 1])
     yeod_b.main([eod, batch, 10])
     build_b.main([eod, batch ,ta,10])
-    paper_b.main([model, 650, "%s-%s" % (ta,eod), batch, "2010-06-01", "2016-06-31", 2, 400])
+    paper_b.main([model, 600, "%s-%s" % (ta,eod), batch, "2010-06-01", "2016-06-31", 2, 400])
     last_date = base.last_trade_date()
-    pred_b.main([model, 650, "%s-%s-%d" % (ta, eod, batch),
+    pred_b.main([model, 600, "%s-%s-%d" % (ta, eod, batch),
         last_date, last_date, "label5"])
 if __name__ == '__main__':
     main(sys.argv[1:])

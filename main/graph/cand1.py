@@ -13,6 +13,7 @@ root = os.path.join(local_path, '..', '..')
 sys.path.append(root)
 import main.base as base
 
+
 def main(argv):
     sym = argv[0]
     start = argv[1]
