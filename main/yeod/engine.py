@@ -20,7 +20,7 @@ def doreg(df):
     df["volume"] = df["volume"] * df["adjclose"]/df["close"]
     return df
 def download_csv(instrument):
-    url = "http://chart.finance.yahoo.com/table.csv?s=%s&ignore=.csv" % (instrument)
+    url = "http://ichart.finance.yahoo.com/table.csv?s=%s&ignore=.csv" % (instrument)
     print url
     f = urllib2.urlopen(url)
 
