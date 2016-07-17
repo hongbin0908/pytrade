@@ -40,6 +40,11 @@ def get_sp500Top100():
     df = df.sort("Market Cap", ascending=False)
     return [each["Symbol"].strip() for i,each in df.head(100).iterrows()]
 
+def get_sp500Top50():
+    df = pd.read_csv(os.path.join(root, "constituents-financials.csv"))
+    df = df.sort("Market Cap", ascending=False)
+    return [each["Symbol"].strip() for i,each in df.head(50).iterrows()]
+
 def get_data_root_batch(target,batch,num):
     data_root = os.path.join(root, 'data', 'yeod_batch', target+"-"+str(batch), str(num))
     if not os.path.exists(data_root):
