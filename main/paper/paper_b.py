@@ -93,6 +93,7 @@ def main(argv):
         if dfTa is None:
             continue
         dfTa = get_range(dfTa, start, end)
+        print dfTa.shape
         if not os.path.isfile(os.path.join(root, 'data', 'models_batch',modelName,d,"model.pkl")):
             continue
         cls = joblib.load(os.path.join(root, 'data', 'models_batch',modelName,d,"model.pkl"))
@@ -103,7 +104,6 @@ def main(argv):
             npFeatScaler = scaler.transform(npFeat)
         else:
             npFeatScaler = npFeat
-        print npFeatScaler.shape
         for i, npPred in enumerate(cls.staged_predict_proba(npFeatScaler)):
             if i == stage:
                 break
