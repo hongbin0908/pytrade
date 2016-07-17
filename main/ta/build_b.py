@@ -63,8 +63,10 @@ def get_eod(symbol):
 
 def _one_work(eod, func, dir_out):
     symbol = get_stock_from_path(eod)
+    print symbol
     df = get_eod(eod)
     if df is None:
+        print symbol
         return
     df = getattr(ta, func)(df)
     df = judge(df)
