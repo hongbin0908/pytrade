@@ -51,13 +51,16 @@ def accu(df, label):
 
 def splay(df1, df2,top):
     df1["ym"] = df1.date.str.slice(0,7)
+    df1["y"] = df1.date.str.slice(0,4)
     #df2 = df.loc[df['pred'] >= thresh]
     df2 = df2.sort_values(["date", "pred"],ascending = False)
     df2 = df2.groupby('date').head(top)
     df2 = df2.reset_index(drop=True)
     df2["ym"] = df2.date.str.slice(0,7)
-    df1 = df1[["ym", "pred"]]
-    df2 = df2[["ym", "pred"]]
+    df2["y"] = df2.date.str.slice(0,4)
+    df1 = df1[['y', "ym", "pred"]]
+    df2 = df2[['y', "ym", "pred"]]
+
     df2 = df2.groupby("ym").count()
     df1 = df1.groupby("ym").count()
     df1 =  df1.join(df2, lsuffix="_df1")
@@ -110,25 +113,29 @@ def main(argv):
         #npPred = cls.predict_proba(npFeat)
         dfTa["pred"] = npPred[:,1]
         dfTa = dfTa.sort_values(['pred'], ascending = False)
-        if dfOver is None:
-            dfOver = dfTa
-        else:
-            dfOver = dfOver.append(dfTa)
-        print "%.2f" % (len(dfTa[dfTa["label5"] > 1.0])*1.0/len(dfTa)) 
-        dfTa = select_(dfTa, int(top), thresh)
-        dfTa = dfTa.sort_values(["pred"])
-        print dfTa[["date","sym", "pred"]].head(1)
-        print dfTa[["date","sym", "pred"]].tail(1)
-        accu(dfTa, "label5")
-        if dfAll is None:
-            dfAll = dfTa
-        else:
-            dfAll = dfAll.append(dfTa)
+        out_dir = os.path.join(root, 'data', 'paper_batch', '%s_%s_%s_%s' % (modelName, taName, start, end), d)
+        if not os.path.exists(out_dir):
+            os.makedirs(out_dir)
+        dfTa.to_csv(os.path.join(out_dir, "pred.csv"))
+        #if dfOver is None:
+        #    dfOver = dfTa
+        #else:
+        #    dfOver = dfOver.append(dfTa)
+        #print "%.2f" % (len(dfTa[dfTa["label5"] > 1.0])*1.0/len(dfTa)) 
+        #dfTa = select_(dfTa, int(top), thresh)
+        #dfTa = dfTa.sort_values(["pred"])
+        #print dfTa[["date","sym", "pred"]].head(1)
+        #print dfTa[["date","sym", "pred"]].tail(1)
+        #accu(dfTa, "label5")
+        #if dfAll is None:
+        #    dfAll = dfTa
+        #else:
+        #    dfAll = dfAll.append(dfTa)
         #splay(dfTa,int(top), thresh)
-    dfAll = dfAll.sort_values(['pred'], ascending = False)
-    print dfAll[["date", "sym", "pred"]].head()
-    print "%.2f" % (len(dfAll[dfAll["label5"] > 1.0])*1.0/len(dfAll)),
-    accu(select_(dfAll, int(top), 100000), "label5")
-    splay(dfOver,dfAll,int(top))
+    #dfAll = dfAll.sort_values(['pred'], ascending = False)
+    #print dfAll[["date", "sym", "pred"]].head()
+    #print "%.2f" % (len(dfAll[dfAll["label5"] > 1.0])*1.0/len(dfAll)),
+    #accu(select_(dfAll, int(top), 100000), "label5")
+    #splay(dfOver,dfAll,int(top))
 if __name__ == '__main__':
     main(sys.argv[1:])
