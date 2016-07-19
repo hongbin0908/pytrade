@@ -55,12 +55,12 @@ def get_pd(symbol):
 
 def get_eod(symbol):
     df = pd.read_csv(symbol)
-    if df["volume"].mean() < 10000:
-        print "volumne less 10000"
-        return None
-    if df["close"].mean() < 10:
-        print "close less 10"
-        return None
+    #if df["volume"].mean() < 10000:
+    #    print "volumne less 10000"
+    #    return None
+    #if df["close"].mean() < 10:
+    #    print "close less 10"
+    #    return None
     return df[df["volume"]>0]
 
 def _one_work(eod, func, dir_out):
