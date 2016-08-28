@@ -5,7 +5,9 @@
 
 import sys,os
 from sklearn.ensemble import GradientBoostingClassifier
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.tree import DecisionTreeClassifier
+
 local_path = os.path.dirname(__file__)
 root = os.path.join(local_path, '..', '..')
 sys.path.append(root)
@@ -31,11 +33,36 @@ d_dir_ta =  {
 d_model = {
     # good
     "GBCv1n1000md3lr001":GradientBoostingClassifier(**{'verbose':1,'n_estimators':1000, 'max_depth':3, 'learning_rate':0.01}),
+    "GBCv1n600md3lr001":GradientBoostingClassifier(**{'verbose':1,'n_estimators':600, 'max_depth':3, 'learning_rate':0.01}),
+    "GBCv1n10md3lr001":GradientBoostingClassifier(**{'verbose':1,'n_estimators':10, 'max_depth':3, 'learning_rate':0.01}),
+    "GBCv1n600md3lr001ex":GradientBoostingClassifier(**{'verbose':1,'n_estimators':600, 'max_depth':3,\
+            'learning_rate':0.01, 'loss':'exponential'}),
+    "GBCv1n600md4lr001":GradientBoostingClassifier(**{'verbose':1,'n_estimators':600, 'max_depth':4, 'learning_rate':0.01}),
+    "GBCv1n600md2lr001":GradientBoostingClassifier(**{'verbose':1,'n_estimators':600, 'max_depth':2, 'learning_rate':0.01}),
     "GBCv1n2000md3lr001":GradientBoostingClassifier(**{'verbose':1,'n_estimators':2000, 'max_depth':3, 'learning_rate':0.01}),
 
     "GBCv1n322md3lr001":GradientBoostingClassifier(**{'verbose':1,'n_estimators':322, 'max_depth':3, 'learning_rate':0.01}),
     "GBCv1n200md3lr001":GradientBoostingClassifier(**{'verbose':1,'n_estimators':200, 'max_depth':3, 'learning_rate':0.01}),
     "GBCv1n1md3lr001":GradientBoostingClassifier(**{'verbose':1,'n_estimators':1, 'max_depth':3, 'learning_rate':0.01}),
+
+    "RFCv1n600md2":RandomForestClassifier(**{'verbose':1, 'n_estimators':600, 'max_depth':2, 'n_jobs':10}),
+    "RFCv1n600md3":RandomForestClassifier(**{'verbose':1, 'n_estimators':600, 'max_depth':3, 'n_jobs':10}),
+    "RFCv1n600md5":RandomForestClassifier(**{'verbose':1, 'n_estimators':600, 'max_depth':5, 'n_jobs':10}),
+    "RFCv1n600md8":RandomForestClassifier(**{'verbose':1, 'n_estimators':600, 'max_depth':8, 'n_jobs':10}),
+    "RFCv1n1000md8":RandomForestClassifier(**{'verbose':1, 'n_estimators':1000, 'max_depth':8, 'n_jobs':10}),
+    "RFCv1n1000md3":RandomForestClassifier(**{'verbose':1, 'n_estimators':1000, 'max_depth':3, 'n_jobs':10}),
+    "RFCv1n1000md4":RandomForestClassifier(**{'verbose':1, 'n_estimators':1000, 'max_depth':4, 'n_jobs':10}),
+    "RFCv1n1000md6":RandomForestClassifier(**{'verbose':1, 'n_estimators':1000, 'max_depth':6, 'n_jobs':10}),
+    "RFCv1n2000md6":RandomForestClassifier(**{'verbose':1, 'n_estimators':2000, 'max_depth':6, 'n_jobs':10}),
+    "RFCv1n2000md6msl100":RandomForestClassifier(**{'verbose':1, 'n_estimators':2000, 'max_depth':6,'min_samples_leaf':100, 'n_jobs':10}),
+    "RFCv1n2000md6msl1000":RandomForestClassifier(**{'verbose':1, 'n_estimators':2000, 'max_depth':6,'min_samples_leaf':1000, 'n_jobs':10}),
+    "RFCv1n2000md2":RandomForestClassifier(**{'verbose':1, 'n_estimators':2000, 'max_depth':2, 'n_jobs':10}),
+    "RFCv1n1500md6":RandomForestClassifier(**{'verbose':1, 'n_estimators':1500, 'max_depth':6, 'n_jobs':10}),
+    "RFCv1n3000md6":RandomForestClassifier(**{'verbose':1, 'n_estimators':3000, 'max_depth':6, 'n_jobs':10}),
+    "RFCv1n2000md8":RandomForestClassifier(**{'verbose':1, 'n_estimators':2000, 'max_depth':8, 'n_jobs':10}),
+    "RFCv1n8000md1":RandomForestClassifier(**{'verbose':1, 'n_estimators':8000, 'max_depth':1, 'n_jobs':10}),
+    "RFCv1n4000md2":RandomForestClassifier(**{'verbose':1, 'n_estimators':4000, 'max_depth':2, 'n_jobs':10}),
+    "RFCv1n2000md16":RandomForestClassifier(**{'verbose':1, 'n_estimators':2000, 'max_depth':16, 'n_jobs':10}),
 
 
     "DC":DecisionTreeClassifier(),

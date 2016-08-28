@@ -10,6 +10,7 @@ sys.path.append(root)
 
 from main.yeod import engine
 from main.utils import time_me
+import main.base as base
 
 def get_MSFT():
     return ['MSFT']
@@ -26,61 +27,34 @@ def get_dow():
                 "XOM", ]
     return symbols
 
-
-def get_sp500Top100():
+def get_sp500Top5():
     df = pd.read_csv(os.path.join(root, "constituents-financials.csv"))
-    df = df.sort("Market Cap", ascending=False)
-    return [each["Symbol"].strip() for i,each in df.head(100).iterrows()]
+    df = df.sort_values("Market Cap", ascending=False)
+    return [each["Symbol"].strip() for i, each in df.head(5).iterrows()]
 def get_sp500Top50():
     df = pd.read_csv(os.path.join(root, "constituents-financials.csv"))
-    df = df.sort("Market Cap", ascending=False)
-    return [each["Symbol"].strip() for i,each in df.head(50).iterrows()]
-def get_sp500Top30():
+    df = df.sort_values("Market Cap", ascending=False)
+    return [each["Symbol"].strip() for i, each in df.head(50).iterrows()]
+def get_sp500Top50p():
     df = pd.read_csv(os.path.join(root, "constituents-financials.csv"))
-    df = df.sort("Market Cap", ascending=False)
-    return [each["Symbol"].strip() for i,each in df.head(30).iterrows()]
-def get_sp500Top10():
+    df = df.sort_values("Market Cap", ascending=False)
+    re = [each["Symbol"].strip() for i,each in df.head(50).iterrows()]
+    re.append('^DJI')
+    return re
+def get_sp500Top100():
     df = pd.read_csv(os.path.join(root, "constituents-financials.csv"))
-    df = df.sort("Market Cap", ascending=False)
-    return [each["Symbol"].strip() for i,each in df.head(10).iterrows()]
-def get_sp500Top1020():
-    df = pd.read_csv(os.path.join(root, "constituents-financials.csv"))
-    df = df.sort("Market Cap", ascending=False)
-    return [each["Symbol"].strip() for i,each in df.head(20).tail(10).iterrows()]
-def get_sp500Top2030():
-    df = pd.read_csv(os.path.join(root, "constituents-financials.csv"))
-    df = df.sort("Market Cap", ascending=False)
-    return [each["Symbol"].strip() for i,each in df.head(30).tail(10).iterrows()]
-def get_sp500Top3040():
-    df = pd.read_csv(os.path.join(root, "constituents-financials.csv"))
-    df = df.sort("Market Cap", ascending=False)
-    return [each["Symbol"].strip() for i,each in df.head(40).tail(10).iterrows()]
-def get_sp500Top4050():
-    df = pd.read_csv(os.path.join(root, "constituents-financials.csv"))
-    df = df.sort("Market Cap", ascending=False)
-    return [each["Symbol"].strip() for i,each in df.head(50).tail(10).iterrows()]
-def get_sp500():
-    symbols = []
-    for each in finsymbols.symbols.get_sp500_symbols():
-        symbols.append(each['symbol'].strip())
-    return symbols
-
-def get_sp500_energy():
-    return [each['symbol'].strip() for each in finsymbols.symbols.get_sp500_symbols() if each['sector'] == 'Energy']
-
-def get_data_root(target):
-    data_root = os.path.join(root, 'data', 'yeod', target)
-    if not os.path.exists(data_root):
-        os.makedirs(data_root)
-    return data_root
+    df = df.sort_values("Market Cap", ascending=False)
+    return [each["Symbol"].strip() for i,each in df.head(100).iterrows()]
 
 @time_me
-def main(argv):
-    target = argv[0]
-    pool_num = int(argv[1])
-    symbols = eval("get_%s" % target)()
-    return engine.work(symbols, get_data_root(target), pool_num)
-    pass
+def main(args):
+    symbols = eval("get_%s" % args.setname)()
+    engine.work(symbols, base.dir_eod(), args.poolnum)
 
 if __name__ == '__main__':
-    main(sys.argv[1:])
+    import argparse
+    parser = argparse.ArgumentParser(description="download eod")
+    parser.add_argument('-p', '--pool', help="thread pool num", dest="poolnum", action="store", default=1, type=int)
+    parser.add_argument('setname', help = "the sym set to be download")
+    args = parser.parse_args()
+    main(args)
