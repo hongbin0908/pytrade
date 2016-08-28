@@ -3,9 +3,6 @@
 #@author  Bin Hong
 
 """
-$ ./paper/paper.py  tadowcall1_GBCv1n322md3lr001_l5_s1700e2009 call1_dow 2010-01-01 2016-12-31 2 0.62
-
-151 211 0.715639810427
 """
 
 import sys,os
@@ -20,65 +17,29 @@ sys.path.append(root)
 
 import main.base as base
 import main.ta as ta
+import main.paper.ana as ana
+import main.yeod.yeod as yeod
 
 isscaler = False
 
-def get_df(taName):
-    dfTa = base.get_merged(os.path.join(root, 'data', 'ta', taName))
-    return dfTa
 
-def get_cls(clsName):
-    cls = joblib.load(os.path.join(root, 'data', 'models',"model_" + clsName + ".pkl"))
-    return cls
 def get_scaler(clsName):
     return joblib.load(os.path.join(root, 'data', 'models', 'scaler_' + clsName + ".pkl"))
 
-def select_(dfTa, top, thresh):
-    #dfTa = dfTa.loc[dfTa['pred'] >= thresh]
-    dfTa = dfTa.sort(["pred"], ascending = False).head(thresh)
-    dfTa = dfTa.sort(["date", "pred"],ascending = False)
-    dfTa = dfTa.groupby('date').head(top)
-    return dfTa
 
-def pre_rank(df):
-    df['rank'] = np.arange(len(df)) + 1
-    return df
+def main(args):
+    lsym =  getattr(yeod, "get_%s" % args.setname)()
+    dfTa = base.get_merged(args.taname, lsym)
+    if dfTa is None:
+        print "can not merge " % args.setname
+        sys.exit(1)
+    dfTa = base.get_range(dfTa, args.start, args.end)
+    print dfTa.shape
+    #if args.filter:
+    #    dfTa = filter_trend(dfTa)
+    #print dfTa.shape
 
-def accu(df, label):
-    npLabel = df[label].values
-    npTrue = npLabel[(npLabel>1.0)]
-    print npTrue.size, npLabel.size, npTrue.size*1.0/npLabel.size
-
-def splay(df,top,thresh):
-    df["ym"] = df.date.str.slice(0,7)
-    #df2 = df.loc[df['pred'] >= thresh]
-    df2 = df.sort(["pred"],ascending=False).head(thresh)
-    df2 = df2.sort(["date", "pred"],ascending = False)
-    df2 = df2.groupby('date').head(top)
-    df2 = df2.reset_index(drop=True)
-    df2["ym"] = df2.date.str.slice(0,7)
-    df = df[["ym", "pred"]]
-    df2 = df2[["ym", "pred"]]
-    df2 = df2.groupby("ym").count()
-    df = df.groupby("ym").count()
-    df =  df.join(df2, lsuffix="_df1")
-    for i, row in df.iterrows():
-        print i, row["ym_df1"], row["pred"]
-
-def get_range(df, start ,end):
-    return df.query('date >="%s" & date <= "%s"' % (start, end))
-
-def main(argv):
-    clsName = argv[1]
-    stage = int(argv[2])
-    taName = argv[3]
-    start = argv[4]
-    end = argv[5]
-    top = argv[6]
-    thresh = int(argv[7])
-    dfTa = get_df(taName)
-    dfTa = get_range(dfTa, start, end)
-    cls = get_cls(clsName)
+    cls = joblib.load(os.path.join(base.dir_model(),args.model))
     feat_names = base.get_feat_names(dfTa)
     npFeat = dfTa.loc[:,feat_names].values
     if isscaler :
@@ -86,14 +47,31 @@ def main(argv):
         npFeatScaler = scaler.transform(npFeat)
     else:
         npFeatScaler = npFeat
-    for i, npPred in enumerate(cls.staged_predict_proba(npFeatScaler)):
-        if i == stage:
-            break
-    #npPred = cls.predict_proba(npFeat)
+    #for i, npPred in enumerate(cls.staged_predict_proba(npFeatScaler)):
+    #    if i == args.stage:
+    #        break
+    npPred = cls.predict_proba(npFeat)
     dfTa["pred"] = npPred[:,1]
-    dfTa = dfTa.sort(['pred'], ascending = False)
-    print dfTa[["date","sym", "pred"]].head(10)
-    accu(select_(dfTa, int(top), thresh), "label5")
-    splay(dfTa,int(top), thresh)
+    dfTa = dfTa.sort_values(['pred'], ascending = False)
+    freport,fpred = base.file_paper(args)
+    dfTa.to_csv(fpred)
+
+    ana.main([fpred, args.top, args.thresh,freport, args.level])
+    print freport
+    
 if __name__ == '__main__':
-    main(sys.argv)
+    import argparse
+    parser = argparse.ArgumentParser(description='paper test')
+    parser.add_argument('--stage', dest="stage", action="store", default=600, \
+            help="the stage of gbdt")
+    parser.add_argument('--start', dest="start", action="store", default='2010-01-01')
+    parser.add_argument('--end', dest="end", action="store", default='2016-12-31')
+    parser.add_argument('--top', dest="top", action="store", type = int, default=2)
+    parser.add_argument('--thresh', dest="thresh", action="store", type = int, default=800)
+    parser.add_argument('--level', dest="level", action="store", type=float, default=1.0)
+    parser.add_argument('model', help = "the full path of model")
+    parser.add_argument('setname', help = "")
+    parser.add_argument('taname', help = "")
+
+    args = parser.parse_args()
+    main(args)
