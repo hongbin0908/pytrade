@@ -21,14 +21,23 @@ import main.pandas_talib.sig_123recall as sig_123recall
 import main.pandas_talib.sig_adx as sig_adx
 import main.pandas_talib.sig_upbreak as sig_upbreak
 
+"""
+add history value of
+ta_ROC_5
+ta_WILLR_2
+ta_ROC_7
+ta_WILLR_7
+ta_WILLR_5
+ta_STOCHRSI_slowd_28_5_3
+ta_NATR_28
+"""
+
 
 def main(df):
     df = df.reset_index("date", drop = True)
     df = base1.main(df)
-    df = sig_123recall.main(df)
-    df = sig_adx.main(df)
-    #df = sig_upbreak.main(df)
-
-    #assert 40 == df.shape[1]
+    for each in ["ta_ROC_5","ta_WILLR_2", "ta_ROC_7", "ta_WILLR_7", "ta_WILLR_5", "ta_STOCHRSI_slowd_28_5_3", "ta_NATR_28"]:
+        for i in [1, 2, 5, 7, 14]:
+            df["%s-shift-%d" % (each, i)] = df[each].shift(i)
     return df
 

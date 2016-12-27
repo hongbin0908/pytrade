@@ -1,0 +1,1 @@
+setname="sp500"

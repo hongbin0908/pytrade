@@ -1,37 +1,81 @@
-#!/usr/bin/env python2.7
+#! /usr/bin/env python2.7
 # -*- coding: utf-8 -*-
+# @author  Bin Hong
 
-#@author  Bin Hong
+"""
+"""
 
-import sys,os,shutil
+import sys
+import os
+import platform
+
+import matplotlib
+matplotlib.use('Agg')
 
 local_path = os.path.dirname(__file__)
-root = os.path.join(local_path,'..')
+root = os.path.join(local_path, '..')
 sys.path.append(root)
 
-from main.yeod import yeod
-from main.yeod import yeod_b
-from main.ta import build
-from main.ta import build_b
-from main.utils import time_me
-from main.pred import pred_b
-from main.paper import paper_b
-import main.base as base
+from main.base.score2 import ScoreLabel
 
-ta = "call1s4"
-eod = "sp500Top100"
-batch=50
-model = "GBCv1n1000md3lr001-%s-sp500Top100-%d-label5-1700-01-01-2009-12-31-0-0" % (ta, batch)
-@time_me
-def main(argv):
-    #shutil.rmtree(os.path.join(root, "data", "yeod_batch", "%s-%d" % (eod, batch)), ignore_errors=False)
-    yeod.main(["index_dow", 1])
-    yeod_b.main([eod, batch, 10])
-    build_b.main([eod, batch ,ta,10])
-    paper_b.main([model, 600, "%s-%s" % (ta,eod), batch, "2010-06-01", "2016-06-31", 2, 400])
-    last_date = base.last_trade_date()
-    pred_b.main([model, 600, "%s-%s-%d" % (ta, eod, batch),
-        last_date, last_date, "label5"])
+from main.work import model
+from main.work import build
+from main.work import pred
+from main.work.conf import MltradeConf
+from main.ta import ta_set
+from main.model.spliter import StaticSpliter
+from main.classifier.tree import MyRandomForestClassifier
+from main.classifier.tree import RFCv1n2000md6msl100
+from main.classifier.tree import MyGradientBoostingClassifier
+
+
+if platform.platform().startswith("Windows"):
+    TEST = True
+elif platform.platform().startswith("Darwin"):
+    TEST = True
+else:
+    TEST = False
+
+def getConf2():
+    """
+    for test
+    :return:
+    """
+    classifier = MyRandomForestClassifier()
+    confer = MltradeConf(500,classifier=classifier, score1=ScoreLabel(5, 1.0),
+                         score2 = ScoreLabel(5, 1.0),
+                         model_split=StaticSpliter(2010,2013,1, 1900, 2010),
+                         valid_split=StaticSpliter(2013, 2017, 1, 1900, 2010),
+                         ta = ta_set.TaSetBase1Ext8(), n_pool=25)
+    return confer
+
+def getConf():
+    if not TEST:
+        #classifier = MyRandomForestClassifier(n_estimators = 1000)
+        classifier = MyGradientBoostingClassifier(n_estimators = 100)
+        classifier = RFCv1n2000md6msl100()
+        ta = ta_set.TaSetBase1Ext4El()
+        confer = MltradeConf(150,classifier=classifier, score1=ScoreLabel(5, 1.0),
+                             score2 = ScoreLabel(5, 1.0),
+                             model_split=StaticSpliter(2010,2017,1, 1700, 2010),
+                             valid_split=StaticSpliter(2013, 2017, 1, 1700, 2010),
+                             ta = ta, n_pool=30, index="sp100")
+        confer.syms = confer.syms[0:1]
+
+    else:
+        ta = ta_set.TaSetBase1Ext4El()
+        confer = MltradeConf(2,
+                classifier=MyRandomForestClassifier(n_estimators=10, min_samples_leaf=10), 
+                score1=ScoreLabel(5, 1.0),
+                score2 = ScoreLabel(5, 1.0),
+                model_split=StaticSpliter(2010,2013, 1, 2000, 2010),
+                valid_split=StaticSpliter(2013, 2017, 1, 2003, 2013),
+                ta = ta, n_pool=1)
+        confer.syms = confer.syms[0:1]
+    return confer
+
 if __name__ == '__main__':
-    main(sys.argv[1:])
-
+    confer = getConf()
+    build.work(confer)
+    model.work(confer)
+    pred.work(confer)

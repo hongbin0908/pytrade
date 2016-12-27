@@ -1,0 +1,33 @@
+#! /usr/bin/env python2.7
+# -*- coding: utf-8 -*-
+# @author  Bin Hong
+
+"""
+"""
+
+import sys
+import os
+import pandas as pd
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.externals import joblib
+import platform
+import ntpath
+
+local_path = os.path.dirname(__file__)
+root = os.path.join(local_path, '..', "..")
+sys.path.append(root)
+
+import main.base as base
+from main.model import pred
+from main.work.conf import MltradeConf
+from main.model.post import CrosserSet
+
+def work(confer):
+    out_file_name = confer.get_out_file_prefix() + ".pred.md"
+    out_file = open(out_file_name, "w", encoding="utf-8")
+    stuff_dir_name = out_file_name + ".data"
+    os.makedirs(stuff_dir_name, exist_ok=True)
+
+    crosser_set = CrosserSet(confer)
+
+    print("\n" + crosser_set.pred().round(4).to_html(), file=out_file)
