@@ -18,6 +18,29 @@ local_path = os.path.dirname(__file__)
 root = os.path.join(local_path, '..', '..')
 sys.path.append(root)
 
+
+def to_pickles(df, picklename):
+    if not os.path.exists(picklename):
+        os.makedirs(picklename)
+    LEN = 200000000/len(df.columns)
+    size_ = len(df)
+    cursor1 = 0
+    while cursor1 < size_:
+        cursor2 = cursor1 + LEN
+        if cursor2 > size_:
+            cursor2 = size_
+        tmp = df.iloc[cursor1:cursor2]
+        tmp.to_pickle(os.path.join(picklename, "%d.pkl"%cursor1))
+        cursor1 = cursor2
+
+def from_pickles(picklename):
+    flist = get_file_list(picklename, ext=".pkl")
+    toappend = []
+    for f in flist:
+        toappend.append(pd.read_pickle(f))
+    return pd.concat(toappend)
+
+
 def get_file_list(rootdir, ext=".csv"):
     file_list = []
     for f in os.listdir(rootdir):
@@ -37,10 +60,12 @@ def get_feat_names(df):
     """
     return [x for x in df.columns if x.startswith('ta_')]
 
-def get_all(taname, lsym):
+def get_all(taname, lsym, start="",end=""):
     sym2df = {}
     for sym in lsym:
         df = pd.read_pickle(os.path.join(dir_ta(taname), sym + ".pkl"))
+        if len(start) > 0:
+            df = df[(df.date >=start)&(df.date<end)]
         df["sym"] = sym
         sym2df[sym] = df
     return sym2df
@@ -51,38 +76,33 @@ def get_range(df, start ,end):
     """
     return df[(df.date>=start) & (df.date<=end)]
 
-def merge(sym2feats):
-    dfMerged = None
-    toAppends = []
+def merge(sym2feats,start="", end=""):
+    df_merged = None
+    to_appends = []
     for sym in sym2feats.keys():
         df = sym2feats[sym]
-        if dfMerged is None:
-            dfMerged = df
-        else:
-            toAppends.append(df)
-    # batch merge speeds up!
-    if len(toAppends) > 0:
-        dfMerged =  dfMerged.append(toAppends)
-    return dfMerged
+        to_appends.append(df)
+    if len(to_appends) > 0:
+        df_merged =  pd.concat(to_appends)
+    assert isinstance(df_merged, pd.DataFrame)
+    df_merged.sort_values(["date"], ascending=True, inplace=True)
+    return df_merged
 
-def get_merged_with_na(taname, lsym):
-    sym2ta = get_all(taname, lsym)
-    df = merge(sym2ta)
+def get_merged_with_na(taname, lsym,start="", end=""):
+    sym2ta = get_all(taname, lsym,start,end)
+    df = merge(sym2ta,start,end)
     if df is None:
         return None
-    if len(df) > 0 and "ta_NATR_14" in df:
-        df = df[df['ta_NATR_14']>1.0]
+    if len(df) > 0 and "ta_NATR_7" in df:
+        df = df[df['ta_NATR_7']>1.0]
     return df
 
-
-def get_merged(taname, lsym):
-    df = get_merged_with_na(taname, lsym)
+def get_merged(taname, lsym,start = "", end =""):
+    df = get_merged_with_na(taname, lsym,start,end)
     if df is None:
         return df
-    df = df.replace([np.inf,-np.inf],np.nan)\
-        .dropna()
+    df = df.replace([np.inf,-np.inf],np.nan).dropna()
     return df
-
 
 def dir_eod():
     p = os.path.join(root, 'data', 'yeod')
@@ -104,15 +124,12 @@ def dir_model():
     if not os.path.exists(p):
         os.makedirs(p)
     return p
+
+
 def file_model(args):
     fname = "%s-%s-%s-%s-%s-%s" % (args.setname, args.taname, \
-            args.clsname, args.labelname, args.start, args.end)
-    if args.sw:
-        fname += "-%s" % args.sw
-    if args.repeat:
-        fname += "-%s" % args.repeat
-    if args.sample:
-        fname += "-%s" % args.sample
+            args.clsname, args.scorename, args.start, args.end)
+
     return (os.path.join(dir_model(), fname + ".pkl"), os.path.join(dir_model(), fname + ".ipt"))
 
 def dir_paper():
@@ -121,14 +138,11 @@ def dir_paper():
         os.makedirs(p)
     return p
 def file_paper(args):
-    fname="%s-%s-%s-%s-%s-%d-%d" % (args.model,\
+    fname="%s%s-%s-%s" % (args.model,
             args.setname,
-            args.stage,
             args.start,
-            args.end,
-            args.top,
-            args.thresh)
-    return (os.path.join(dir_paper(), fname + ".report"), os.path.join(dir_paper(), fname + ".pre.csv"))
+            args.end)
+    return os.path.join(dir_paper(), fname + ".pre.csv")
 
 def dir_pred():
     p = os.path.join(root, 'data', 'pred')

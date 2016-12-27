@@ -12,11 +12,6 @@ local_path = os.path.dirname(__file__)
 root = os.path.join(local_path, '..', '..')
 sys.path.append(root)
 
-import main.base as base
-import main.ta as ta
-import main.yeod.yeod as yeod
-import main.ta.build as build
-import main.pandas_talib as pta
 import talib
 
 span = 14

@@ -15,6 +15,8 @@ from main.utils import time_me
 import main.pandas_talib as pta
 import main.base as base
 
+def get_name():
+    return "base1"
 
 def main(df):
     opens = df['open'].values
@@ -68,9 +70,9 @@ def main(df):
         df['ta_PPO_%d_%d'%(couple[0],couple[1])] = talib.PPO(closes, couple[0],couple[1])
     for i in [2,5,7,10,14,28]:
         df['ta_ROC_%d'% i] = talib.ROC(closes, i)
-        df['ta_ROCP_%d'%i] = talib.ROCP(closes, i)
-        df['ta_ROCR_%d'%i] = talib.ROCR(closes, i)
-        df['ta_ROCR100_%d'%i] = talib.ROCR100(closes,i)
+        # df['ta_ROCP_%d'%i] = talib.ROCP(closes, i)
+        # df['ta_ROCR_%d'%i] = talib.ROCR(closes, i)
+        # df['ta_ROCR100_%d'%i] = talib.ROCR100(closes,i)
         df['ta_RSI_%d'%i] = talib.RSI(closes, i)
     for tri in [(5,3,3),(10,6,6),(20,12,12)]:
         stoch = talib.STOCH(highs,lows,closes, fastk_period=tri[0],slowk_period=tri[1],slowd_period=tri[2])
@@ -125,4 +127,5 @@ def main(df):
     #for c in [(3,10), (6,20),(12,40)]:
     #    df['ta_ADOSC_%d_%d'%(c[0],c[1])] = talib.ADOSC(highs, lows, closes, volumes,c[0],c[1])
     #df['ta_OBV'] = talib.OBV(closes, volumes)
+    df = df.round(4)
     return df

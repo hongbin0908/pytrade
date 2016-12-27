@@ -21,6 +21,5 @@ import main.ta.ta_cdl as cdl
 def main(df):
     df = base1.main(df)
     df = cdl.main(df)
-    print df.shape
     return df
 

@@ -2,116 +2,138 @@
 # -*- coding: utf-8 -*-
 #@author  Bin Hong
 
-import sys,os
-import json
+import sys
+import os
 import numpy as np
 import pandas as pd
-import math
-import random
-import multiprocessing
-from sklearn.ensemble import GradientBoostingClassifier
-from sklearn.externals import joblib # to dump model
-from sklearn import preprocessing
+from itertools import cycle
+from sklearn.metrics import roc_curve, auc
+import pandas.util.testing as pdt
+
+import matplotlib.pyplot as plt
 
 local_path = os.path.dirname(__file__)
 root = os.path.join(local_path, '..', '..')
 sys.path.append(root)
 
-import main.model.model_param_set as params_set
 import main.base as base
-import main.ta as ta
-import main.model.sample_weight as sw
-import main.yeod.yeod as yeod
+from main.work import conf
 
 
-def build_trains(df, start, end):
-    """
-    param sym2feats:
-        dict from symbol to its features dataframe
-    param start:
-        the first day(include) to merge
-    param end:
-        the last day(exclude) to merge
-    """
-    df = df[ (df.date >= start) & (df.date<=end)]
-    return df
+def cvsplit(np_data, train_num, test_num):
+    i = 0
+    while True:
+        if i +train_num + test_num > len(np_data):
+            break
+        yield(np_data[i:i+train_num], np_data[i+train_num:i+train_num+test_num])
+        i += test_num
 
-def getMinMax(npTrainFeat):
-    minMaxScaler = preprocessing.MinMaxScaler()
-    npTrainFeatMinMax = minMaxScaler.fit_transform(npTrainFeat)
-    return minMaxScaler
 
-def main(args):
-    cls = params_set.d_model[args.clsname]
-    file_model, file_ipt = base.file_model(args)
+def date_split(df, train_num, test_num):
+    assert isinstance(df, pd.DataFrame)
+    df['yyyy'] = df.date.str.slice(0,4)
+    npDates = df["yyyy"].unique()
+    df.set_index(["yyyy"], drop=True, inplace=True)
+    for (train,test) in cvsplit(npDates, train_num, test_num):
+        df_train = df.loc[train]
+        df_train.reset_index(drop=False, inplace=True)
+        df_test = df.loc[test]
+        df_test.reset_index(drop=False, inplace=True)
+        yield (df_train, df_test)
 
-    if os.path.isfile(file_model):
-        print "%s already exists!" % file_model
-        return
-    dfTa = base.get_merged(args.taname, getattr(yeod, "get_%s" % args.setname)())
-    if dfTa is None:
-        return None
-    dfTrain = build_trains(dfTa, args.start, args.end)
+def extract_feat_label(df, scorename):
+    df = df.replace([np.inf,-np.inf],np.nan).dropna()
+    feat_names = base.get_feat_names(df)
+    npFeat = df.loc[:,feat_names].values.copy()
+    npLabel = df.loc[:,scorename].values.copy()
+    return npFeat, npLabel
 
-    if args.sample:
-        print "sampling ..."
-        sample = len(dfTrain)/sample
-        rows = random.sample(range(len(dfTrain)), sample)
-        print len(rows)
-        dfTrain = dfTrain.reset_index(drop=True)
-        dfTrain = dfTrain.ix[rows]
-    
-    if args.repeat:
-        print "repeat ..."
-        toAppends = []
-        for i in range(1,3):
-            dfTmp = dfTrain[dfTrain.label5>=1+i/20.0]
-            toAppends.append(dfTmp)
-        print dfTrain.shape
-        dfTrain = dfTrain.append(toAppends)
-        print dfTrain.shape
 
-    if args.sw:
-        dfTrain = getattr(sw, "sw_%s" % args.sw)(dfTrain)
+def split(years, split_):
+    if split_[conf.SPLIT_POS_METHOD] == conf.SPLIT_METHOD_STA:
+        static_test_end = len(years)-1
+        while True:
+            if years[static_test_end] > split_[conf.SPLIT_POS_START]:
+                static_test_end -= 1
+            else:
+                break
+        static_test_start = static_test_end  - split_[conf.SPLIT_POS_TRAIN_LEN]
+    i = len(years) - 1
+    while True:
+        if years[i] > split_[conf.SPLIT_POS_END]:
+            i -= 1
+            continue
+        if i+1 -split_[conf.SPLIT_POS_TEST_LEN] - split_[conf.SPLIT_POS_TRAIN_LEN] < 0:
+            break
+        if years[i+1-split_[conf.SPLIT_POS_TEST_LEN]] < split_[conf.SPLIT_POS_START]:
+            break
+        if split_[conf.SPLIT_POS_METHOD] == conf.SPLIT_METHOD_MOV:
+            yield (years[i-split_[conf.SPLIT_POS_TEST_LEN]-split_[conf.SPLIT_POS_TRAIN_LEN] + 1: i-split_[conf.SPLIT_POS_TEST_LEN]+1],
+                   years[i-split_[conf.SPLIT_POS_TEST_LEN] + 1:i+1])
+        else:
+            yield(years[static_test_start:static_test_end],
+                  years[i-split_[conf.SPLIT_POS_TEST_LEN] + 1:i+1])
+        i -= split_[conf.SPLIT_POS_TEST_LEN]
 
-    feat_names = base.get_feat_names(dfTrain)
-    npTrainFeat = dfTrain.loc[:,feat_names].values
 
-    npTrainLabel = dfTrain.loc[:,args.labelname].values.copy()
-    npTrainLabel[npTrainLabel != 1.0]
-    npTrainLabel[npTrainLabel >  1.0] = 1
-    npTrainLabel[npTrainLabel <  1.0] = 0
-
-    if args.scaler:
-        scaler = getMinMax(npTrainFeat)
-        npTrainFeatScaled = scaler.transform(npTrainFeat)
+def post_valid(classifier, df_train, df_test, score, is_fit):
+    df_train = df_train.sort_values(["sym", "date"])
+    # from sklearn.exceptions import NotFittedError
+    npTrainFeat, npTrainLabel = extract_feat_label(df_train, score.get_name())
+    npTestFeat, npTestLabel = extract_feat_label(df_test, score.get_name())
+    feat_names = base.get_feat_names(df_test)
+    if not is_fit:
+        probas_ = classifier.predict_proba(npTestFeat)
     else:
-        npTrainFeatScaled = npTrainFeat
-    if args.sw:
-        cls.fit(npTrainFeatScaled, npTrainLabel, sample_weight=dfTrain["sample_weight"].values)
-    else:
-        cls.fit(npTrainFeatScaled, npTrainLabel)
-    joblib.dump(cls, file_model, compress = 3)
-    #joblib.dump(scaler, os.path.join(root, 'data', 'models',scalerName), compress = 3)
-    dFeatImps = dict(zip( feat_names, cls.feature_importances_))
-    with open(file_ipt, 'w') as fipt:
-        for each in sorted(dFeatImps.iteritems(), key = lambda a: a[1], reverse=True):
-            print >> fipt, each[0], ",", each[1]
+        classifier.fit(npTrainFeat, npTrainLabel)
+        probas_ = classifier.predict_proba(npTestFeat)
+    d_feat_ipts = dict(zip(feat_names, classifier.get_feature_importances()))
+    ipts = []
+    for each in sorted(d_feat_ipts.items(), key=lambda a: a[1], reverse=True):
+        ipts.append({"name":each[0], "score": each[1]})
 
-if __name__ == '__main__':
-    import argparse
-    parser = argparse.ArgumentParser(description='traing modeling ')
-    parser.add_argument('-s', '--sw', help='is sample weight', dest='sw', action="store", default = None)
-    parser.add_argument('-r', '--rp', help="repeat",    dest="repeat", action="store", default=None)
-    parser.add_argument('--sample', help="sample method", dest="sample", action="store", default=None)
-    parser.add_argument('--scaler', help="scaler method", dest="scaler", action="store", default=None)
-    parser.add_argument('--start', dest='start', action='store', default='1700-01-01', help="model start time")
-    parser.add_argument('--end',   dest='end',   action='store', default='2009-12-31', help="model end time")
-    parser.add_argument('--label', dest='labelname', action='store', default='label5', help="the label name")
-    
-    parser.add_argument('setname', help = "the sym set to be ta")
-    parser.add_argument('taname', help = "the sym set to be ta")
-    parser.add_argument('clsname', help="the model full name")
+    fpr, tpr, thresholds = roc_curve(npTestLabel, probas_[:, 1])
+    roc_auc = auc(fpr, tpr)
 
-    args = parser.parse_args()
-    main(args)
+    min = str(df_test.head(1)["yyyy"].values[0])
+    max = str(df_test.tail(1)["yyyy"].values[0])
+    df_test.loc[:, "pred"] = probas_[:, 1]
+    df_test.loc[:, "pred2"] = probas_[:, 0]
+    #pdt.assert_numpy_array_equal(df_test.round(2).loc[:, "pred"].values[0:10], 1 - df_test.round(2).loc[:, "pred2"].values[0:10])
+    post = {"classifier": classifier,
+            'ipts':ipts,
+            "fpr":fpr, "tpr":tpr, 
+            "thresholds": thresholds,
+            "roc_auc":roc_auc,
+            "name":"%s-%s" % (min, max),
+            "min":min,
+            "max":max,
+            "df_test":df_test}
+    return post
+
+
+def plot_cross(cross, is_label = False):
+    colors = cycle(['cyan', 'indigo', 'seagreen', 'yellow', 'blue', 'darkorange'])
+    for each,color in zip(cross, colors):
+        if is_label:
+            plt.plot(each.fpr, each.tpr, lw=2, color=color,
+                    label= each.name)
+        else:
+            plt.plot(each.fpr, each.tpr, lw=2, color=color)
+def plot_mean(mean):
+    plt.plot(mean["fpr"], mean["tpr"], color='g', linestyle="--",
+             label="Mean Roc (area = %0.2f)" % mean["roc_auc"], lw = 2)
+    plt.plot([0, 1], [0, 1], linestyle='--', lw=1, color='k')
+def plot_post(post):
+    plt.plot(post.fpr, post.tpr, color='k', linestyle="-",
+             label="Post Roc (area = %0.2f)" % post["roc_auc"], lw = 2)
+
+def plot_save(outfile):
+    plt.xlim([-0.05, 1.05])
+    plt.ylim([-0.05, 1.05])
+    plt.xlabel('False Positive Rate')
+    plt.ylabel('True Positive Rate')
+    plt.title('Receiver operating characteristic mltrade')
+    plt.legend(loc="lower right")
+    plt.savefig(outfile)
+    plt.cla()
