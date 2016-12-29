@@ -134,10 +134,8 @@ def get_sp500Top100():
     df = df.sort_values("Market Cap", ascending=False)
     return [each["Symbol"].strip() for i,each in df.head(100).iterrows()]
 
-def main2(poolnum=10):
-    symbols = Sp500(0, 500).get_syms()
-    symbols.extend(sp100(0, 150).get_syms())
-    engine.work(list(set(symbols)), base.dir_eod(), poolnum)
+def main2(poolnum=10, target=base.dir_eod(), symbols = sp100(0, 150).get_syms()):
+    engine.work(list(set(symbols)), target, poolnum)
 
 def main(args):
     main2(args.poolnum)
@@ -149,3 +147,8 @@ if __name__ == '__main__':
     parser.add_argument('setname', help = "the sym set to be download")
     args = parser.parse_args()
     main(args)
+
+def test_main2():
+    import tempfile
+    tmpdir = tempfile.TemporaryDirectory()
+    print(tmpdir)
