@@ -5,6 +5,10 @@ import pandas as pd
 import numpy as np
 import pandas_datareader.yahoo.daily as yahoo
 import multiprocessing
+import logging
+
+logging.basicConfig(level=logging.DEBUG)
+
 local_path = os.path.dirname(__file__)
 
 def get_stock(symbol):
@@ -55,6 +59,9 @@ def _single(symbol, data_dir):
 
     return len(df)
 def work(syms,data_dir, processes):
+    logging.debug("data_dir : %s" % data_dir)
+    if not os.path.exists(data_dir):
+        os.makedirs(data_dir)
     syms.sort()
     pool = multiprocessing.Pool(processes = int(processes) )
     result = {}

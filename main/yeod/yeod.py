@@ -151,4 +151,6 @@ if __name__ == '__main__':
 def test_main2():
     import tempfile
     tmpdir = tempfile.TemporaryDirectory()
-    print(tmpdir)
+    main2(1, tmpdir.name, ["AAPL", "YHOO"])
+    import glob
+    assert 2 == len(glob.glob(tmpdir.name + "/*.csv"))

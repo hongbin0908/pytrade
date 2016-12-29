@@ -2,13 +2,12 @@
 # -*- coding: utf-8 -*-
 # @author  Bin Hong
 
-"""
-"""
-
 import os
 import sys
 import time
 import subprocess
+import datetime
+import logging
 
 local_path = os.path.dirname(__file__)
 root = os.path.join(local_path, '..')
@@ -23,19 +22,16 @@ def git_diff():
             git diff | wc -l
     """.format(**{"local_path":local_path}), shell=True)
     return int(s)
-yeod.main2(poolnum = 10)
+dirname = "sp100_%s" % datetime.datetime.now().strftime("%Y%m%d")
+dirpath = os.path.join(local_path, dirname)
+yeod.main2(5, dirpath)
 
-subprocess.check_output("""
-    cd {local_path};
-    git pull;
-""".format(**{"local_path":local_path}), shell=True)
+cmdstr = """
+    tar cvzf {dirpath}.tar.gz {dirpath};
+    mv {dirpath}.tar.gz /home/hongbin/misc/nginx/html;
+    rm -rf /home/hongbin/misc/nginx/html/sp100_current.tar.gz;
+    ln -s /home/hongbin/misc/nginx/html/{dirname}.tar.gz /home/hongbin/misc/nginx/html/sp100_current.tar.gz 
+""".format(**{"dirname":dirname, "dirpath": dirpath})
 
-diff_num = git_diff()
-
-if diff_num > 0 :
-    subprocess.check_output("""
-        cd {local_path};
-        git pull;
-        git commit -a -m "xxxx"; 
-        git push;
-    """.format(**{"local_path":local_path}), shell=True)
+print(cmdstr)
+subprocess.check_output(cmdstr, shell=True)
