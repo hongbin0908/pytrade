@@ -31,3 +31,12 @@ def work(confer):
     crosser_set = CrosserSet(confer)
 
     print("\n" + crosser_set.pred().round(4).to_html(), file=out_file)
+
+    import markdown2 as md
+    text = ""
+    with open(out_file, 'r', encoding='utf-8') as f:
+        text = f.read()
+    html = md.markdown(text, extras=["tables"])
+    out_file_html = confer.get_out_file_prefix() + ".pred.html"
+    with open(out_file_html, "w", encoding='utf-8') as fout:
+        print(html, file=fout)
