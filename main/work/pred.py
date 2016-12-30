@@ -34,7 +34,7 @@ def work(confer):
 
     import markdown2 as md
     text = ""
-    with open(out_file, 'r', encoding='utf-8') as f:
+    with open(out_file_name, 'r', encoding='utf-8') as f:
         text = f.read()
     html = md.markdown(text, extras=["tables"])
     out_file_html = confer.get_out_file_prefix() + ".pred.html"
