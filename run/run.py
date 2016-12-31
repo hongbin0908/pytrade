@@ -8,6 +8,7 @@
 import sys
 import os
 import platform
+import socket
 
 import matplotlib
 matplotlib.use('Agg')
@@ -32,6 +33,8 @@ from main.classifier.tree import MyGradientBoostingClassifier
 if platform.platform().startswith("Windows"):
     TEST = True
 elif platform.platform().startswith("Darwin"):
+    TEST = True
+elif '47.90.41.27' == socket.gethostbyname(socket.gethostname()):
     TEST = True
 else:
     TEST = False
