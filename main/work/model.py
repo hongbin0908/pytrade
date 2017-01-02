@@ -153,5 +153,9 @@ def work(confer):
         text = f.read()
     html = md.markdown(text, extras=["tables"])
     out_file_html = confer.get_out_file_prefix() + ".model.html"
+
+    from shutil import copyfile
+    copyfile(out_file_html, os.path.join(root, "report", "model.html"))
+
     with open(out_file_html, "w", encoding='utf-8') as fout:
         print(html, file=fout)

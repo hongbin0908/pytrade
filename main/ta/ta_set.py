@@ -35,7 +35,7 @@ class TaSet():
 class TaSetBase1(TaSet):
     def get_name(self):
         return "base1"
-    def get_ta(self, df):
+    def get_ta(self, df, confer):
         opens = df['open'].values
         highs = df['high'].values
         lows = df['low'].values

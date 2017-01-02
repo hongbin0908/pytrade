@@ -66,7 +66,7 @@ def getConf():
         confer.syms = confer.syms[0:1]
 
     else:
-        ta = ta_set.TaSetBase1Ext4El()
+        ta = ta_set.TaSetBase1()
         confer = MltradeConf(2,
                 classifier=MyRandomForestClassifier(n_estimators=10, min_samples_leaf=10), 
                 score1=ScoreLabel(5, 1.0),

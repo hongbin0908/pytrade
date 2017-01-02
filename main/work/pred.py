@@ -40,3 +40,6 @@ def work(confer):
     out_file_html = confer.get_out_file_prefix() + ".pred.html"
     with open(out_file_html, "w", encoding='utf-8') as fout:
         print(html, file=fout)
+
+    from shutil import copyfile
+    copyfile(out_file_html, os.path.join(root, "report", "pred.html"))
