@@ -11,6 +11,7 @@ cd "$SCRIPT_PATH"/../
 
 rm -rf data/ta/*
 rm -rf data/cross/*
+python3 run/get_yeod.py
 python3 run/run.py
 
  
