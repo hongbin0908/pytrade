@@ -28,6 +28,7 @@ from main.model.spliter import StaticSpliter
 from main.classifier.tree import MyRandomForestClassifier
 from main.classifier.tree import RFCv1n2000md6msl100
 from main.classifier.tree import MyGradientBoostingClassifier
+from main.classifier.tree import MyLogisticRegressClassifier
 
 
 if platform.platform().startswith("Windows"):
@@ -50,6 +51,7 @@ def getConf2():
                          model_split=StaticSpliter(2010,2013,1, 1900, 2010),
                          valid_split=StaticSpliter(2013, 2017, 1, 1900, 2010),
                          ta = ta_set.TaSetBase1Ext8(), n_pool=25)
+
     return confer
 
 def getConf():
@@ -67,8 +69,10 @@ def getConf():
 
     else:
         ta = ta_set.TaSetBase1()
+        clazz = MyRandomForestClassifier(n_estimators=10, min_samples_leaf=10)
+        clazz = MyLogisticRegressClassifier()
         confer = MltradeConf(2,
-                classifier=MyRandomForestClassifier(n_estimators=10, min_samples_leaf=10), 
+                classifier= clazz,
                 score1=ScoreLabel(5, 1.0),
                 score2 = ScoreLabel(5, 1.0),
                 model_split=StaticSpliter(2010,2013, 1, 2000, 2010),

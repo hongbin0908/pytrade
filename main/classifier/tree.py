@@ -6,8 +6,12 @@ from main.classifier.base_classifier import BaseClassifier
 from sklearn.ensemble.forest import RandomForestClassifier
 from sklearn.ensemble.gradient_boosting import GradientBoostingClassifier
 
-from sklean import linear_model
+from sklearn import linear_model
+
 class MyLogisticRegressClassifier(BaseClassifier):
+    """
+    http://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html
+    """
     def __init__(self):
         self.classifier = linear_model.LogisticRegression(C = 1e5)
         self.name = "lr"
@@ -21,7 +25,7 @@ class MyLogisticRegressClassifier(BaseClassifier):
         return self.classifier.predict_proba(X)
 
     def get_feature_importances(self):
-        return self.classifier.feature_importances_
+        assert False
 
 class MyRandomForestClassifier(BaseClassifier):
     def __init__(self, verbose=1, n_estimators = 2000, max_depth=8, min_samples_leaf=10000,

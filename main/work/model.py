@@ -111,8 +111,8 @@ def work(confer):
     crosser_set.plot_precision_recall_bulls("valid",
                          os.path.join(stuff_dir_name, "valid_pp.png"))
     print("\n![](./%s.data/%s.png)" % (ntpath.basename(out_file_name), "valid_pp"), file=out_file)
-    print("\n" + crosser_set.ipts_table("model").head(10).round(4).to_html(), file=out_file)
-    print("\n" + crosser_set.ipts_table("model").tail(10).round(4).to_html(), file=out_file)
+    #print("\n" + crosser_set.ipts_table("model").head(10).round(4).to_html(), file=out_file)
+    #print("\n" + crosser_set.ipts_table("model").tail(10).round(4).to_html(), file=out_file)
 
     print("## bears...", file=out_file)
     crosser_set.plot_precision_recall_bears("model",
@@ -123,8 +123,8 @@ def work(confer):
     crosser_set.plot_precision_recall_bears("valid",
                                       os.path.join(stuff_dir_name, "valid_pp_bears.png"))
     print("\n![](./%s.data/%s.png)" % (ntpath.basename(out_file_name), "valid_pp_bears"), file=out_file)
-    print("\n" + crosser_set.ipts_table("model").head(10).round(4).to_html(), file=out_file)
-    print("\n" + crosser_set.ipts_table("model").tail(10).round(4).to_html(), file=out_file)
+    #print("\n" + crosser_set.ipts_table("model").head(10).round(4).to_html(), file=out_file)
+    #print("\n" + crosser_set.ipts_table("model").tail(10).round(4).to_html(), file=out_file)
     print("\n" + crosser_set.accurate("model").round(4).to_html(), file=out_file)
 
     crosser_set.plot_top_precision("model",
@@ -154,8 +154,9 @@ def work(confer):
     html = md.markdown(text, extras=["tables"])
     out_file_html = confer.get_out_file_prefix() + ".model.html"
 
+    with open(out_file_html, "w", encoding='utf-8') as fout:
+        print(html, file=fout)
+
     from shutil import copyfile
     copyfile(out_file_html, os.path.join(root, "report", "model.html"))
 
-    with open(out_file_html, "w", encoding='utf-8') as fout:
-        print(html, file=fout)
