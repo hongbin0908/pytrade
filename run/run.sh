@@ -11,7 +11,6 @@ cd "$SCRIPT_PATH"/../
 
 rm -rf data/ta/*
 rm -rf data/cross/*
-scl enable rh-python34 bash
 python3 run/run.py
 
  
