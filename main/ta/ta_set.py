@@ -154,9 +154,9 @@ class TaSetBase1Ext4(TaSet):
     def get_name(self):
         return "TaBase1Ext4"
 
-    def get_ta(self, df):
+    def get_ta(self, df, confer):
         df = df.reset_index("date", drop = True)
-        df = TaSetBase1().get_ta(df)
+        df = TaSetBase1().get_ta(df, confer)
         df = sig_123recall.main(df)
         df = sig_adx.main(df)
         df = sig_upbreak.main(df)
@@ -169,7 +169,7 @@ class TaSetBase1Ext4El(TaSet):
 
     def get_ta(self, df, confer):
         df = df.reset_index("date", drop=True)
-        df = TaSetBase1Ext4().get_ta(df)
+        df = TaSetBase1Ext4().get_ta(df, confer)
         ipt = os.path.join(root, "main/ta/feat_select_sp500Top50-base1_ext4")
         with open(ipt, "r") as f:
             for line in f.readlines():
