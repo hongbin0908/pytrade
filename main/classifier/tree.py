@@ -6,6 +6,23 @@ from main.classifier.base_classifier import BaseClassifier
 from sklearn.ensemble.forest import RandomForestClassifier
 from sklearn.ensemble.gradient_boosting import GradientBoostingClassifier
 
+from sklean import linear_model
+class MyLogisticRegressClassifier(BaseClassifier):
+    def __init__(self):
+        self.classifier = linear_model.LogisticRegression(C = 1e5)
+        self.name = "lr"
+    def get_name(self):
+        return self.name
+
+    def fit(self, X, y):
+        return self.classifier.fit(X, y)
+
+    def predict_proba(self, X):
+        return self.classifier.predict_proba(X)
+
+    def get_feature_importances(self):
+        return self.classifier.feature_importances_
+
 class MyRandomForestClassifier(BaseClassifier):
     def __init__(self, verbose=1, n_estimators = 2000, max_depth=8, min_samples_leaf=10000,
                  n_jobs=25):
