@@ -24,8 +24,8 @@ class MyLogisticRegressClassifier(BaseClassifier):
     def predict_proba(self, X):
         return self.classifier.predict_proba(X)
 
-    def get_feature_importances(self):
-        assert False
+    def get_feature_importances(self, feat_names):
+        return dict(zip(feat_names, self.classifier.coef_))
 
 class MyRandomForestClassifier(BaseClassifier):
     def __init__(self, verbose=1, n_estimators = 2000, max_depth=8, min_samples_leaf=10000,
@@ -47,7 +47,7 @@ class MyRandomForestClassifier(BaseClassifier):
     def predict_proba(self, X):
         return self.classifier.predict_proba(X)
 
-    def get_feature_importances(self):
+    def get_feature_importances(self, feat_names):
         return self.classifier.feature_importances_
 
 
