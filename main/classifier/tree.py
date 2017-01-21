@@ -7,6 +7,7 @@ from sklearn.ensemble.forest import RandomForestClassifier
 from sklearn.ensemble.gradient_boosting import GradientBoostingClassifier
 
 from sklearn import linear_model
+import main.base as base
 
 class MyLogisticRegressClassifier(BaseClassifier):
     """
@@ -27,6 +28,17 @@ class MyLogisticRegressClassifier(BaseClassifier):
     def get_feature_importances(self, feat_names):
         ipts = dict(zip(feat_names, self.classifier.coef_[0]))
         return ipts
+
+    def verify_predict(self, df):
+        feat_names = base.get_feat_names(df)
+        ipts = self.get_feature_importances(feat_names)
+        s = 0
+        for each in ipts:
+            if int(df[each]) == 1:
+                s += ipts[each] * 1
+        import math
+        return 1 / (1 + math.exp(-1 * (s + self.classifier.intercept_)))
+
 
 class MyRandomForestClassifier(BaseClassifier):
     def __init__(self, verbose=1, n_estimators = 2000, max_depth=8, min_samples_leaf=10000,
