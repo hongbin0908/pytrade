@@ -17,4 +17,4 @@ if __name__ == "__main__":
     for feat_name in ["ta_RSI_7_d1_0", "ta_RSI_7_d2_0", "ta_NATR_7_d2_3", "ta_ROC_10_d2_0", "ta_ROCR100_10_d2_0", "ta_CMO_14_d2_1",
                       "ta_ROCR100_10_d1_0", "ta_ROC_10_d1_0", "ta_ROCR100_7_d2_0", "ta_ROC_7_d2_0"]:
         df1 = df[df[feat_name] == 1]
-        print("%s:%f" % (feat_name, len(df1.score_label_5_100 == 1)/len(df1)))
+        print("%s:%f" % (feat_name, len(df1[df1.score_label_5_100 == 1])/len(df1)))
