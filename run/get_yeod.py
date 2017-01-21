@@ -20,7 +20,7 @@ cmdstr = """
     mkdir -p yeod
     rm -rf yeod/*
     tar xvzf sp100_current.tar.gz -C yeod
-    rsync  -av /data/users/hongbin/wp/pytrade hongbin@bc-r2hdp2:~/wp/
+    #rsync  -av /data/users/hongbin/wp/pytrade hongbin@bc-r2hdp2:~/wp/
     """.format(**{"target":os.path.join(local_path, "..", "data")})
 logging.debug(cmdstr)
 subprocess.check_output(cmdstr, shell=True)
