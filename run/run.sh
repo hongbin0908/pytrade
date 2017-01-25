@@ -14,5 +14,9 @@ rm -rf data/cross/*
 python3 run/get_yeod.py
 python3 run/run.py
 
+git add report/*
+git commit -a -m "running ..."
+git push
+
  
 popd  > /dev/null # return the directory orignal
