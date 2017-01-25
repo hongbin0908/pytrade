@@ -22,6 +22,7 @@ from main.base.score2 import ScoreLabel
 from main.work import model
 from main.work import build
 from main.work import pred
+from main import base
 from main.work.conf import MltradeConf
 from main.ta import ta_set
 from main.model.spliter import StaticSpliter
@@ -83,7 +84,11 @@ def getConf():
     return confer
 
 if __name__ == '__main__':
+    last_date = base.last_trade_date()
     confer = getConf()
     build.work(confer)
     model.work(confer)
-    pred.work(confer)
+    pred.work(confer, last_date)
+
+
+

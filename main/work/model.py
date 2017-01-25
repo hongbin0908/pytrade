@@ -147,6 +147,16 @@ def work(confer):
     print("\n" + crosser_set.top_bears("valid").round(4).to_html(), file=out_file)
     out_file.close()
 
+    df_pred = crosser_set.pred()
+    index = df_pred["date"].unique(); index.sort()
+    columns = df_pred["sym"].unique(); columns.sort()
+
+    df_pred2 = pd.DataFrame(index=index, columns=columns)
+    for i, each in df_pred.iterrows():
+        df_pred2.loc[each["date"], each["sym"]] = each["pred"]
+
+    df_pred2.to_pickle(os.path.join(root, "data", "cross", "pred%s.pkl" % base.last_trade_date()))
+
     import markdown2 as md
     text = ""
     with open(out_file_name, 'r', encoding='utf-8') as f:
@@ -159,4 +169,6 @@ def work(confer):
 
     from shutil import copyfile
     copyfile(out_file_html, os.path.join(root, "report", "model.html"))
+
+
 
