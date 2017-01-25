@@ -30,7 +30,7 @@ from main.classifier.tree import MyRandomForestClassifier
 from main.classifier.tree import RFCv1n2000md6msl100
 from main.classifier.tree import MyGradientBoostingClassifier
 from main.classifier.tree import MyLogisticRegressClassifier
-
+from main.backtest import backtest
 
 if platform.platform().startswith("Windows"):
     TEST = True
@@ -89,6 +89,8 @@ if __name__ == '__main__':
     build.work(confer)
     model.work(confer)
     pred.work(confer, last_date)
+    backtest.run(os.path.join(root, "data", "cross", "pred2017-01-09.pkl"))
+
 
 
 
