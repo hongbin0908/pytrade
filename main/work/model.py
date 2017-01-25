@@ -148,14 +148,14 @@ def work(confer):
     out_file.close()
 
     df_pred = crosser_set.pred()
-    index = df_pred["date"].unique(); index.sort()
-    columns = df_pred["sym"].unique(); columns.sort()
+    # index = df_pred["date"].unique(); index.sort()
+    # columns = df_pred["sym"].unique(); columns.sort()
 
-    df_pred2 = pd.DataFrame(index=index, columns=columns)
-    for i, each in df_pred.iterrows():
-        df_pred2.loc[each["date"], each["sym"]] = each["pred"]
+    # df_pred2 = pd.DataFrame(index=index, columns=columns)
+    # for i, each in df_pred.iterrows():
+    #    df_pred2.loc[each["date"], each["sym"]] = each["pred"]
 
-    df_pred2.to_pickle(os.path.join(root, "data", "cross", "pred%s.pkl" % base.last_trade_date()))
+    df_pred.to_pickle(os.path.join(root, "data", "cross", "pred%s.pkl" % base.last_trade_date()))
 
     import markdown2 as md
     text = ""

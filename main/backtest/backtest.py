@@ -17,9 +17,9 @@ def f(x):
 
 
 def run(pred_file):
-    #df = pd.read_pickle(os.path.join(root, "data", "cross", "pred2017-01-09.pkl"))
+    # df = pd.read_pickle(os.path.join(root, "data", "cross", "pred2017-01-09.pkl"))
     df = pd.read_pickle(pred_file)
-    df = df["2010-01-01":]
+    df = df[df.date > "2010-01-01"]
     df.reset_index(drop=False, inplace = True)
     df["datetime"] = pd.to_datetime(df["index"])
     df = df.set_index('datetime')
