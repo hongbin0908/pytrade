@@ -89,7 +89,7 @@ if __name__ == '__main__':
     build.work(confer)
     model.work(confer)
     pred.work(confer, last_date)
-    backtest.run(os.path.join(root, "data", "cross", "pred2017-01-09.pkl"))
+    backtest.run(os.path.join(root, "data", "cross", "pred%s.pkl" % base.last_trade_date()))
 
 
 
