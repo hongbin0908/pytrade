@@ -19,9 +19,24 @@ def f(x):
     print(x)
     return x
 
+def assert_cotinue(df):
+    for sym in df.columns:
+        s = df[sym]
+        assert isinstance(s, pd.Series)
+        nan_check = False
+        for date, each in s.iteritems():
+            if nan_check:
+                if np.isnan(each):
+                    print("ERROR: %s has no price at %s" % (sym, date))
+                    assert False
+            elif not np.isnan(each):
+                nan_check = True
+            else:
+                pass
+
 def transfer():
     df_pred = pd.read_pickle(os.path.join(root, "data", "cross", "pred%s.pkl" % base.last_trade_date()))
-    df_pred = df_pred[df_pred.date >= "2015-01-01"]
+    df_pred = df_pred[df_pred.date >= "2010-01-01"]
     index = df_pred[df_pred.sym == "MSFT"]["date"].unique(); index.sort()
     columns = df_pred["sym"].unique(); columns.sort()
     df_price = pd.DataFrame(index = index, columns = columns)
@@ -31,18 +46,8 @@ def transfer():
         df_price.loc[each["date"], each["sym"]] = each["close"]
         df_thred.loc[each["date"], each["sym"]] = each["pred"]
     # assert
-    for sym in df_price.columns:
-        s = df_price[sym]
-        assert isinstance(s, pd.Series)
-        nan_check = False
-        for each in s:
-            if nan_check:
-                assert not np.isnan(each)
-            elif not np.isnan(each):
-                nan_check = True
-            else:
-                pass
-
+    assert_cotinue(df_price)
+    assert_cotinue(df_thred)
 
         
         

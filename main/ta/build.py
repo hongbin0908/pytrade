@@ -85,7 +85,7 @@ def work(pool_num, symset, ta, scores, confer):
                 for score in scores:
                     assert isinstance(score, ScoreLabel)
                     data = score.agn_score(data)
-                    data = data[data.ta_NATR_7 > 1.0]
+                    #data = data[data.ta_NATR_7 > 1.0]
                 to_apends.append(data)
                 print(sym)
             except Exception as exc:
