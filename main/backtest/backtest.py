@@ -42,8 +42,10 @@ def transfer():
     df_thred = pd.DataFrame(index = index, columns = columns)
 
     for i, each in df_pred.iterrows():
-        df_price.loc[each["date"], each["sym"]] = each["close"]
-        df_thred.loc[each["date"], each["sym"]] = each["pred"]
+        if each["date"] not in df_price.index:
+            continue
+        df_price.set_value(each["date"], each["sym"], each["close"])
+        df_thred.set_value(each["date"], each["sym"], each["pred"])
     # assert
     assert_cotinue(df_price)
     assert_cotinue(df_thred)
