@@ -21,17 +21,20 @@ def assert_cotinue(df):
     for sym in df.columns:
         s = df[sym]
         assert isinstance(s, pd.Series)
-        nan_check = False
+        BEGIN = 0; BODY=1; END=2
+        phrase = BEGIN
         for date, each in s.iteritems():
-            if nan_check:
+            if BEGIN == phrase:
+                if not np.isnan(each):
+                    phrase = BODY
+                    continue
+            elif BODY == phrase:
                 if np.isnan(each):
-                    print("ERROR: %s has no price at %s" % (sym, date))
-                    assert False
-            elif not np.isnan(each):
-                nan_check = True
+                    phrase = END
+                    continue
             else:
-                pass
-
+                if not np.isnan(each):
+                    assert(False)
 def transfer():
     df_pred = pd.read_pickle(os.path.join(root, "data", "cross", "pred%s.pkl" % base.last_trade_date()))
     df_pred = df_pred[df_pred.date >= "2010-01-01"]
