@@ -34,6 +34,7 @@ def assert_cotinue(df):
                     continue
             else:
                 if not np.isnan(each):
+                    print("stop at %s %s" (sym, date))
                     assert(False)
 def transfer():
     df_pred = pd.read_pickle(os.path.join(root, "data", "cross", "pred%s.pkl" % base.last_trade_date()))
