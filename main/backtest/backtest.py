@@ -1,6 +1,7 @@
 import os
 import sys
 import pandas as pd
+import numpy as np
 import bt
 import matplotlib
 matplotlib.use('Agg')
@@ -30,8 +31,19 @@ def transfer():
         df_price.loc[each["date"], each["sym"]] = each["close"]
         df_thred.loc[each["date"], each["sym"]] = each["pred"]
     # assert
-    for sym in df_price.columns():
+    for sym in df_price.columns:
         s = df_price[sym]
+        assert isinstance(s, pd.Series)
+        nan_check = False
+        for each in s:
+            if nan_check:
+                assert not np.isnan(each)
+            elif not np.isnan(each):
+                nan_check = True
+            else:
+                pass
+
+
         
         
      
