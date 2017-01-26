@@ -3,8 +3,6 @@ import sys
 import pandas as pd
 import numpy as np
 import bt
-import matplotlib
-matplotlib.use('Agg')
 from bt.algos import SelectWhere
 
 local_path = os.path.dirname(__file__)
@@ -38,6 +36,7 @@ def transfer():
     df_pred = pd.read_pickle(os.path.join(root, "data", "cross", "pred%s.pkl" % base.last_trade_date()))
     df_pred = df_pred[df_pred.date >= "2010-01-01"]
     index = df_pred[df_pred.sym == "MSFT"]["date"].unique(); index.sort()
+    index = pd.to_datetime(index)
     columns = df_pred["sym"].unique(); columns.sort()
     df_price = pd.DataFrame(index = index, columns = columns)
     df_thred = pd.DataFrame(index = index, columns = columns)
@@ -49,19 +48,14 @@ def transfer():
     assert_cotinue(df_price)
     assert_cotinue(df_thred)
 
+    return (df_price, df_thred)
+
         
         
      
-def run(pred_file):
-    # df = pd.read_pickle(os.path.join(root, "data", "cross", "pred2017-01-09.pkl"))
-    df = pd.read_pickle(pred_file)
-    df = df[df.date > "2010-01-01"]
-    df.reset_index(drop=False, inplace = True)
-    df["datetime"] = pd.to_datetime(df["index"])
-    df = df.set_index('datetime')
-    del df["index"]
-
-    signal = df > 0.7
+def run():
+    df_price, df_thred = transfer()
+    signal = df_thred > 0.7
     for col in range(signal.shape[1]):
         eng = 0
         for i in range(signal.shape[0]):
@@ -79,7 +73,7 @@ def run(pred_file):
                                    bt.algos.WeighEqually(),
                                    bt.algos.Rebalance()])
     # now we create the Backtest
-    t = bt.Backtest(s, df, initial_capital=9000)
+    t = bt.Backtest(s, df_price, initial_capital=9000)
 
     # and let's run it!
     res = bt.run(t)
@@ -91,4 +85,4 @@ def run(pred_file):
     #res.display()
 
 if __name__ == '__main__':
-    transfer()
+    run()

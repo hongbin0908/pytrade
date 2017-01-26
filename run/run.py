@@ -79,7 +79,7 @@ def getConf():
                 score2 = ScoreLabel(5, 1.0),
                 model_split=StaticSpliter(2010,2013, 1, 2000, 2010),
                 valid_split=StaticSpliter(2013, 2017, 1, 2003, 2013),
-                ta = ta, n_pool=1)
+                ta = ta, n_pool=1, index = "test")
         confer.syms = confer.syms[0:1]
     return confer
 
