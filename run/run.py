@@ -62,8 +62,8 @@ def getConf():
         classifier = RFCv1n2000md6msl100()
         classifier = MyLogisticRegressClassifier()
         ta = ta_set.TaSetBase1Ext4El()
-        confer = MltradeConf(150,classifier=classifier, score1=ScoreLabel(1, 1.0),
-                             score2 = ScoreLabel(1, 1.0),
+        confer = MltradeConf(150,classifier=classifier, score1=ScoreLabel(3, 1.0),
+                             score2 = ScoreLabel(3, 1.0),
                              model_split=StaticSpliter(2010,2017,1, 1700, 2010),
                              valid_split=StaticSpliter(2013, 2017, 1, 1700, 2010),
                              ta = ta, n_pool=30, index="sp100")
