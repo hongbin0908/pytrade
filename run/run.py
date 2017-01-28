@@ -41,20 +41,6 @@ elif '47.90.41.27' == socket.gethostbyname(socket.gethostname()):
 else:
     TEST = False
 
-def getConf2():
-    """
-    for test
-    :return:
-    """
-    classifier = MyRandomForestClassifier()
-    confer = MltradeConf(500,classifier=classifier, score1=ScoreLabel(5, 1.0),
-                         score2 = ScoreLabel(5, 1.0),
-                         model_split=StaticSpliter(2010,2013,1, 1900, 2010),
-                         valid_split=StaticSpliter(2013, 2017, 1, 1900, 2010),
-                         ta = ta_set.TaSetBase1Ext8(), n_pool=25)
-
-    return confer
-
 def getConf():
     if not TEST:
         #classifier = MyRandomForestClassifier(n_estimators = 1000)
@@ -62,8 +48,8 @@ def getConf():
         classifier = RFCv1n2000md6msl100()
         classifier = MyLogisticRegressClassifier()
         ta = ta_set.TaSetBase1Ext4El()
-        confer = MltradeConf(150,classifier=classifier, score1=ScoreLabel(4, 1.0),
-                             score2 = ScoreLabel(4, 1.0),
+        confer = MltradeConf(150,classifier=classifier, score1=ScoreLabel(5, 1.0),
+                             score2 = ScoreLabel(5, 1.0),
                              model_split=StaticSpliter(2010,2017,1, 1700, 2010),
                              valid_split=StaticSpliter(2013, 2017, 1, 1700, 2010),
                              ta = ta, n_pool=30, index="sp100")
