@@ -236,18 +236,19 @@ class CrosserSet:
         df_ipt.reset_index(drop=False, inplace=True)
         return df_ipt
 
-    def pred(self):
+    def pred(self, start = None):
         to_merged = []
         for crosser in self.crossers:
             assert isinstance(crosser, Crosser)
             df = pd.read_pickle(crosser.get_ta_file())
             # df = df.replace([np.inf,-np.inf],np.nan).dropna()
-            today = df.sort_values("date", ascending=False)["date"].unique()[0]
-            df = df[df.date == today]
+            # today = df.sort_values("date", ascending=False)["date"].unique()[0]
+            if start != None:
+                df = df[df.date >= start]
             feat_names = base.get_feat_names(df)
             np_feat = df.loc[:, feat_names].values
             np_pred = crosser.posts["valid"][0].classifier.predict_proba(np_feat)
-            df["pred"] = np_pred[:,1]
+            df["pred"] = np_pred[:, 1]
             df = df[["date", "sym", "open", "high", "low", "close", "pred"]]
             to_merged.append(df)
         return pd.concat(to_merged).sort_values("pred", ascending=False)
@@ -281,7 +282,7 @@ class CrosserSet:
                                                         df_test,
                                                         10, 999999, score_name)
             df_select['yyyy'] = df_select.date.str.slice(0, 4)
-            df = df_select.sort_values(["pred"], ascending=False) \
+            df = df_select.sort_values([score_name], ascending=False) \
                 .groupby('yyyy', as_index=False).head(2).sort_values( ['yyyy'])
             df["which"] = which
             cols = df.columns.tolist()
