@@ -111,8 +111,8 @@ def work(confer):
     crosser_set.plot_precision_recall_bulls("valid",
                          os.path.join(stuff_dir_name, "valid_pp.png"))
     print("\n![](./%s.data/%s.png)" % (ntpath.basename(out_file_name), "valid_pp"), file=out_file)
-    #print("\n" + crosser_set.ipts_table("model").head(10).round(4).to_html(), file=out_file)
-    #print("\n" + crosser_set.ipts_table("model").tail(10).round(4).to_html(), file=out_file)
+    print("\n" + crosser_set.ipts_table("model").head(10).round(4).to_html(), file=out_file)
+    print("\n" + crosser_set.ipts_table("model").tail(10).round(4).to_html(), file=out_file)
 
     print("## bears...", file=out_file)
     crosser_set.plot_precision_recall_bears("model",
@@ -147,28 +147,11 @@ def work(confer):
     print("\n" + crosser_set.top_bears("valid").round(4).to_html(), file=out_file)
     out_file.close()
 
-    df_pred = crosser_set.pred()
-    # index = df_pred["date"].unique(); index.sort()
-    # columns = df_pred["sym"].unique(); columns.sort()
-
-    # df_pred2 = pd.DataFrame(index=index, columns=columns)
-    # for i, each in df_pred.iterrows():
-    #    df_pred2.loc[each["date"], each["sym"]] = each["pred"]
-
-    df_pred.to_pickle(os.path.join(root, "data", "cross", "pred%s.pkl" % base.last_trade_date()))
-
     import markdown2 as md
     text = ""
     with open(out_file_name, 'r', encoding='utf-8') as f:
         text = f.read()
     html = md.markdown(text, extras=["tables"])
     out_file_html = confer.get_out_file_prefix() + ".model.html"
-
     with open(out_file_html, "w", encoding='utf-8') as fout:
         print(html, file=fout)
-
-    from shutil import copyfile
-    copyfile(out_file_html, os.path.join(root, "report", "model.html"))
-
-
-

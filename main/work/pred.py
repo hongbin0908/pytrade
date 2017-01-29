@@ -22,7 +22,7 @@ from main.model import pred
 from main.work.conf import MltradeConf
 from main.model.post import CrosserSet
 
-def work(confer, last_date):
+def work(confer):
     out_file_name = confer.get_out_file_prefix() + ".pred.md"
     out_file = open(out_file_name, "w", encoding="utf-8")
     stuff_dir_name = out_file_name + ".data"
@@ -30,7 +30,7 @@ def work(confer, last_date):
 
     crosser_set = CrosserSet(confer)
 
-    print("\n" + crosser_set.pred(last_date).round(4).to_html(), file=out_file)
+    print("\n" + crosser_set.pred().round(4).to_html(), file=out_file)
 
     import markdown2 as md
     text = ""
@@ -40,6 +40,3 @@ def work(confer, last_date):
     out_file_html = confer.get_out_file_prefix() + ".pred.html"
     with open(out_file_html, "w", encoding='utf-8') as fout:
         print(html, file=fout)
-
-    from shutil import copyfile
-    copyfile(out_file_html, os.path.join(root, "report", "pred.html"))
