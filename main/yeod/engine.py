@@ -55,7 +55,7 @@ def assert_valid(df):
 def _single(symbol, data_dir):
     df = get_stock2(symbol)
     assert_valid(df)
-    df.round(6).to_csv(os.path.join(data_dir, symbol + ".csv"), index=False, date_format='%Y-%m-%d')
+    df[df.volume > 1].round(6).to_csv(os.path.join(data_dir, symbol + ".csv"), index=False, date_format='%Y-%m-%d')
 
     return len(df)
 def work(syms,data_dir, processes):
