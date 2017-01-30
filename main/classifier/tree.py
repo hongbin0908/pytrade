@@ -13,10 +13,11 @@ class MyLogisticRegressClassifier(BaseClassifier):
     """
     http://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html
     """
-    def __init__(self):
-        self.classifier = linear_model.LogisticRegression(C=1e5, max_iter=1e3, verbose=1, n_jobs = 30, tol=1e-6, solver='sag')
-        self.name = "lr"
+    def __init__(self, C = 1):
+        self.classifier = linear_model.LogisticRegression(C=C, max_iter=2000, verbose=1, n_jobs = 30, tol=1e-6, solver='sag')
+        self.name = "lr-%f" % C
     def get_name(self):
+
         return self.name
 
     def fit(self, X, y):

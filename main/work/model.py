@@ -148,7 +148,7 @@ def work(confer):
     out_file.close()
 
     df_pred = crosser_set.pred()
-    df_pred.to_pickle(os.path.join(root, "data", "cross", "pred%s.pkl" % base.last_trade_date()))
+    df_pred.to_pickle(os.path.join(root, "data", "cross", "%s_pred_%s.pkl" % (confer.name, base.last_trade_date())))
     import markdown2 as md
     text = ""
     with open(out_file_name, 'r', encoding='utf-8') as f:

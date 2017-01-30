@@ -70,6 +70,18 @@ class sp100(YeodBase):
         df = pd.read_csv(os.path.join(root, "sp100_all_2016.csv"))
         s = [each["Symbol"].strip() for i, each in df.head(self.window*self.idx+self.window).tail(self.window).iterrows()]
         return s
+class sp100_snapshot_20091129(YeodBase):
+    """
+    """
+    def __init__(self, idx, window = 30):
+        self.idx = idx
+        self.window = window
+    def get_name(self):
+        return "sp100w%di%d" % (self.window, self.idx)
+    def get_syms(self):
+        df = pd.read_csv(os.path.join(root, "sp100_snapshot", "sp100_20091129.CSV"))
+        s = [each["Symbol"].strip() for i, each in df.head(self.window*self.idx+self.window).tail(self.window).iterrows()]
+        return s
 
 class TestSyms(YeodBase):
     """
@@ -92,7 +104,7 @@ def get_dow30_list(window):
     return [ Dow30(i, window) for i in range(int(30/window))]
 
 def get_sp100_list(window):
-    return [ sp100(0, 150)]
+    return [ sp100_snapshot_20091129(0, 150)]
 
 
 def get_sp500Top50():
