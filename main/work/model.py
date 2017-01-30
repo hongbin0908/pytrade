@@ -147,6 +147,8 @@ def work(confer):
     print("\n" + crosser_set.top_bears("valid").round(4).to_html(), file=out_file)
     out_file.close()
 
+    df_pred = crosser_set.pred()
+    df_pred.to_pickle(os.path.join(root, "data", "cross", "pred%s.pkl" % base.last_trade_date()))
     import markdown2 as md
     text = ""
     with open(out_file_name, 'r', encoding='utf-8') as f:
@@ -155,3 +157,6 @@ def work(confer):
     out_file_html = confer.get_out_file_prefix() + ".model.html"
     with open(out_file_html, "w", encoding='utf-8') as fout:
         print(html, file=fout)
+
+    from shutil import copyfile
+    copyfile(out_file_html, os.path.join(root, "report", "model.html"))

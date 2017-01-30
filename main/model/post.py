@@ -249,7 +249,6 @@ class CrosserSet:
             np_feat = df.loc[:, feat_names].values
             np_pred = crosser.posts["valid"][0].classifier.predict_proba(np_feat)
             df["pred"] = np_pred[:, 1]
-            df = df[["date", "sym", "open", "high", "low", "close", "pred"]]
             to_merged.append(df)
         return pd.concat(to_merged).sort_values("pred", ascending=False)
 
