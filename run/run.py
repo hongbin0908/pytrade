@@ -32,17 +32,9 @@ from main.classifier.tree import MyGradientBoostingClassifier
 from main.classifier.tree import MyLogisticRegressClassifier
 from main.backtest import backtest
 
-if platform.platform().startswith("Windows"):
-    TEST = True
-elif platform.platform().startswith("Darwin"):
-    TEST = True
-elif '47.90.41.27' == socket.gethostbyname(socket.gethostname()):
-    TEST = True
-else:
-    TEST = False
 
 def getConf():
-    if not TEST:
+    if not base.is_test_flag():
         #classifier = MyRandomForestClassifier(n_estimators = 1000)
         classifier = MyGradientBoostingClassifier(n_estimators = 100)
         classifier = RFCv1n2000md6msl100()
@@ -55,10 +47,11 @@ def getConf():
                              ta = ta, n_pool=30, index="sp100")
         confer.syms = confer.syms[0:1]
 
-    else:
+    else: # test puporse
         ta = ta_set.TaSetBase1()
         clazz = MyRandomForestClassifier(n_estimators=10, min_samples_leaf=10)
         clazz = MyLogisticRegressClassifier()
+        clazz = RFCv1n2000md6msl100()
         confer = MltradeConf(2,
                 classifier= clazz,
                 score1=ScoreLabel(5, 1.0),
@@ -76,7 +69,4 @@ if __name__ == '__main__':
     model.work(confer)
     pred.work(confer, last_date)
     # backtest.run(os.path.join(root, "data", "cross", "pred%s.pkl" % base.last_trade_date()))
-
-
-
 

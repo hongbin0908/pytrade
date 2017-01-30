@@ -14,9 +14,23 @@ import math
 import multiprocessing
 import datetime as dt
 import time
+import platform
+import socket
 local_path = os.path.dirname(__file__)
 root = os.path.join(local_path, '..', '..')
 sys.path.append(root)
+
+def is_test_flag():
+    if platform.platform().startswith("Windows"):
+        return True
+    elif platform.platform().startswith("Darwin"):
+        return True
+    elif '47.90.41.27' == socket.gethostbyname(socket.gethostname()):
+        TEST = True
+    elif 'PYTEST' in os.environ and os.environ['PYTEST']:
+        return True
+    else:
+        return False
 
 
 def to_pickles(df, picklename):
@@ -215,3 +229,5 @@ def strDate2num(str):
     return df
     #time_sec_float = time.mktime(df.timetuple())
     #return time_sec_float
+if __name__ == "__main__":
+    print(is_test_flag())

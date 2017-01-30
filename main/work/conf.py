@@ -44,6 +44,8 @@ class MltradeConf:
             self.syms = yeod.get_dow30_list(self.window)
         elif index == "sp100":
             self.syms = yeod.get_sp100_list(self.window)
+        elif index == "test":
+            self.syms = yeod.get_test_list(self.window)
         else:
             assert(False)
 

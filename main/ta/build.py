@@ -7,9 +7,9 @@ import concurrent.futures
 import platform
 import traceback
 
-
 import pandas as pd
 import multiprocessing
+
 local_path = os.path.dirname(__file__)
 root = os.path.join(local_path, '..', '..')
 sys.path.append(root)
@@ -27,18 +27,19 @@ elif platform.platform().startswith("Darwin"):
 else:
     TEST = False
 
+
 def is_trend_long(df):
     ma = talib.MA(df.close.values, timeperiod=10)
     i = 1000
     if i > len(ma) - 1:
         i = len(ma) - 1
-    if ma[i] / ma[15] <2.0: 
+    if ma[i] / ma[15] < 2.0:
         return True
     return False
 
 def _one_work(sym, ta, confer):
     try:
-        df = pd.read_csv(os.path.join(base.dir_eod(),sym + ".csv"))
+        df = pd.read_csv(os.path.join(base.dir_eod(), sym + ".csv"))
         df = df[["date", "open", "high", "low", "close", "volume"]]
         df[['volume']] = df[["volume"]].astype(float)
         if df is None:
@@ -58,9 +59,9 @@ def _one_work(sym, ta, confer):
 
 def bit_apply(df, name, fname, start, end):
     try:
-        print(name, fname, start,end)
-        new = df.apply( lambda row: 1 if ( (row[fname]>=start) and (row[fname]<end)) else 0, axis=1)
-        s = pd.Series(new, name = name)
+        print(name, fname, start, end)
+        new = df.apply(lambda row: 1 if ((row[fname] >= start) and (row[fname] < end)) else 0, axis=1)
+        s = pd.Series(new, name=name)
         return s
     except:
         traceback.print_exc()
@@ -76,7 +77,7 @@ def work(pool_num, symset, ta, scores, confer):
             sym = futures[future]
             try:
                 data = future.result()
-                if(len(data) < 300):
+                if (len(data) < 300):
                     print(sym, "too short!")
                     continue
                 for score in scores:
@@ -109,30 +110,21 @@ def work(pool_num, symset, ta, scores, confer):
     tobe = [df[["sym", "date", "open", "high", "low", "close","volume", confer.score1.get_name()]]]
 
 
-    if confer.n_pool == 1:
-        for i, each in df_bit.iterrows():
-            name = each["name"]
-            fname = each["fname"]
-            start = each["start"]
-            end = each["end"]
+    Executor = concurrent.futures.ProcessPoolExecutor
+    with Timer("bit_apply") as t:
+        with Executor(max_workers=confer.n_pool) as executor:
+            futures = {
+                executor.submit(bit_apply, df[[each["fname"]]].copy(), each["name"], each["fname"], each["start"],
+                                each["end"]): (i, each) for (i, each) in df_bit.iterrows()}
+            for future in concurrent.futures.as_completed(futures):
+                try:
+                    i, each = futures[future]
+                    tobe.append(future.result())
+                except:
+                    traceback.print_exc()
+                    executor.shutdown(wait=False)
+                    sys.exit(1)
 
-            new = df.apply(lambda row: 1 if (row[fname]>=start and row[fname]<end) else 0, axis=1)
-            s = pd.Series(new, name = fname)
-            assert len(s) == len(tobe[0])
-        tobe.append(pd.Series(new, name = name))
-    else:
-        Executor = concurrent.futures.ProcessPoolExecutor
-        with Timer("bit_apply") as t:
-            with Executor(max_workers=confer.n_pool) as executor:
-                futures = {executor.submit(bit_apply, df[[each["fname"]]].copy(), each["name"], each["fname"], each["start"], each["end"]): (i, each) for (i, each) in df_bit.iterrows()}
-                for future in concurrent.futures.as_completed(futures):
-                    try:
-                        i, each = futures[future]
-                        tobe.append(future.result())
-                    except:
-                        traceback.print_exc()
-                        executor.shutdown(wait=False)
-                        sys.exit(1)
     result = pd.concat(tobe, axis=1)
     assert len(df) == len(result)
     return result
