@@ -206,7 +206,7 @@ def last_trade_date():
     """
     get the last trade date
     """
-    df = pd.read_csv(os.path.join(dir_eod(), 'AAPL.csv'))
+    df = pd.read_csv(os.path.join(dir_eod(), '^DJI.csv'))
     return df.date.max()
 
 

@@ -87,7 +87,7 @@ def post_valid(classifier, df_train, df_test, score, is_fit):
     else:
         classifier.fit(npTrainFeat, npTrainLabel)
         probas_ = classifier.predict_proba(npTestFeat)
-    d_feat_ipts = classifier.get_feature_importances(feat_names)
+    d_feat_ipts = dict(zip(feat_names, classifier.get_feature_importances()))
     ipts = []
     for each in sorted(d_feat_ipts.items(), key=lambda a: a[1], reverse=True):
         ipts.append({"name":each[0], "score": each[1]})

@@ -71,20 +71,6 @@ class sp100(YeodBase):
         s = [each["Symbol"].strip() for i, each in df.head(self.window*self.idx+self.window).tail(self.window).iterrows()]
         return s
 
-class TestSyms(YeodBase):
-    """
-    only for test
-    """
-    def __init__(self, idx, window = 2):
-        self.idx = idx
-        self.window = window
-    def get_name(self):
-        return "testw%di%d" % (self.window, self.idx)
-    def get_syms(self):
-        return ["MSFT", "AAPL", "MMM"]
-
-def get_test_list(window):
-    return [TestSyms(i, window) for i in range(int(2/window))]
 def get_sp500_list(window):
     return [ Sp500(i, window) for i in range(int(500/window))]
 
@@ -99,7 +85,6 @@ def get_sp500Top50():
     df = pd.read_csv(os.path.join(root, "constituents-financials.csv"))
     df = df.sort_values("Market Cap", ascending=False)
     return [each["Symbol"].strip() for i, each in df.head(50).iterrows()]
-
 
 get_sp100_list(10)
 # --------------------------------------------------------------------------

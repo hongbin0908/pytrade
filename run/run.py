@@ -22,15 +22,13 @@ from main.base.score2 import ScoreLabel
 from main.work import model
 from main.work import build
 from main.work import pred
-from main import base
 from main.work.conf import MltradeConf
 from main.ta import ta_set
 from main.model.spliter import StaticSpliter
 from main.classifier.tree import MyRandomForestClassifier
 from main.classifier.tree import RFCv1n2000md6msl100
 from main.classifier.tree import MyGradientBoostingClassifier
-from main.classifier.tree import MyLogisticRegressClassifier
-from main.backtest import backtest
+
 
 if platform.platform().startswith("Windows"):
     TEST = True
@@ -52,7 +50,6 @@ def getConf2():
                          model_split=StaticSpliter(2010,2013,1, 1900, 2010),
                          valid_split=StaticSpliter(2013, 2017, 1, 1900, 2010),
                          ta = ta_set.TaSetBase1Ext8(), n_pool=25)
-
     return confer
 
 def getConf():
@@ -60,7 +57,6 @@ def getConf():
         #classifier = MyRandomForestClassifier(n_estimators = 1000)
         classifier = MyGradientBoostingClassifier(n_estimators = 100)
         classifier = RFCv1n2000md6msl100()
-        classifier = MyLogisticRegressClassifier()
         ta = ta_set.TaSetBase1Ext4El()
         confer = MltradeConf(150,classifier=classifier, score1=ScoreLabel(5, 1.0),
                              score2 = ScoreLabel(5, 1.0),
@@ -70,27 +66,19 @@ def getConf():
         confer.syms = confer.syms[0:1]
 
     else:
-        ta = ta_set.TaSetBase1()
-        clazz = MyRandomForestClassifier(n_estimators=10, min_samples_leaf=10)
-        clazz = MyLogisticRegressClassifier()
+        ta = ta_set.TaSetBase1Ext4El()
         confer = MltradeConf(2,
-                classifier= clazz,
+                classifier=MyRandomForestClassifier(n_estimators=10, min_samples_leaf=10), 
                 score1=ScoreLabel(5, 1.0),
                 score2 = ScoreLabel(5, 1.0),
                 model_split=StaticSpliter(2010,2013, 1, 2000, 2010),
                 valid_split=StaticSpliter(2013, 2017, 1, 2003, 2013),
-                ta = ta, n_pool=1, index = "test")
+                ta = ta, n_pool=1)
         confer.syms = confer.syms[0:1]
     return confer
 
 if __name__ == '__main__':
-    last_date = base.last_trade_date()
     confer = getConf()
     build.work(confer)
     model.work(confer)
-    pred.work(confer, last_date)
-    # backtest.run(os.path.join(root, "data", "cross", "pred%s.pkl" % base.last_trade_date()))
-
-
-
-
+    pred.work(confer)
