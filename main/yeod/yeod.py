@@ -83,6 +83,20 @@ class sp100_snapshot_20091129(YeodBase):
         s = [each["Symbol"].strip() for i, each in df.head(self.window*self.idx+self.window).tail(self.window).iterrows()]
         return s
 
+class sp100_snapshot(YeodBase):
+    """
+    """
+    def __init__(self, snap, idx = 0, window = 150):
+        self.snap = snap
+        self.idx = idx
+        self.window = window
+    def get_name(self):
+        return "sp100w%di%d" % (self.window, self.idx)
+    def get_syms(self):
+        df = pd.read_csv(os.path.join(root, "sp100_snapshot", "sp100_%s.CSV" % self.snap))
+        s = [each["Symbol"].strip() for i, each in df.head(self.window*self.idx+self.window).tail(self.window).iterrows()]
+        return s
+
 class TestSyms(YeodBase):
     """
     only for test
@@ -105,6 +119,21 @@ def get_dow30_list(window):
 
 def get_sp100_list(window):
     return [ sp100_snapshot_20091129(0, 150)]
+
+def get_sp100_snapshot_20081201(window):
+    return[sp100_snapshot("20081201")]
+def get_sp100_snapshot_20091129(window):
+    return [ sp100_snapshot("20091129")]
+def get_sp100_snapshot_20100710(window):
+    return [ sp100_snapshot("20100710")]
+def get_sp100_snapshot_20120316(window):
+    return [ sp100_snapshot("20120316")]
+def get_sp100_snapshot_20140321(window):
+    return [ sp100_snapshot("20140321")]
+def get_sp100_snapshot_20151030(window):
+    return [ sp100_snapshot("20151030")]
+def get_sp100_snapshot_20161110(window):
+    return [ sp100_snapshot("20161110")]
 
 
 def get_sp500Top50():
@@ -160,23 +189,15 @@ def get_sp500Top100():
     df = df.sort_values("Market Cap", ascending=False)
     return [each["Symbol"].strip() for i,each in df.head(100).iterrows()]
 
-def main2(poolnum=10, target=base.dir_eod(), symbols = sp100_snapshot_20091129(0, 150).get_syms()):
-    engine.work(list(set(symbols)), target, poolnum)
-
-def main(args):
-    main2(args.poolnum)
+def main2( poolnum, target, symbols):
+    import tempfile
+    tmpdir = tempfile.TemporaryDirectory().name
+    print(tmpdir)
+    engine.work(list(set(symbols)), tmpdir, poolnum)
 
 if __name__ == '__main__':
-    import argparse
-    parser = argparse.ArgumentParser(description="download eod")
-    parser.add_argument('-p', '--pool', help="thread pool num", dest="poolnum", action="store", default=1, type=int)
-    parser.add_argument('setname', help = "the sym set to be download")
-    args = parser.parse_args()
-    main(args)
+    if base.is_test_flag():
+        main2(poolnum=1, 
+                target=os.path.join(root, "main", "yeod", "yeod_demo.zip"),
+                symbols = sp100_snapshot("20091129").get_syms()[0:10])
 
-def test_main2():
-    import tempfile
-    tmpdir = tempfile.TemporaryDirectory()
-    main2(1, tmpdir.name, ["AAPL", "YHOO"])
-    import glob
-    assert 2 == len(glob.glob(tmpdir.name + "/*.csv"))

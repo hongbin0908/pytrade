@@ -65,11 +65,8 @@ class MyRandomForestClassifier(BaseClassifier):
         return self.classifier.feature_importances_
 
 
-class RFCv1n2000md6msl100(BaseClassifier):
-    def __init__(self):
-        n_estimators = 2000
-        max_depth = 6
-        min_samples_leaf = 100
+class MyRfClassifier(BaseClassifier):
+    def __init__(self, n_estimators, max_depth, min_samples_leaf):
         self.classifier = RandomForestClassifier(**{'verbose':1, 'n_estimators': n_estimators,
                                                     'max_depth':max_depth,'min_samples_leaf':min_samples_leaf,
                                                     'n_jobs':25})
@@ -88,6 +85,18 @@ class RFCv1n2000md6msl100(BaseClassifier):
     def get_feature_importances(self, feat_names):
         ipts = dict(zip(feat_names, self.classifier.feature_importances_))
         return ipts
+class RFCv1n2000md6msl100(MyRfClassifier):
+    def __init__(self):
+        n_estimators = 2000
+        max_depth = 6
+        min_samples_leaf = 100
+        MyRfClassifier.__init__(self, n_estimators, max_depth, min_samples_leaf)
+class RFCv1n2000md6msl10000(MyRfClassifier):
+    def __init__(self):
+        n_estimators = 2000
+        max_depth = 6
+        min_samples_leaf = 10000
+        MyRfClassifier.__init__(self, n_estimators, max_depth, min_samples_leaf)
 
 
 class MyGradientBoostingClassifier(BaseClassifier):
