@@ -37,7 +37,7 @@ def getConf():
     if not base.is_test_flag():
         #classifier = MyGradientBoostingClassifier(n_estimators = 100)
         #classifier = RFCv1n2000md6msl100()
-        classifier = MyLogisticRegressClassifier()
+        classifier = MyLogisticRegressClassifier(C=1e3)
         ta = ta_set.TaSetBase1Ext4El()
         confer = MltradeConf(150,classifier=classifier, score1=ScoreLabel(5, 1.0),
                              score2 = ScoreLabel(5, 1.0),

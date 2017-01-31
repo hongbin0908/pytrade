@@ -91,7 +91,7 @@ class RFCv1n2000md6msl100(BaseClassifier):
 
 
 class MyGradientBoostingClassifier(BaseClassifier):
-    def __init__(self, verbose=1, n_estimators = 200, max_depth=8, min_samples_leaf=10000):
+    def __init__(self, verbose=1, n_estimators = 200, max_depth=4, min_samples_leaf=10000):
         self.classifier = GradientBoostingClassifier( **{'verbose': verbose,
                                                      'n_estimators': n_estimators,
                                                      'max_depth': max_depth, 'min_samples_leaf': min_samples_leaf
