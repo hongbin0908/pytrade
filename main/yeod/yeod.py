@@ -190,10 +190,19 @@ def get_sp500Top100():
     return [each["Symbol"].strip() for i,each in df.head(100).iterrows()]
 
 def main2( poolnum, target, symbols):
+    import zipfile
+    zf = zipfile.ZipFile(target, mode='w')
+
     import tempfile
     tmpdir = tempfile.TemporaryDirectory().name
     print(tmpdir)
     engine.work(list(set(symbols)), tmpdir, poolnum)
+    contents = os.walk(tmpdir)
+    for root, folders, files in contents:
+        for file_name in files:
+            zf.write(os.path.join(root, file_name), file_name)
+    zf.close()
+
 
 if __name__ == '__main__':
     if base.is_test_flag():
