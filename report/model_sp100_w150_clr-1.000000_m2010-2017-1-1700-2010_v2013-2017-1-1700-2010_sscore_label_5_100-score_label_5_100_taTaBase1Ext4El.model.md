@@ -1,3 +1,4 @@
+
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -29,7 +30,7 @@
   </tbody>
 </table>
 
-<p><img src="./model_sp100_w150_clr-1.000000_m2010-2017-1-1700-2010_v2013-2017-1-1700-2010_sscore_label_5_100-score_label_5_100_taTaBase1Ext4El.model.md.data/model.png" alt="" /></p>
+![](./model_sp100_w150_clr-1.000000_m2010-2017-1-1700-2010_v2013-2017-1-1700-2010_sscore_label_5_100-score_label_5_100_taTaBase1Ext4El.model.md.data/model.png)
 
 <table border="1" class="dataframe">
   <thead>
@@ -56,11 +57,10 @@
   </tbody>
 </table>
 
-<p><img src="./model_sp100_w150_clr-1.000000_m2010-2017-1-1700-2010_v2013-2017-1-1700-2010_sscore_label_5_100-score_label_5_100_taTaBase1Ext4El.model.md.data/valid.png" alt="" /></p>
+![](./model_sp100_w150_clr-1.000000_m2010-2017-1-1700-2010_v2013-2017-1-1700-2010_sscore_label_5_100-score_label_5_100_taTaBase1Ext4El.model.md.data/valid.png)
+## bulls...
 
-<h2>bulls...</h2>
-
-<p><img src="./model_sp100_w150_clr-1.000000_m2010-2017-1-1700-2010_v2013-2017-1-1700-2010_sscore_label_5_100-score_label_5_100_taTaBase1Ext4El.model.md.data/model_pp.png" alt="" /></p>
+![](./model_sp100_w150_clr-1.000000_m2010-2017-1-1700-2010_v2013-2017-1-1700-2010_sscore_label_5_100-score_label_5_100_taTaBase1Ext4El.model.md.data/model_pp.png)
 
 <table border="1" class="dataframe">
   <thead>
@@ -87,7 +87,7 @@
   </tbody>
 </table>
 
-<p><img src="./model_sp100_w150_clr-1.000000_m2010-2017-1-1700-2010_v2013-2017-1-1700-2010_sscore_label_5_100-score_label_5_100_taTaBase1Ext4El.model.md.data/valid_pp.png" alt="" /></p>
+![](./model_sp100_w150_clr-1.000000_m2010-2017-1-1700-2010_v2013-2017-1-1700-2010_sscore_label_5_100-score_label_5_100_taTaBase1Ext4El.model.md.data/valid_pp.png)
 
 <table border="1" class="dataframe">
   <thead>
@@ -234,10 +234,9 @@
     </tr>
   </tbody>
 </table>
+## bears...
 
-<h2>bears...</h2>
-
-<p><img src="./model_sp100_w150_clr-1.000000_m2010-2017-1-1700-2010_v2013-2017-1-1700-2010_sscore_label_5_100-score_label_5_100_taTaBase1Ext4El.model.md.data/model_pp_bears.png" alt="" /></p>
+![](./model_sp100_w150_clr-1.000000_m2010-2017-1-1700-2010_v2013-2017-1-1700-2010_sscore_label_5_100-score_label_5_100_taTaBase1Ext4El.model.md.data/model_pp_bears.png)
 
 <table border="1" class="dataframe">
   <thead>
@@ -264,7 +263,7 @@
   </tbody>
 </table>
 
-<p><img src="./model_sp100_w150_clr-1.000000_m2010-2017-1-1700-2010_v2013-2017-1-1700-2010_sscore_label_5_100-score_label_5_100_taTaBase1Ext4El.model.md.data/valid_pp_bears.png" alt="" /></p>
+![](./model_sp100_w150_clr-1.000000_m2010-2017-1-1700-2010_v2013-2017-1-1700-2010_sscore_label_5_100-score_label_5_100_taTaBase1Ext4El.model.md.data/valid_pp_bears.png)
 
 <table border="1" class="dataframe">
   <thead>
@@ -485,13 +484,13 @@
   </tbody>
 </table>
 
-<p><img src="./model_sp100_w150_clr-1.000000_m2010-2017-1-1700-2010_v2013-2017-1-1700-2010_sscore_label_5_100-score_label_5_100_taTaBase1Ext4El.model.md.data/model_tp.png" alt="" /></p>
+![](./model_sp100_w150_clr-1.000000_m2010-2017-1-1700-2010_v2013-2017-1-1700-2010_sscore_label_5_100-score_label_5_100_taTaBase1Ext4El.model.md.data/model_tp.png)
 
-<p><img src="./model_sp100_w150_clr-1.000000_m2010-2017-1-1700-2010_v2013-2017-1-1700-2010_sscore_label_5_100-score_label_5_100_taTaBase1Ext4El.model.md.data/valid_tp.png" alt="" /></p>
+![](./model_sp100_w150_clr-1.000000_m2010-2017-1-1700-2010_v2013-2017-1-1700-2010_sscore_label_5_100-score_label_5_100_taTaBase1Ext4El.model.md.data/valid_tp.png)
 
-<p><img src="./model_sp100_w150_clr-1.000000_m2010-2017-1-1700-2010_v2013-2017-1-1700-2010_sscore_label_5_100-score_label_5_100_taTaBase1Ext4El.model.md.data/model_tp2.png" alt="" /></p>
+![](./model_sp100_w150_clr-1.000000_m2010-2017-1-1700-2010_v2013-2017-1-1700-2010_sscore_label_5_100-score_label_5_100_taTaBase1Ext4El.model.md.data/model_tp2.png)
 
-<p><img src="./model_sp100_w150_clr-1.000000_m2010-2017-1-1700-2010_v2013-2017-1-1700-2010_sscore_label_5_100-score_label_5_100_taTaBase1Ext4El.model.md.data/valid_tp2.png" alt="" /></p>
+![](./model_sp100_w150_clr-1.000000_m2010-2017-1-1700-2010_v2013-2017-1-1700-2010_sscore_label_5_100-score_label_5_100_taTaBase1Ext4El.model.md.data/valid_tp2.png)
 
 <table border="1" class="dataframe">
   <thead>
@@ -952,4 +951,3 @@
     </tr>
   </tbody>
 </table>
-
