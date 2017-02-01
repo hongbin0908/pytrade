@@ -34,40 +34,40 @@ from main.classifier.tree import MyLogisticRegressClassifier
 from main.backtest import backtest
 
 
-def getConf():
-    if not base.is_test_flag():
-        #classifier = MyGradientBoostingClassifier(n_estimators = 100)
-        #classifier = RFCv1n2000md6msl100()
-        classifier = RFCv1n2000md6msl10000()
-        #classifier = MyLogisticRegressClassifier(C=1e)
-        ta = ta_set.TaSetBase1Ext4El()
-        confer = MltradeConf(150,classifier=classifier, score1=ScoreLabel(5, 1.0),
-                             score2 = ScoreLabel(5, 1.0),
-                             model_split=StaticSpliter(2010,2017,1, 1700, 2010),
-                             valid_split=StaticSpliter(2013, 2017, 1, 1700, 2010),
-                             ta = ta, n_pool=30, index="sp100")
-        confer.syms = confer.syms[0:1]
+def getConf(index, model_split, valid_split):
+    #classifier = MyGradientBoostingClassifier(n_estimators = 100)
+    #classifier = RFCv1n2000md6msl100()
+    classifier = RFCv1n2000md6msl10000()
+    #classifier = MyLogisticRegressClassifier(C=1e)
+    ta = ta_set.TaSetBase1Ext4El()
+    index = index
 
-    else: # test puporse
-        ta = ta_set.TaSetBase1()
-        clazz = MyRandomForestClassifier(n_estimators=10, min_samples_leaf=10)
-        clazz = MyLogisticRegressClassifier()
-        clazz = RFCv1n2000md6msl100()
-        confer = MltradeConf(2,
-                classifier= clazz,
-                score1=ScoreLabel(5, 1.0),
-                score2 = ScoreLabel(5, 1.0),
-                model_split=StaticSpliter(2010,2013, 1, 2000, 2010),
-                valid_split=StaticSpliter(2013, 2017, 1, 2003, 2013),
-                ta = ta, n_pool=1, index = "test")
-        confer.syms = confer.syms[0:1]
+    if base.is_test_flag():
+        classifier = MyRandomForestClassifier(n_estimators=10, min_samples_leaf=10)
+        index = "test"
+
+    confer = MltradeConf(150,classifier=classifier, score1=ScoreLabel(5, 1.0),
+                         score2 = ScoreLabel(5, 1.0),
+                         model_split=model_split,
+                         valid_split=valid_split,
+                         ta = ta, n_pool=30, index=index)
+
     return confer
 
 if __name__ == '__main__':
     last_date = base.last_trade_date()
-    confer = getConf()
-    build.work(confer)
-    model.work(confer)
-    pred.work(confer, last_date)
+    confer1 = getConf("sp100_snapshot_20091129", StaticSpliter(2010,2017,1, 1700, 2010), StaticSpliter(2013, 2017, 1, 1700, 2010))
+    build.work(confer1)
+    model.work(confer1)
+
+
+    confer2 = getConf("sp100_snapshot_20140321", StaticSpliter(2015,2017,1, 1700, 2015), StaticSpliter(2015, 2017, 1, 1700, 2015))
+    build.work(confer2)
+    model.work(confer2)
+
+    
+
+
+    #pred.work(confer, last_date)
     # backtest.run(os.path.join(root, "data", "cross", "pred%s.pkl" % base.last_trade_date()))
 

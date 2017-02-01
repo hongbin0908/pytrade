@@ -70,18 +70,6 @@ class sp100(YeodBase):
         df = pd.read_csv(os.path.join(root, "sp100_all_2016.csv"))
         s = [each["Symbol"].strip() for i, each in df.head(self.window*self.idx+self.window).tail(self.window).iterrows()]
         return s
-class sp100_snapshot_20091129(YeodBase):
-    """
-    """
-    def __init__(self, idx, window = 30):
-        self.idx = idx
-        self.window = window
-    def get_name(self):
-        return "sp100w%di%d" % (self.window, self.idx)
-    def get_syms(self):
-        df = pd.read_csv(os.path.join(root, "sp100_snapshot", "sp100_20091129.CSV"))
-        s = [each["Symbol"].strip() for i, each in df.head(self.window*self.idx+self.window).tail(self.window).iterrows()]
-        return s
 
 class sp100_snapshot(YeodBase):
     """
@@ -91,7 +79,9 @@ class sp100_snapshot(YeodBase):
         self.idx = idx
         self.window = window
     def get_name(self):
-        return "sp100w%di%d" % (self.window, self.idx)
+        return "sp100snap%sw%di%d" % (self.snap, self.window, self.idx)
+    def get_dir_name(self):
+        return "sp100_snapshot_%s" % self.snap
     def get_syms(self):
         df = pd.read_csv(os.path.join(root, "sp100_snapshot", "sp100_%s.CSV" % self.snap))
         s = [each["Symbol"].strip() for i, each in df.head(self.window*self.idx+self.window).tail(self.window).iterrows()]
@@ -106,19 +96,19 @@ class TestSyms(YeodBase):
         self.window = window
     def get_name(self):
         return "testw%di%d" % (self.window, self.idx)
+    def get_dir_name(self):
+        return "test"
     def get_syms(self):
         return ["MSFT", "AAPL", "MMM"]
 
 def get_test_list(window):
-    return [TestSyms(i, window) for i in range(int(2/window))]
+    return [TestSyms(i, window) for i in range(int(150/window))]
 def get_sp500_list(window):
     return [ Sp500(i, window) for i in range(int(500/window))]
 
 def get_dow30_list(window):
     return [ Dow30(i, window) for i in range(int(30/window))]
 
-def get_sp100_list(window):
-    return [ sp100_snapshot_20091129(0, 150)]
 
 def get_sp100_snapshot_20081201(window):
     return[sp100_snapshot("20081201")]
@@ -141,7 +131,6 @@ def get_sp500Top50():
     df = df.sort_values("Market Cap", ascending=False)
     return [each["Symbol"].strip() for i, each in df.head(50).iterrows()]
 
-get_sp100_list(10)
 # --------------------------------------------------------------------------
 
 def get_MSFT():

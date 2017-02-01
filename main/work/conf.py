@@ -42,11 +42,18 @@ class MltradeConf:
             self.syms = yeod.get_sp500_list(self.window)
         elif index == "dow30":
             self.syms = yeod.get_dow30_list(self.window)
-        elif index == "sp100":
-            self.syms = yeod.get_sp100_list(self.window)
         elif index == "test":
             self.syms = yeod.get_test_list(self.window)
-        elif index == "sp100_"
+        elif index == "sp100_snapshot_20081201":
+            self.syms = yeod.get_sp100_snapshot_20081201(self.window)
+        elif index == "sp100_snapshot_20091129":
+            self.syms = yeod.get_sp100_snapshot_20091129(self.window)
+        elif index == "sp100_snapshot_20100710":
+            self.syms = yeod.get_sp100_snapshot_20100710(self.window)
+        elif index == "sp100_snapshot_20120316":
+            self.syms = yeod.get_sp100_snapshot_20120316(self.window)
+        elif index == "sp100_snapshot_20120316":
+            self.syms = yeod.get_sp100_snapshot_20120316(self.window)
         else:
             assert(False)
 

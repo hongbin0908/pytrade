@@ -20,13 +20,6 @@ from main.base.timer import Timer
 from main.ta import ta_set
 import talib
 
-if platform.platform().startswith("Windows"):
-    TEST = True
-elif platform.platform().startswith("Darwin"):
-    TEST = True
-else:
-    TEST = False
-
 
 def is_trend_long(df):
     ma = talib.MA(df.close.values, timeperiod=10)
@@ -37,21 +30,18 @@ def is_trend_long(df):
         return True
     return False
 
-def _one_work(sym, ta, confer):
+def _one_work(sym, ta, confer, dirname = ""):
     try:
-        if not os.path.exists(os.path.join(base.dir_eod(), sym + ".csv")):
-            print("Not exsits %s!!!!!!" % sym)
+        if not os.path.exists(os.path.join(base.dir_eod(), dirname, sym + ".csv")):
+            print("Not exsits %s!!!!!!" % os.path.join(base.dir_eod(), dirname, sym + ".csv"))
             return None
-        df = pd.read_csv(os.path.join(base.dir_eod(), sym + ".csv"))
+        df = pd.read_csv(os.path.join(base.dir_eod(),dirname, sym + ".csv"))
         df = df[["date", "open", "high", "low", "close", "volume"]]
         df[['volume']] = df[["volume"]].astype(float)
         if df is None:
             print(sym)
             return
         df["sym"] = sym
-        if TEST:
-            print("TEST")
-            df = df[df.date >= "2000-01-01"]
         df = ta.get_ta(df, confer)
         df.to_pickle(os.path.join(base.dir_ta(ta.get_name()), sym+".pkl"))
         return df
@@ -70,12 +60,12 @@ def bit_apply(df, name, fname, start, end):
         traceback.print_exc()
         assert False
 
-def work(pool_num, symset, ta, scores, confer):
+def work(pool_num, symset, ta, scores, confer, dirname = ""):
     print(pool_num)
     to_apends = []
     Executor = concurrent.futures.ProcessPoolExecutor
     with Executor(max_workers=pool_num) as executor:
-        futures = {executor.submit(_one_work, sym, ta, confer): sym for sym in symset}
+        futures = {executor.submit(_one_work, sym, ta, confer, dirname): sym for sym in symset}
         for future in concurrent.futures.as_completed(futures):
             sym = futures[future]
             try:

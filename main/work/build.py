@@ -18,11 +18,6 @@ sys.path.append(root)
 from main.ta import build
 from main.work.conf import MltradeConf
 
-if platform.platform().startswith("Windows"):
-    TEST = True
-else:
-    TEST = False
-
 
 def work(confer):
     assert isinstance(confer, MltradeConf)
@@ -43,6 +38,8 @@ def work2(syms, ta, score1, score2, confer, n_pool):
         if os.path.exists(out_file):
             print("%s exists!" % out_file)
             continue
+        print(type(symset))
+        dir_name = symset.get_dir_name()
         df = build.work(n_pool, symset.get_syms(), ta,
-                        [score1, score2], confer)
+                        [score1, score2], confer, dirname = dir_name)
         df.to_pickle(out_file)

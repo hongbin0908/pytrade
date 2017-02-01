@@ -62,7 +62,8 @@ class MyRandomForestClassifier(BaseClassifier):
         return self.classifier.predict_proba(X)
 
     def get_feature_importances(self, feat_names):
-        return self.classifier.feature_importances_
+        ipts = dict(zip(feat_names, self.classifier.feature_importances_))
+        return ipts
 
 
 class MyRfClassifier(BaseClassifier):
