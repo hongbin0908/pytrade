@@ -39,6 +39,9 @@ def is_trend_long(df):
 
 def _one_work(sym, ta, confer):
     try:
+        if not os.path.exists(os.path.join(base.dir_eod(), sym + ".csv")):
+            print("Not exsits %s!!!!!!" % sym)
+            return None
         df = pd.read_csv(os.path.join(base.dir_eod(), sym + ".csv"))
         df = df[["date", "open", "high", "low", "close", "volume"]]
         df[['volume']] = df[["volume"]].astype(float)
@@ -77,6 +80,8 @@ def work(pool_num, symset, ta, scores, confer):
             sym = futures[future]
             try:
                 data = future.result()
+                if data is None:
+                    continue
                 if (len(data) < 300):
                     print(sym, "too short!")
                     continue
@@ -87,6 +92,7 @@ def work(pool_num, symset, ta, scores, confer):
                 to_apends.append(data)
                 print(sym)
             except Exception as exc:
+                traceback.print_exc()
                 executor.shutdown(wait=False)
                 sys.exit(1)
     #longs = []

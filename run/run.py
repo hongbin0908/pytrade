@@ -28,6 +28,7 @@ from main.ta import ta_set
 from main.model.spliter import StaticSpliter
 from main.classifier.tree import MyRandomForestClassifier
 from main.classifier.tree import RFCv1n2000md6msl100
+from main.classifier.tree import RFCv1n2000md6msl10000
 from main.classifier.tree import MyGradientBoostingClassifier
 from main.classifier.tree import MyLogisticRegressClassifier
 from main.backtest import backtest
@@ -37,7 +38,8 @@ def getConf():
     if not base.is_test_flag():
         #classifier = MyGradientBoostingClassifier(n_estimators = 100)
         #classifier = RFCv1n2000md6msl100()
-        classifier = MyLogisticRegressClassifier()
+        classifier = RFCv1n2000md6msl10000()
+        #classifier = MyLogisticRegressClassifier(C=1e)
         ta = ta_set.TaSetBase1Ext4El()
         confer = MltradeConf(150,classifier=classifier, score1=ScoreLabel(5, 1.0),
                              score2 = ScoreLabel(5, 1.0),
