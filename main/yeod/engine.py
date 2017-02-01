@@ -7,7 +7,7 @@ import pandas_datareader.yahoo.daily as yahoo
 import multiprocessing
 import logging
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.WARN)
 
 local_path = os.path.dirname(__file__)
 

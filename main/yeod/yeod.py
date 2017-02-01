@@ -87,6 +87,21 @@ class sp100_snapshot(YeodBase):
         s = [each["Symbol"].strip() for i, each in df.head(self.window*self.idx+self.window).tail(self.window).iterrows()]
         return s
 
+class sp500_snapshot(YeodBase):
+    """
+    """
+    def __init__(self, snap, idx = 0, window = 1000):
+        self.snap = snap
+        self.idx = idx
+        self.window = window
+    def get_name(self):
+        return "sp500snap%sw%di%d" % (self.snap, self.window, self.idx)
+    def get_dir_name(self):
+        return "sp500_snapshot_%s" % self.snap
+    def get_syms(self):
+        df = pd.read_csv(os.path.join(root, "sp100_snapshot", "sp500_%s.CSV" % self.snap))
+        s = [each["Symbol"].strip() for i, each in df.head(self.window*self.idx+self.window).tail(self.window).iterrows()]
+        return s
 class TestSyms(YeodBase):
     """
     only for test
