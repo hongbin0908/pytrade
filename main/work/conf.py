@@ -54,8 +54,8 @@ class MltradeConf:
             self.syms = yeod.get_sp100_snapshot_20140321(self.window)
         elif index == "sp100_snapshot_20120316":
             self.syms = yeod.get_sp100_snapshot_20120316(self.window)
-        elif index == "sp100_snapshot_20120316":
-            self.syms = yeod.get_sp100_snapshot_20120316(self.window)
+        elif index == "sp500_snapshot_20091231":
+            self.syms = yeod.get_sp500_snapshot_20091231(self.window)
         else:
             assert(False)
 

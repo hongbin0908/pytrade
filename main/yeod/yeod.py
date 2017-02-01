@@ -139,7 +139,8 @@ def get_sp100_snapshot_20151030(window):
     return [ sp100_snapshot("20151030")]
 def get_sp100_snapshot_20161110(window):
     return [ sp100_snapshot("20161110")]
-
+def get_sp500_snapshot_20091231(window):
+    return [ sp500_snapshot("20091231")]
 
 def get_sp500Top50():
     df = pd.read_csv(os.path.join(root, "constituents-financials.csv"))

@@ -36,8 +36,7 @@ from main.backtest import backtest
 
 def getConf(index, model_split, valid_split):
     #classifier = MyGradientBoostingClassifier(n_estimators = 100)
-    #classifier = RFCv1n2000md6msl100()
-    classifier = RFCv1n2000md6msl10000()
+    classifier = RFCv1n2000md6msl100()
     #classifier = MyLogisticRegressClassifier(C=1e)
     ta = ta_set.TaSetBase1Ext4El()
     index = index
