@@ -26,8 +26,6 @@ def is_test_flag():
         return True
     elif platform.platform().startswith("Darwin"):
         return True
-    elif '47.90.41.27' == socket.gethostbyname(socket.gethostname()):
-        TEST = True
     elif 'PYTEST' in os.environ and os.environ['PYTEST'] == '1':
         return True
     else:
