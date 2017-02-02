@@ -19,6 +19,7 @@ from main.base.score2 import ScoreLabel
 from main.base.timer import Timer
 from main.ta import ta_set
 import talib
+from datetime import datetime
 
 
 def is_trend_long(df):
@@ -85,16 +86,6 @@ def work(pool_num, symset, ta, scores, confer, dirname = ""):
                 traceback.print_exc()
                 executor.shutdown(wait=False)
                 sys.exit(1)
-    #longs = []
-    #shorts = []
-    #for each in to_apends:
-    #    if is_trend_long(each):
-    #        longs.append(each)
-    #    else:
-    #        shorts.append(each)
-    #print("longs: ", len(longs))
-    #print("shorts: ", len(shorts))
-    #return pd.concat(longs)
     df = pd.concat(to_apends)
     from main.model import bitlize
     with Timer("bitlize.feat_select") as t:
@@ -125,9 +116,9 @@ def work(pool_num, symset, ta, scores, confer, dirname = ""):
     result = pd.concat(tobe, axis=1)
     assert len(df) == len(result)
     ## 防止一致正在下跌的股票会持续被选中, 因此只对周一到周五的股票进行预测. 
-    if conf.score1.get_name.startswith("score_label_5"):
+    if confer.score1.get_name().startswith("score_label_5"):
         print("filter....")
-        result = result[result.apply(lambda x: datetime.strptime(x['date'], "%Y-%m-%d").weekday()==1)]
+        result = result[result.apply(lambda x: datetime.strptime(x['date'], "%Y-%m-%d").weekday()==confer.week, axis=1) ]
 
     return result
 

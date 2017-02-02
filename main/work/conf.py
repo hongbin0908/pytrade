@@ -12,50 +12,43 @@ from main.model.spliter import StaticSpliter
 from main.classifier.tree import MyRandomForestClassifier
 
 class MltradeConf:
-    def __init__(self, window, classifier = MyRandomForestClassifier(),
-                 model_split=StaticSpliter(2000,2010,2,1700,2000),
-                 valid_split=StaticSpliter(2010,2017,1,1700,2000),
+    def __init__(self, model_split,
+                 classifier = MyRandomForestClassifier(),
                  score1=ScoreLabel(5, 1.0), score2 = ScoreLabel(5, 1.0),
-                 ta = TaSetBase1(), n_pool=10, index="dow30"):
-        self.window = window
-        self.classifier = classifier
+                 ta = TaSetBase1(), n_pool=10, index="dow30", week=0):
         self.model_split = model_split
-        self.valid_split = valid_split
+        self.classifier = classifier
         self.n_pool = n_pool
         self.score1 = score1
         self.score2 = score2
         self.index = index
+        self.week = week
 
         self.ta = ta
-        self.name = "model_{index}_w{window}_c{classifier}_m{model_split}_v{valid_split}_s{score1}-{score2}_ta{ta}".format (
+        self.name = "model_{index}_c{classifier}_m{model_split}_s{score1}-{score2}_ta{ta}_week{week}".format (
             **{"index": self.index,
-                "window": self.window,
              "classifier":self.classifier.get_name(),
              "model_split": self.model_split.get_name(),
-             "valid_split": self.valid_split.get_name(),
              "score1": self.score1.get_name(), "score2":self.score2.get_name(),
-             "ta":self.ta.get_name()})
+             "ta":self.ta.get_name(),
+             "week":self.week})
 
-        self.model_split.set_classifier(self.classifier)
-        self.valid_split.set_classifier(self.classifier)
-        if index == "sp500":
-            self.syms = yeod.get_sp500_list(self.window)
-        elif index == "dow30":
-            self.syms = yeod.get_dow30_list(self.window)
-        elif index == "test":
-            self.syms = yeod.get_test_list(self.window)
+        if index == "test":
+            self.syms = yeod.get_test_list()
         elif index == "sp100_snapshot_20081201":
-            self.syms = yeod.get_sp100_snapshot_20081201(self.window)
+            self.syms = yeod.get_sp100_snapshot_20081201()
         elif index == "sp100_snapshot_20091129":
-            self.syms = yeod.get_sp100_snapshot_20091129(self.window)
+            self.syms = yeod.get_sp100_snapshot_20091129()
         elif index == "sp100_snapshot_20100710":
-            self.syms = yeod.get_sp100_snapshot_20100710(self.window)
-        elif index == "sp100_snapshot_20140321":
-            self.syms = yeod.get_sp100_snapshot_20140321(self.window)
+            self.syms = yeod.get_sp100_snapshot_20100710()
         elif index == "sp100_snapshot_20120316":
-            self.syms = yeod.get_sp100_snapshot_20120316(self.window)
-        elif index == "sp500_snapshot_20091231":
-            self.syms = yeod.get_sp500_snapshot_20091231(self.window)
+            self.syms = yeod.get_sp100_snapshot_20120316()
+        elif index == "sp100_snapshot_20140321":
+            self.syms = yeod.get_sp100_snapshot_20140321()
+        elif index == "sp100_snapshot_20151030":
+            self.syms = yeod.get_sp100_snapshot_20151030()
+        #elif index == "sp500_snapshot_20091231":
+        #    self.syms = yeod.get_sp500_snapshot_20091231()
         else:
             assert(False)
 
@@ -74,3 +67,11 @@ class MltradeConf:
         return os.path.join(root, 'data',
                                  'model',
                                  self.name + "-" + conf_name + ".model")
+    def get_ta_file(self):
+        return os.path.join(root, "data", "ta", "%s-%s-%d-%s.pkl"
+                            % (self.syms.get_name(), 
+                                self.ta.get_name(), 
+                                self.week, 
+                                self.score1.get_name()))
+    def get_pred_file(self):
+        return os.path.join(root, "data", "pred", "%s.pred.pkl" % self.name)

@@ -32,14 +32,11 @@ def work2(syms, ta, score1, score2, confer, n_pool):
     assert isinstance(score1, ScoreLabel)
     assert isinstance(score2, ScoreLabel)
     assert isinstance(n_pool, int)
-    for symset in syms:
-        out_file = os.path.join(root, "data", "ta", "%s-%s-%s.pkl"
-                                % (symset.get_name(), ta.get_name(), score1.get_name()))
-        if os.path.exists(out_file):
-            print("%s exists!" % out_file)
-            continue
-        print(type(symset))
-        dir_name = symset.get_dir_name()
-        df = build.work(n_pool, symset.get_syms(), ta,
-                        [score1, score2], confer, dirname = dir_name)
-        df.to_pickle(out_file)
+    if os.path.exists(confer.get_ta_file()):
+        print("%s exists!" % confer.get_ta_file())
+        return
+    print(type(confer.syms))
+    dir_name = confer.syms.get_name()
+    df = build.work(n_pool, confer.syms.get_syms(), ta,
+                    [score1, score2], confer, dirname = dir_name)
+    df.to_pickle(confer.get_ta_file())
