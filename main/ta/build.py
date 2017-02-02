@@ -99,9 +99,10 @@ def work(pool_num, symset, ta, scores, confer, dirname = ""):
     from main.model import bitlize
     with Timer("bitlize.feat_select") as t:
         df_bit1 = bitlize.feat_select(df, 0.8, confer.score1.get_name(), 1, 100, confer.n_pool)
-        df_bit2 = bitlize.feat_select(df, 0.8, confer.score1.get_name(), 2, 100, confer.n_pool)
-        df_bit = pd.concat([df_bit1, df_bit2], axis = 0)
-        assert len(df_bit1) + len(df_bit2) == len(df_bit)
+        #df_bit2 = bitlize.feat_select(df, 0.8, confer.score1.get_name(), 2, 100, confer.n_pool)
+        #df_bit = pd.concat([df_bit1, df_bit2], axis = 0)
+        #assert len(df_bit1) + len(df_bit2) == len(df_bit)
+        df_bit = df_bit1
 
     tobe = [df[["sym", "date", "open", "high", "low", "close","volume", confer.score1.get_name()]]]
 
@@ -123,6 +124,11 @@ def work(pool_num, symset, ta, scores, confer, dirname = ""):
 
     result = pd.concat(tobe, axis=1)
     assert len(df) == len(result)
+    ## 防止一致正在下跌的股票会持续被选中, 因此只对周一到周五的股票进行预测. 
+    if conf.score1.get_name.startswith("score_label_5"):
+        print("filter....")
+        result = result[result.apply(lambda x: datetime.strptime(x['date'], "%Y-%m-%d").weekday()==1)]
+
     return result
 
 

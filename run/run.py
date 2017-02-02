@@ -36,8 +36,8 @@ from main.backtest import backtest
 
 def getConf(index, model_split, valid_split):
     #classifier = MyGradientBoostingClassifier(n_estimators = 100)
-    classifier = RFCv1n2000md6msl100()
-    #classifier = MyLogisticRegressClassifier(C=1e)
+    #classifier = RFCv1n2000md6msl100()
+    classifier = MyLogisticRegressClassifier(C=1e3)
     ta = ta_set.TaSetBase1Ext4El()
     index = index
 
@@ -45,8 +45,8 @@ def getConf(index, model_split, valid_split):
         classifier = MyRandomForestClassifier(n_estimators=10, min_samples_leaf=10)
         index = "test"
 
-    confer = MltradeConf(150,classifier=classifier, score1=ScoreLabel(5, 1.0),
-                         score2 = ScoreLabel(5, 1.0),
+    confer = MltradeConf(150,classifier=classifier, score1=ScoreLabel(1, 1.0),
+                         score2 = ScoreLabel(1, 1.0),
                          model_split=model_split,
                          valid_split=valid_split,
                          ta = ta, n_pool=30, index=index)
