@@ -10,6 +10,7 @@ import os
 import numpy as np
 import pandas as pd
 import ntpath
+import pickle
 
 local_path = os.path.dirname(__file__)
 root = os.path.join(local_path, '..', "..")
@@ -21,7 +22,7 @@ from main.model import ana
 from main.work.conf import MltradeConf
 from sklearn.base import clone
 from main.base import decision_path
-from main.model.post import CrosserSet
+from main.model.post import Crosser
 
 def work(confer):
     def accurate(crosses, crossname):
@@ -91,67 +92,89 @@ def work(confer):
     stuff_dir_name = out_file_name + ".data"
     os.makedirs(stuff_dir_name, exist_ok=True)
 
-    crosser_set = CrosserSet(confer)
-    print("\n" + crosser_set.to_table("model").round(4).to_html(), file=out_file)
-    crosser_set.plot_roc("model",
-                     os.path.join(stuff_dir_name, "model.png"))
-    print("\n![](./%s.data/%s.png)" % (ntpath.basename(out_file_name), "model"), file=out_file)
 
-    print("\n"+ crosser_set.to_table("valid").round(4).to_html(), file=out_file)
-    crosser_set.plot_roc("valid",
-                     os.path.join(stuff_dir_name, "valid.png"))
-    print("\n![](./%s.data/%s.png)" % (ntpath.basename(out_file_name), "valid"), file=out_file)
+    cross_dump_file = os.path.join(root, 'data', 'cross', '%s-%s'
+            % (confer.name, confer.syms.get_name()))
+    if not os.path.exists(cross_dump_file):
+        print("%s Not exists, need to build!" %  cross_dump_file )
+        crosser = Crosser(confer)
+        with open(cross_dump_file, 'wb') as fout:
+            pickle.dump(crosser, fout, protocol=-1)
+    else:
+        print("%s exists" % cross_dump_file)
+        with open(cross_dump_file, 'rb') as fin:
+            crosser = pickle.load(fin)
 
-    print("## bulls...", file=out_file)
-    crosser_set.plot_precision_recall_bulls("model",
-                         os.path.join(stuff_dir_name, "model_pp.png"))
-    print("\n![](./%s.data/%s.png)" % (ntpath.basename(out_file_name), "model_pp"), file=out_file)
-    print("\n"+ crosser_set.to_table("valid").round(4).to_html(), file=out_file)
 
-    crosser_set.plot_precision_recall_bulls("valid",
-                         os.path.join(stuff_dir_name, "valid_pp.png"))
-    print("\n![](./%s.data/%s.png)" % (ntpath.basename(out_file_name), "valid_pp"), file=out_file)
-    print("\n" + crosser_set.ipts_table("model").head(10).round(4).to_html(), file=out_file)
-    print("\n" + crosser_set.ipts_table("model").tail(10).round(4).to_html(), file=out_file)
+    df_pred = crosser.pred()
+    df_pred.to_pickle(confer.get_pred_file())
 
-    print("## bears...", file=out_file)
-    crosser_set.plot_precision_recall_bears("model",
-                                      os.path.join(stuff_dir_name, "model_pp_bears.png"))
-    print("\n![](./%s.data/%s.png)" % (ntpath.basename(out_file_name), "model_pp_bears"), file=out_file)
-    print("\n"+ crosser_set.to_table("valid").round(4).to_html(), file=out_file)
+    #crosser_set = CrosserSet(confer)
+    #print("\n" + crosser_set.to_table("model").round(4).to_html(), file=out_file)
+    #crosser_set.plot_roc("model",
+    #                 os.path.join(stuff_dir_name, "model.png"))
+    #print("\n![](./%s.data/%s.png)" % (ntpath.basename(out_file_name), "model"), file=out_file)
 
-    crosser_set.plot_precision_recall_bears("valid",
-                                      os.path.join(stuff_dir_name, "valid_pp_bears.png"))
-    print("\n![](./%s.data/%s.png)" % (ntpath.basename(out_file_name), "valid_pp_bears"), file=out_file)
-    print("\n" + crosser_set.ipts_table("model").head(10).round(4).to_html(), file=out_file)
-    print("\n" + crosser_set.ipts_table("model").tail(10).round(4).to_html(), file=out_file)
-    print("\n" + crosser_set.accurate("model").round(4).to_html(), file=out_file)
+    #print("\n"+ crosser_set.to_table("valid").round(4).to_html(), file=out_file)
+    #crosser_set.plot_roc("valid",
+    #                 os.path.join(stuff_dir_name, "valid.png"))
+    #print("\n![](./%s.data/%s.png)" % (ntpath.basename(out_file_name), "valid"), file=out_file)
 
-    crosser_set.plot_top_precision("model",
-                         os.path.join(stuff_dir_name, "model_tp.png"), score_name="pred")
-    print("\n![](./%s.data/%s.png)" % (ntpath.basename(out_file_name), "model_tp"), file=out_file)
-    crosser_set.plot_top_precision("valid",
-                         os.path.join(stuff_dir_name, "valid_tp.png"), score_name="pred")
-    print("\n![](./%s.data/%s.png)" % (ntpath.basename(out_file_name), "valid_tp"), file=out_file)
+    #print("## bulls...", file=out_file)
+    #crosser_set.plot_precision_recall_bulls("model",
+    #                     os.path.join(stuff_dir_name, "model_pp.png"))
+    #print("\n![](./%s.data/%s.png)" % (ntpath.basename(out_file_name), "model_pp"), file=out_file)
+    #print("\n"+ crosser_set.to_table("valid").round(4).to_html(), file=out_file)
 
-    crosser_set.plot_top_precision("model",
-                                   os.path.join(stuff_dir_name, "model_tp2.png"), score_name="pred2")
-    print("\n![](./%s.data/%s.png)" % (ntpath.basename(out_file_name), "model_tp2"), file=out_file)
-    crosser_set.plot_top_precision("valid",
-                                   os.path.join(stuff_dir_name, "valid_tp2.png"), score_name="pred2")
-    print("\n![](./%s.data/%s.png)" % (ntpath.basename(out_file_name), "valid_tp2"), file=out_file)
-    print("\n" + crosser_set.top_bulls("model").round(4).to_html(), file=out_file)
-    print("\n" + crosser_set.top_bulls("valid").round(4).to_html(), file=out_file)
+    #crosser_set.plot_precision_recall_bulls("valid",
+    #                     os.path.join(stuff_dir_name, "valid_pp.png"))
+    #print("\n![](./%s.data/%s.png)" % (ntpath.basename(out_file_name), "valid_pp"), file=out_file)
+    #print("\n" + crosser_set.ipts_table("model").head(10).round(4).to_html(), file=out_file)
+    #print("\n" + crosser_set.ipts_table("model").tail(10).round(4).to_html(), file=out_file)
 
-    print("\n" + crosser_set.top_bears("model").round(4).to_html(), file=out_file)
-    print("\n" + crosser_set.top_bears("valid").round(4).to_html(), file=out_file)
-    out_file.close()
+    #print("## bears...", file=out_file)
+    #crosser_set.plot_precision_recall_bears("model",
+    #                                  os.path.join(stuff_dir_name, "model_pp_bears.png"))
+    #print("\n![](./%s.data/%s.png)" % (ntpath.basename(out_file_name), "model_pp_bears"), file=out_file)
+    #print("\n"+ crosser_set.to_table("valid").round(4).to_html(), file=out_file)
 
-    import markdown2 as md
-    text = ""
-    with open(out_file_name, 'r', encoding='utf-8') as f:
-        text = f.read()
-    html = md.markdown(text, extras=["tables"])
-    out_file_html = confer.get_out_file_prefix() + ".model.html"
-    with open(out_file_html, "w", encoding='utf-8') as fout:
-        print(html, file=fout)
+    #crosser_set.plot_precision_recall_bears("valid",
+    #                                  os.path.join(stuff_dir_name, "valid_pp_bears.png"))
+    #print("\n![](./%s.data/%s.png)" % (ntpath.basename(out_file_name), "valid_pp_bears"), file=out_file)
+    #print("\n" + crosser_set.ipts_table("model").head(10).round(4).to_html(), file=out_file)
+    #print("\n" + crosser_set.ipts_table("model").tail(10).round(4).to_html(), file=out_file)
+    #print("\n" + crosser_set.accurate("model").round(4).to_html(), file=out_file)
+
+    #crosser_set.plot_top_precision("model",
+    #                     os.path.join(stuff_dir_name, "model_tp.png"), score_name="pred")
+    #print("\n![](./%s.data/%s.png)" % (ntpath.basename(out_file_name), "model_tp"), file=out_file)
+    #crosser_set.plot_top_precision("valid",
+    #                     os.path.join(stuff_dir_name, "valid_tp.png"), score_name="pred")
+    #print("\n![](./%s.data/%s.png)" % (ntpath.basename(out_file_name), "valid_tp"), file=out_file)
+
+    #crosser_set.plot_top_precision("model",
+    #                               os.path.join(stuff_dir_name, "model_tp2.png"), score_name="pred2")
+    #print("\n![](./%s.data/%s.png)" % (ntpath.basename(out_file_name), "model_tp2"), file=out_file)
+    #crosser_set.plot_top_precision("valid",
+    #                               os.path.join(stuff_dir_name, "valid_tp2.png"), score_name="pred2")
+    #print("\n![](./%s.data/%s.png)" % (ntpath.basename(out_file_name), "valid_tp2"), file=out_file)
+    #print("\n" + crosser_set.top_bulls("model").round(4).to_html(), file=out_file)
+    #print("\n" + crosser_set.top_bulls("valid").round(4).to_html(), file=out_file)
+
+    #print("\n" + crosser_set.top_bears("model").round(4).to_html(), file=out_file)
+    #print("\n" + crosser_set.top_bears("valid").round(4).to_html(), file=out_file)
+    #out_file.close()
+
+    #df_pred = crosser_set.pred()
+    #df_pred.to_pickle(os.path.join(root, "data", "cross", "%s_pred_%s.pkl" % (confer.name, base.last_trade_date())))
+    #import markdown2 as md
+    #text = ""
+    #with open(out_file_name, 'r', encoding='utf-8') as f:
+    #    text = f.read()
+    #html = md.markdown(text, extras=["tables"])
+    #out_file_html = confer.get_out_file_prefix() + ".model.html"
+    #with open(out_file_html, "w", encoding='utf-8') as fout:
+    #    print(html, file=fout)
+
+    #from shutil import copyfile
+    #copyfile(out_file_html, os.path.join(root, "report", "model.html"))

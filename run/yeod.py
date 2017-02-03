@@ -9,7 +9,7 @@ import shutil
 import subprocess
 import datetime
 import logging
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.WARN)
 
 local_path = os.path.dirname(__file__)
 root = os.path.join(local_path, '..')
@@ -17,29 +17,15 @@ sys.path.append(root)
 
 from main.yeod import yeod
 
-
-def git_diff():
-    s = subprocess.check_output("""
-            cd {local_path};
-            git diff | wc -l
-    """.format(**{"local_path":local_path}), shell=True)
-    return int(s)
-dirname = "sp100_%s" % datetime.datetime.now().strftime("%Y%m%d")
-    
-dirpath = os.path.join(local_path, dirname)
-if os.path.exists(dirpath):
-    shutil.rmtree(dirpath)
-yeod.main2(5, dirpath)
-#yeod.main2(5, dirpath, ["GOOG", "YHOO"])
-
-cmdstr = """
-    pwd;
-    cd {local_path}/{dirname};
-    tar cvzf ../{dirname}.tar.gz *.csv;
-    cd ..;
-    mv {dirname}.tar.gz /home/hongbin/misc/nginx/html;
-    rm -rf /home/hongbin/misc/nginx/html/sp100_current.tar.gz;
-    cp -rf /home/hongbin/misc/nginx/html/{dirname}.tar.gz /home/hongbin/misc/nginx/html/sp100_current.tar.gz 
-""".format(**{"dirname":dirname, "local_path": local_path})
-print(cmdstr)
-subprocess.check_output(cmdstr, shell=True)
+#yeod.main2(10, "/home/hongbin/misc/nginx/html/yeod/sp100_snapshot_20091129.zip",
+#        yeod.sp100_snapshot("20091129").get_syms())
+#yeod.main2(10, "/home/hongbin/misc/nginx/html/yeod/sp100_snapshot_20100710.zip",
+#        yeod.sp100_snapshot("20100710").get_syms())
+#yeod.main2(10, "/home/hongbin/misc/nginx/html/yeod/sp100_snapshot_20140321.zip",
+#        yeod.sp100_snapshot("20140321").get_syms())
+#yeod.main2(10, "/home/hongbin/misc/nginx/html/yeod/sp100_snapshot_20161110.zip",
+#        yeod.sp100_snapshot("20161110").get_syms())
+syms = yeod.sp500_snapshot("20091231").get_syms()
+print(len(syms))
+yeod.main2(10, "/home/hongbin/misc/nginx/html/yeod/sp500_snapshot_20091231.zip",
+        yeod.sp500_snapshot("20091231").get_syms())

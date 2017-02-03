@@ -1,0 +1,76 @@
+#! /usr/bin/env python2.7
+# -*- coding: utf-8 -*-
+# @author  Bin Hong
+
+"""
+"""
+
+import sys
+import os
+import platform
+import socket
+import pandas as pd
+
+import matplotlib
+matplotlib.use('Agg')
+
+local_path = os.path.dirname(__file__)
+root = os.path.join(local_path, '..')
+sys.path.append(root)
+
+from main.base.score2 import ScoreLabel
+from main.work import model
+from main.work import build
+#from main.work import pred
+from main import base
+from main.work.conf import MltradeConf
+from main.ta import ta_set
+from main.model.spliter import YearSpliter
+from main.model import ana
+from main.classifier.tree import MyRandomForestClassifier
+from main.classifier.tree import RFCv1n2000md6msl100
+from main.classifier.tree import RFCv1n2000md6msl10000
+from main.classifier.tree import MyGradientBoostingClassifier
+from main.classifier.tree import MyLogisticRegressClassifier
+from main.backtest import backtest
+
+
+def conf(index, test_start, test_end):
+    week = -1
+    score=5
+    model_split=YearSpliter(test_start, test_end, "1900", test_start)
+    classifier = RFCv1n2000md6msl100()
+    index = index
+    ta = ta_set.TaSetBase1Ext4El()
+    index = index
+    week = week
+    if base.is_test_flag():
+        classifier = MyRandomForestClassifier(n_estimators=10, min_samples_leaf=10)
+        index = "test"
+    confer = MltradeConf(
+                         model_split=model_split,
+                         classifier=classifier,
+                         score1=ScoreLabel(score, 1.0),
+                         score2 = ScoreLabel(score, 1.0),
+                         ta = ta, n_pool=30, index=index, week = week)
+    return confer
+
+if __name__ == '__main__':
+    confer1 = conf("sp100_snapshot_20091129", "2010", "2013")
+    build.work(confer1)
+    model.work(confer1)
+    df1 = pd.read_pickle(confer1.get_pred_file())
+    df1 = df[(df.date >=confer1.model_split.test_start) & (df.date<=confer1.model_split.test_end)]
+    confer2 = conf("sp100_snapshot_20120629", "2013", "2017")
+    build.work(confer2)
+    model.work(confer2)
+    df2 = pd.read_pickle(confer2.get_pred_file())
+    df2 = df[(df.date >=confer2.model_split.test_start) & (df.date<=confer2.model_split.test_end)]
+
+    pd.concat([df1, df2]).to_pickle(os.path.join())
+
+    df.to_pickle(os.path.join(root, 'output', "result_20170205.pkl"))
+    df = pd.read_pickle(os.path.join(root, 'output', "result_20170205.pkl"))
+    print(ana.roc_auc(df, confer))
+    print(ana.roc_auc_per_year(df, confer))
+
