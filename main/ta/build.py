@@ -117,8 +117,9 @@ def work(pool_num, symset, ta, scores, confer, dirname = ""):
     assert len(df) == len(result)
     ## 防止一致正在下跌的股票会持续被选中, 因此只对周一到周五的股票进行预测. 
     if confer.score1.get_name().startswith("score_label_5"):
-        print("filter....")
-        result = result[result.apply(lambda x: datetime.strptime(x['date'], "%Y-%m-%d").weekday()==confer.week, axis=1) ]
+        if confer.week > 0:
+            print("filter....")
+            result = result[result.apply(lambda x: datetime.strptime(x['date'], "%Y-%m-%d").weekday()==confer.week, axis=1) ]
 
     return result
 

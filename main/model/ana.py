@@ -6,6 +6,7 @@ import sys
 import os
 import pandas as pd
 import numpy as np
+from sklearn.metrics import roc_curve, auc
 
 local_path = os.path.dirname(__file__)
 root = os.path.join(local_path, '..', '..')
@@ -114,3 +115,27 @@ def select2(score1, score2, df_test, top, threshold, score_name):
     assert isinstance(df_year, pd.DataFrame)
     df_year = df_year.fillna(0)
     return df_selected, df_year, df_month
+
+def extract_feat_label(df, scorename):
+    df = df.replace([np.inf,-np.inf],np.nan).dropna()
+    feat_names = base.get_feat_names(df)
+    npFeat = df.loc[:,feat_names].values.copy()
+    npLabel = df.loc[:,scorename].values.copy()
+    npPred = df.loc[:, "pred"].values.copy()
+    return npFeat, npLabel, npPred
+
+def roc_auc(df, confer):
+    npTFeat, npLabel, npPred = extract_feat_label(df, confer.score1.get_name())
+    fpr, tpr, thresholds = roc_curve(npLabel, npPred)
+    roc_auc = auc(fpr, tpr)
+    return roc_auc
+
+def roc_auc_per_year(df, confer):
+    res = []
+    df['yyyy'] = df.date.str.slice(0,4)
+    years = df["yyyy"].unique()
+    for year in years:
+        df_cur = df[df.yyyy == year]
+        res.append({"yyyy":year, "roc":roc_auc(df_cur,confer)})
+    return pd.DataFrame(data = res).sort_values("yyyy")
+

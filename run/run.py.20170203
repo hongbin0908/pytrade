@@ -38,8 +38,8 @@ def getConf(week,
         index="sp100_snapshot_20091129",
         model_split=BinarySpliter("2010-01-01", "2017-01-01", "1700-01-01", "2010-01-01")
 ):
-    #classifier = MyGradientBoostingClassifier(n_estimators = 100)
-    classifier = RFCv1n2000md6msl100()
+    classifier = MyGradientBoostingClassifier(n_estimators = 100)
+    #classifier = RFCv1n2000md6msl100()
     index = index
     #classifier = MyLogisticRegressClassifier(C=1e3)
     ta = ta_set.TaSetBase1Ext4El()
@@ -58,22 +58,13 @@ def getConf(week,
 
     return confer
 
-def get_confs():
-    for week in [1,2,3,4,5]:
-        yield getConf(week, index = "sp100_snapshot_20091129", model_split=BinarySpliter("2010-01-01", "2013-01-01", "1980-01-01", "2010-01-01"))
-        yield getConf(1, index = "sp100_snapshot_20120316", model_split=BinarySpliter("2013-01-01", "2015-01-01", "1983-01-01", "2013-01-01"))
-        yield getConf(1, index = "sp100_snapshot_20140321", model_split=BinarySpliter("2015-01-01", "2017-01-01", "1985-01-01", "2015-01-01"))
+if __name__ == '__main__':
+    confer = getConf(-1, index = "sp100_snapshot_20091129", model_split=BinarySpliter("2010-01-01", "2017-01-01", "1980-01-01", "2010-01-01"))
+    build.work(confer)
+    model.work(confer)
+    df = pd.read_pickle(confer.get_pred_file())
+    df = df[(df.date >=confer.model_split.test_start) & (df.date<=confer.model_split.test_end)]
 
-#if __name__ == '__main__':
-#    tobe = []
-#    for confer in get_confs():
-#        build.work(confer)
-#        model.work(confer)
-#        df1 = pd.read_pickle(confer.get_pred_file())
-#        df1 = df1[(df1.date >=confer.model_split.test_start) & (df1.date<=confer.model_split.test_end)]
-#        tobe.append(df1)
-#    df = pd.concat(tobe)
-#
-#    df.to_pickle(os.path.join(root, 'output', "result.pkl"))
-#    # backtest.run(os.path.join(root, "data", "cross", "pred%s.pkl" % base.last_trade_date()))
+    df.to_pickle(os.path.join(root, 'output', "result_20170203.pkl"))
+    # backtest.run(os.path.join(root, "data", "cross", "pred%s.pkl" % base.last_trade_date()))
 

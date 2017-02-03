@@ -8,7 +8,6 @@ sys.path.append(root)
 from main.ta.ta_set import TaSetBase1
 from main.base.score2 import ScoreLabel
 from main.yeod import yeod
-from main.model.spliter import StaticSpliter
 from main.classifier.tree import MyRandomForestClassifier
 
 class MltradeConf:
@@ -47,8 +46,8 @@ class MltradeConf:
             self.syms = yeod.get_sp100_snapshot_20140321()
         elif index == "sp100_snapshot_20151030":
             self.syms = yeod.get_sp100_snapshot_20151030()
-        #elif index == "sp500_snapshot_20091231":
-        #    self.syms = yeod.get_sp500_snapshot_20091231()
+        elif index == "sp500_snapshot_20091231":
+            self.syms = yeod.get_sp500_snapshot_20091231()
         else:
             assert(False)
 

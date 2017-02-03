@@ -9,6 +9,49 @@ from sklearn.ensemble.gradient_boosting import GradientBoostingClassifier
 from sklearn import linear_model
 import main.base as base
 
+
+from lasagne import layers  
+from lasagne.updates import nesterov_momentum  
+from nolearn.lasagne import NeuralNet 
+from nolearn.lasagne import visualize  
+import lasagne
+import pickle
+from sklearn.metrics import confusion_matrix
+import matplotlib  
+import matplotlib.pyplot as plt  
+import matplotlib.cm as cm  
+from sklearn import metrics
+import numpy as np
+from keras.models import Sequential
+from keras.layers.core import Dense, Dropout, Activation
+from keras.layers.embeddings import Embedding
+from keras.layers.recurrent import LSTM
+from keras.optimizers import SGD
+from keras.layers.core import Flatten
+class ccl(BaseClassifier):
+    def __init__(self):
+        pass
+    def get_name(self):
+        return "ccl"
+    def fit(self, X, y):
+        model = Sequential()
+        model.add(LSTM(input_shape=[X.reshap(-1, 118,1).shape[1], 1],  output_dim =30, return_sequences = True))
+        model.add(Flatten())
+        model.add(Activation('linear'))
+        model.add(Dense( output_dim=30))
+        model.add(Activation('linear'))
+        model.add(Dropout(0.3))
+        model.add(Dense(output_dim=10))
+        model.add(Activation('tanh'))
+        model.add(Dense(output_dim=1))
+        model.add(Activation('sigmoid'))
+        sgd = SGD(lr=0.05, decay=1e-5, momentum=0.9, nesterov=True)
+        model.compile(loss='binary_crossentropy', optimizer='sgd')
+
+        model.fit(X, y, batch_size=200, nb_epoch=100)
+    def predict_proba(self, X):
+        return model.predict_proba(X)
+
 class MyLogisticRegressClassifier(BaseClassifier):
     """
     http://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html
