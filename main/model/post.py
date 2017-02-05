@@ -56,7 +56,6 @@ class Poster:
 class Crosser:
     def __init__(self, confer):
 
-        self.posts = {"model":None, "valid":None}
         self.confer = confer
         self.symset = confer.syms
         assert isinstance(self.confer, conf.MltradeConf)
@@ -115,8 +114,7 @@ class Crosser:
     def _create(self, split_):
         df_all = pd.read_pickle(self.confer.get_ta_file())
         token = split_.split(df_all)
-        class_dump_file = os.path.join(root, 'data', 'cross', "%s-%s-%s-%s"
-                                            % (self.confer.name, self.confer.syms.get_name(), token.train.name, self.confer.classifier.get_name()))
+        class_dump_file = self.confer.get_classifier_file()
         tmp = token.train.sort_values(["date"])
         is_to_fit = True
         if os.path.exists(class_dump_file):

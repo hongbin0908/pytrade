@@ -93,17 +93,18 @@ def work(confer):
     os.makedirs(stuff_dir_name, exist_ok=True)
 
 
+    crosser = Crosser(confer)
     cross_dump_file = os.path.join(root, 'data', 'cross', '%s-%s'
             % (confer.name, confer.syms.get_name()))
-    if not os.path.exists(cross_dump_file):
-        print("%s Not exists, need to build!" %  cross_dump_file )
-        crosser = Crosser(confer)
-        with open(cross_dump_file, 'wb') as fout:
-            pickle.dump(crosser, fout, protocol=-1)
-    else:
-        print("%s exists" % cross_dump_file)
-        with open(cross_dump_file, 'rb') as fin:
-            crosser = pickle.load(fin)
+    #if not os.path.exists(cross_dump_file):
+    #    print("%s Not exists, need to build!" %  cross_dump_file )
+    #    crosser = Crosser(confer)
+    #    with open(cross_dump_file, 'wb') as fout:
+    #        pickle.dump(crosser, fout, protocol=-1)
+    #else:
+    #    print("%s exists" % cross_dump_file)
+    #    with open(cross_dump_file, 'rb') as fin:
+    #        crosser = pickle.load(fin)
 
 
     df_pred = crosser.pred()

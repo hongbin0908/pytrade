@@ -12,34 +12,65 @@ sys.path.append(root)
 
 import main.base as base
 from main.base.timer import Timer
-from main.work import build
 
 
-def feat_select(df, split_point, label, depth, min_, n_pool):
+def feat_split(df, split_point, label, depth, min_, n_pool):
     df_len = len(df)
     split_point = int(df_len * split_point)
     df1 = df.iloc[:split_point]
     df2 = df.iloc[split_point:]
-    assert df_len == len(df1) + len(df2)
-    with Timer("bit1 bitlize") as t:
-        df_bit1 = bitlize(df1, label, depth, min_, n_pool)
-    with Timer("bit2 apply") as t:
-        df_bit2 = apply(df_bit1, df2, label)
-    df_merged = df_bit1.merge(df_bit2, on = ["name"], suffixes=("", "_df2"))
-    assert len(df_bit1) == len(df_bit2) == len(df_merged)
-    assert 0 == (df_merged.start - df_merged.start_df2).sum()
-    assert 0 == (df_merged.end - df_merged.end_df2).sum()
-    df_merged["direct"] = df_merged.apply(lambda row: 1 if row["p_chvfa"] > 1.0 and row["p_chvfa_df2"] > 1.0 else 0, axis = 1)
-    df_all = apply(df_bit1, df, label)
-    assert len(df_all) == len(df_merged)
-    df_all["direct"] = df_merged["direct"]
-    return df_all[df_all.direct == 1]
+    if True:
+        assert df_len == len(df1) + len(df2)
+    df_bit1s = bitlize(df1, label, depth, min_, n_pool)
+    candis = [df[list(set(df.columns)-set(base.get_feat_names(df)))]]
 
+    for i in range(0, 2**depth):
+        df_bit1 = df_bit1s[i]
+        df_bit1.to_pickle(os.path.join(root, "data", "df_bit.pkl.%d" % i))
+        df_bit2 = apply(df_bit1, df2, label)
+        df_bit1.loc["direct"] = \
+                (df_bit1.loc["p_chvfa"] >= 1.0) & (df_bit2.loc["p_chvfa"] >= 1.0)
+        df_bit1 = df_bit1.loc[:, df_bit1.loc["direct"]]
+        feat_names = base.get_feat_names(df_bit1)
+    
+        df_candi = (df[feat_names] >= df_bit1.loc["start"] ) & (df[feat_names] < df_bit1.loc["end"])
+        pd.set_option('display.expand_frame_repr', False) 
+        df_candi.columns = df_bit1.loc["name"]
+        candis.append(df_candi)
+    df_res = pd.concat(candis, axis=1)
+    df_res.sort_values(["sym","date"])
+    return df_res
+        
 
 def apply(dfBit, df, label):
+    feat_names = base.get_feat_names(dfBit)
+    df_c = df[feat_names]
+    df_c.loc[:,label] = df[label]
+    df_res = pd.DataFrame(None, columns= df_c[feat_names].columns)
+    df_res.loc["name"] = dfBit.loc["name"]
+    df_res.loc["start"] = dfBit.loc["start"]
+    df_res.loc["end"] = dfBit.loc["end"]
+    df_res.loc["p"] = df_c[df_c[label]>0.5].count()[feat_names]/df_c.count()[feat_names]
+    df_res.loc["n"] = df_c[df_c[label]<0.5].count()[feat_names]/df_c.count()[feat_names]
+    df_dfc = (df_c[feat_names]>=dfBit.loc["start"]) & (df_c[feat_names]<dfBit.loc["end"])
+    df_dfc[label] = df[label]
+    df_res.loc["n-samples"] = df_dfc[feat_names].sum()
+    df_res.loc["c_p"] = df_dfc[df_dfc[label]>0.5].sum()[feat_names]/df_dfc.sum()[feat_names]
+    df_res.loc["c_n"] = df_dfc[df_dfc[label]<0.5].sum()[feat_names]/df_dfc.sum()[feat_names]
+    df_res.loc["p_chvfa"] = df_res.loc["c_p"]/df_res.loc["p"]
+    df_res.loc["n_chvfa"] = df_res.loc["c_n"]/df_res.loc["n"]
+    df_res = df_res.fillna(0)
+    return df_res
+
+
+
+
+    sys.exit(0)
+
+
     df_len = len(df)
-    fp = len(df[df[label] == 1.0]) * 1.0 / df_len
-    fn = len(df[df[label] == 0.0]) * 1.0 / df_len
+    fp = len(df[df[label] >0.5]) * 1.0 / df_len
+    fn = len(df[df[label] <0.5]) * 1.0 / df_len
     assert 1 == fp + fn
 
     shadows = []
@@ -52,8 +83,33 @@ def apply(dfBit, df, label):
         d["p"] = fp
         d["n"] = fn
         dfc = df[(df[d["fname"]] >= d["start"]) & (df[d["fname"]] < d["end"])]
-        d["c_p"] = 0 if len(dfc) == 0 else len(dfc[dfc[label] == 1.0]) * 1.0 / len(dfc)
-        d["c_n"] = 0 if len(dfc) == 0 else len(dfc[dfc[label] == 0.0]) * 1.0 / len(dfc)
+        d["c_p"] = 0 if len(dfc) <= 0 else len(dfc[dfc[label] > 0.5]) * 1.0 / len(dfc)
+        d["c_n"] = 0 if len(dfc) <= 0 else len(dfc[dfc[label] <0.5]) * 1.0 / len(dfc)
+        d["p_chvfa"] = d["c_p"] / d["p"]
+        d["n_chvfa"] = d["c_n"] / d["n"]
+        d["n_samples"] = len(dfc)
+        shadows.append(d)
+    df2 = pd.DataFrame(shadows)
+    return df2
+
+def apply_old(dfBit, df, label):
+    df_len = len(df)
+    fp = len(df[df[label] > 0.5]) * 1.0 / df_len
+    fn = len(df[df[label] < 0.5]) * 1.0 / df_len
+    assert 1 == fp + fn
+
+    shadows = []
+    for i, each in dfBit.iterrows():
+        d = {}
+        d["name"] = each["name"]
+        d["fname"] = each["fname"]
+        d["start"] = each["start"]
+        d["end"] = each["end"]
+        d["p"] = fp
+        d["n"] = fn
+        dfc = df[(df[d["fname"]] >= d["start"]) & (df[d["fname"]] < d["end"])]
+        d["c_p"] = 0 if len(dfc) <= 0 else len(dfc[dfc[label] > 0.5]) * 1.0 / len(dfc)
+        d["c_n"] = 0 if len(dfc) <= 0 else len(dfc[dfc[label] < 0.5]) * 1.0 / len(dfc)
         d["p_chvfa"] = d["c_p"] / d["p"]
         d["n_chvfa"] = d["c_n"] / d["n"]
         d["n_samples"] = len(dfc)
@@ -72,7 +128,8 @@ def bitlize(df, label, depth, min_, n_pool):
     :return: the new feature dataframe
     """
     metas = _get_metas(df, depth, min_, label, n_pool)
-    fmetas = []
+    metas = sorted(metas, key = lambda x: x["name"])
+    fmetas = [[] for i in range(0, 2**depth)]
     for each in metas:
         for i, term in enumerate(each["range"]):
             d = {}
@@ -90,10 +147,12 @@ def bitlize(df, label, depth, min_, n_pool):
             d["score"] = each["delta_impurity"]
             d["n_samples"] = each["n_samples"][i]
             # d["direct"] = 1 if d["p_chvfa"] > 1.0 else 0
-            fmetas.append(d)
-    df = pd.DataFrame(fmetas)
-    df.sort_values("c_p", ascending=False, inplace=True)
-    return df
+            fmetas[i].append(d)
+    dfs = [pd.DataFrame(fmetas[i]).transpose() for i in range(0, 2**depth)]
+    #dfs = [dfs[i].sort_values("c_p", ascending=False) for i in range(0, 2**depth)]
+    for i in range(0, len(dfs)):
+        dfs[i].columns= dfs[i].loc["fname"]
+    return dfs
 
 
 def _get_metas(dfTa, depth, min_, label, n_pool):
@@ -101,27 +160,20 @@ def _get_metas(dfTa, depth, min_, label, n_pool):
     idx = 0
     results = []
     import concurrent.futures
-    if n_pool == 1:
-        for cur_feat in feat_names:
-            feat_meta = _feat_meta(cur_feat, dfTa, len(dfTa[dfTa[label] == 1]),
-                                      len(dfTa[dfTa[label] == 0]), len(dfTa), label, depth, min_)
-            if None != feat_meta:
-                results.append(feat_meta)
-    else:
-        Executor = concurrent.futures.ProcessPoolExecutor
-        plen = len(dfTa[dfTa[label] == 1])
-        nlen = len(dfTa[dfTa[label] == 0])
-        alen = len(dfTa)
-        with Executor(max_workers=n_pool) as executor:
-            futures = {executor.submit(_feat_meta, cur_feat, dfTa[[cur_feat, label]].copy(), plen, nlen, alen, label, depth, min_): cur_feat for cur_feat in feat_names}
-            for future in concurrent.futures.as_completed(futures):
-                try:
-                    cur_feat = futures[future]
-                    results.append(future.result())
-                except Exception as exc:
-                    import traceback
-                    traceback.print_exc()
-                    sys.exit(1)
+    Executor = concurrent.futures.ProcessPoolExecutor
+    plen = len(dfTa[dfTa[label] > 0.5])
+    nlen = len(dfTa[dfTa[label] < 0.5])
+    alen = len(dfTa)
+    with Executor(max_workers=n_pool) as executor:
+        futures = {executor.submit(_feat_meta, cur_feat, dfTa[[cur_feat, label]].copy(), plen, nlen, alen, label, depth, min_): cur_feat for cur_feat in feat_names}
+        for future in concurrent.futures.as_completed(futures):
+            try:
+                cur_feat = futures[future]
+                results.append(future.result())
+            except Exception as exc:
+                import traceback
+                traceback.print_exc()
+                sys.exit(1)
 
     return results
 
@@ -132,8 +184,8 @@ def _feat_meta(feat, df, plen, nlen, len_, label, depth=1, min_=10000):
     tree = _get_tree(depth, min_)
     npFeat = df[[feat]].values.copy()
     npLabel = df[label].values.copy()
-    npLabel[npLabel >= 1.0] = 1
-    npLabel[npLabel < 1.0] = 0
+    npLabel[npLabel > 0.5] = 1
+    npLabel[npLabel < 0.5] = 0
 
     min_ = npFeat.min()
     max_ = npFeat.max()
@@ -148,9 +200,6 @@ def _feat_meta(feat, df, plen, nlen, len_, label, depth=1, min_=10000):
     rlt["n"] = 1.0 * nlen / len_
     rlt["delta_impurity"] = _delta_impurity(tree, leaves)
     rlt["impurity"] = tree.tree_.impurity[0]
-    # p1 = 1.0*len(df[df[label]>1.0])/len(df)
-    # p2 = 1.0*len(df[df[label]<1.0])/len(df)
-    # assert abs(rlt["impurity"] - (1- p1*p1 -p2*p2)) < 0.0001
     rlt["range"] = leaves_range(leaves)
     rlt["children_p"] = leaves_p(leaves)
     rlt["children_n"] = [(1 - each) for each in leaves_p(leaves)]

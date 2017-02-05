@@ -41,8 +41,9 @@ def date_split(df, train_num, test_num):
         df_test.reset_index(drop=False, inplace=True)
         yield (df_train, df_test)
 
-def extract_feat_label(df, scorename):
-    df = df.replace([np.inf,-np.inf],np.nan).dropna()
+def extract_feat_label(df, scorename, drop = True):
+    if drop:
+        df = df.replace([np.inf,-np.inf],np.nan).dropna()
     feat_names = base.get_feat_names(df)
     npFeat = df.loc[:,feat_names].values.copy()
     npLabel = df.loc[:,scorename].values.copy()
@@ -80,7 +81,7 @@ def post_valid(classifier, df_train, df_test, score, is_fit):
     df_train = df_train.sort_values(["sym", "date"])
     # from sklearn.exceptions import NotFittedError
     npTrainFeat, npTrainLabel = extract_feat_label(df_train, score.get_name())
-    npTestFeat, npTestLabel = extract_feat_label(df_test, score.get_name())
+    npTestFeat, npTestLabel = extract_feat_label(df_test, score.get_name(), drop=False)
     feat_names = base.get_feat_names(df_test)
     if not is_fit:
         probas_ = classifier.predict_proba(npTestFeat)

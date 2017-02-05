@@ -71,7 +71,7 @@ def get_feat_names(df):
     """
     the the columns of feature names to train
     """
-    return [x for x in df.columns if x.startswith('ta_')]
+    return sorted([x for x in df.columns if x.startswith('ta_')])
 
 def get_all(taname, lsym, start="",end=""):
     sym2df = {}
