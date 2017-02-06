@@ -93,39 +93,6 @@ def work(pool_num, symset, ta, scores, confer, dirname = ""):
         df = pd.read_pickle(confer.get_origin_ta_file())
     result = bitlize.feat_split(df, 0.8, confer.score1.get_name(), 1, 20000, confer.n_pool)
 
-    #with Timer("bitlize.feat_select") as t:
-    #    df_bit1 = bitlize.feat_split(df, 0.8, confer.score1.get_name(), 1, 100, confer.n_pool)
-    #    #df_bit2 = bitlize.feat_select(df, 0.8, confer.score1.get_name(), 2, 100, confer.n_pool)
-    #    #df_bit = pd.concat([df_bit1, df_bit2], axis = 0)
-    #    #assert len(df_bit1) + len(df_bit2) == len(df_bit)
-    #    df_bit = df_bit1
-    #    df_bit.to_pickle(confer.get_ta_bit_file())
-    #    #df_bit = df_bit[df_bit.direct==1]
-    
-    
-    #df_bit_start =  pd.DataFrame(columns=df.columns,index=df.index) 
-    #
-
-    #tobe = [df[["sym", "date", "open", "high", "low", "close","volume", confer.score1.get_name()]]]
-
-
-    #Executor = concurrent.futures.ProcessPoolExecutor
-    #with Timer("bit_apply") as t:
-    #    with Executor(max_workers=confer.n_pool) as executor:
-    #        futures = {
-    #            executor.submit(bit_apply, df[[each["fname"]]].copy(), each["name"], each["fname"], each["start"],
-    #                            each["end"]): (i, each) for (i, each) in df_bit.iterrows()}
-    #        for future in concurrent.futures.as_completed(futures):
-    #            try:
-    #                i, each = futures[future]
-    #                tobe.append(future.result())
-    #            except:
-    #                traceback.print_exc()
-    #                executor.shutdown(wait=False)
-    #                sys.exit(1)
-
-    #result = pd.concat(tobe, axis=1)
-    #assert len(df) == len(result)
     ## 防止一致正在下跌的股票会持续被选中, 因此只对周一到周五的股票进行预测. 
     if confer.score1.get_name().startswith("score_label_5"):
         if confer.week > 0:

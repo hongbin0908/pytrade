@@ -67,36 +67,6 @@ def apply(dfBit, df, label):
     df_res = df_res.fillna(0)
     return df_res
 
-
-
-
-    sys.exit(0)
-
-
-    df_len = len(df)
-    fp = len(df[df[label] >0.5]) * 1.0 / df_len
-    fn = len(df[df[label] <0.5]) * 1.0 / df_len
-    assert 1 == fp + fn
-
-    shadows = []
-    for i, each in dfBit.iterrows():
-        d = {}
-        d["name"] = each["name"]
-        d["fname"] = each["fname"]
-        d["start"] = each["start"]
-        d["end"] = each["end"]
-        d["p"] = fp
-        d["n"] = fn
-        dfc = df[(df[d["fname"]] >= d["start"]) & (df[d["fname"]] < d["end"])]
-        d["c_p"] = 0 if len(dfc) <= 0 else len(dfc[dfc[label] > 0.5]) * 1.0 / len(dfc)
-        d["c_n"] = 0 if len(dfc) <= 0 else len(dfc[dfc[label] <0.5]) * 1.0 / len(dfc)
-        d["p_chvfa"] = d["c_p"] / d["p"]
-        d["n_chvfa"] = d["c_n"] / d["n"]
-        d["n_samples"] = len(dfc)
-        shadows.append(d)
-    df2 = pd.DataFrame(shadows)
-    return df2
-
 def apply_old(dfBit, df, label):
     df_len = len(df)
     fp = len(df[df[label] > 0.5]) * 1.0 / df_len
