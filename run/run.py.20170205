@@ -38,10 +38,11 @@ from main.work.conf import MyConfStableLTa
 
 if __name__ == '__main__':
     confer = MyConfStableLTa()
-    build.work(confer)
-    model.work(confer)
+    #build.work(confer)
+    #model.work(confer)
     df = pd.read_pickle(confer.get_pred_file())
     df = df[(df.date >=confer.model_split.test_start) & (df.date<=confer.model_split.test_end)]
     df.to_pickle(os.path.join(root, 'output', "result_20170205.pkl"))
     df = pd.read_pickle(os.path.join(root, 'output', "result_20170205.pkl"))
     print(ana.roc_auc(df, confer))
+    print(ana.roc_auc_per_year(df, confer))

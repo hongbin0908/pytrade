@@ -91,7 +91,8 @@ def work(pool_num, symset, ta, scores, confer, dirname = ""):
         df.to_pickle(confer.get_origin_ta_file())
     else:
         df = pd.read_pickle(confer.get_origin_ta_file())
-    result = bitlize.feat_split(df, 0.8, confer.score1.get_name(), 1, 100, confer.n_pool)
+    result = bitlize.feat_split(df, 0.8, confer.score1.get_name(), 1, 20000, confer.n_pool)
+
     #with Timer("bitlize.feat_select") as t:
     #    df_bit1 = bitlize.feat_split(df, 0.8, confer.score1.get_name(), 1, 100, confer.n_pool)
     #    #df_bit2 = bitlize.feat_select(df, 0.8, confer.score1.get_name(), 2, 100, confer.n_pool)

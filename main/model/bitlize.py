@@ -24,13 +24,18 @@ def feat_split(df, split_point, label, depth, min_, n_pool):
     df_bit1s = bitlize(df1, label, depth, min_, n_pool)
     candis = [df[list(set(df.columns)-set(base.get_feat_names(df)))]]
 
-    for i in range(0, 2**depth):
+    for i in range(0, 1):
         df_bit1 = df_bit1s[i]
         df_bit1.to_pickle(os.path.join(root, "data", "df_bit.pkl.%d" % i))
-        df_bit2 = apply(df_bit1, df2, label)
-        df_bit1.loc["direct"] = \
-                (df_bit1.loc["p_chvfa"] >= 1.0) & (df_bit2.loc["p_chvfa"] >= 1.0)
-        df_bit1 = df_bit1.loc[:, df_bit1.loc["direct"]]
+        if len(df2) > 0:
+            df_bit2 = apply(df_bit1, df2, label)
+
+            df_bit1.loc["direct"] = \
+                    ((df_bit1.loc["p_chvfa"] -1 ) * (df_bit2.loc["p_chvfa"] - 1)) > 0.00008
+            print(df_bit1.shape)
+            df_bit1 = df_bit1.loc[:, df_bit1.loc["direct"]]
+            print(df_bit1.shape)
+
         feat_names = base.get_feat_names(df_bit1)
     
         df_candi = (df[feat_names] >= df_bit1.loc["start"] ) & (df[feat_names] < df_bit1.loc["end"])
