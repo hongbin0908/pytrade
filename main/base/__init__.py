@@ -215,11 +215,11 @@ def fname_pred(cls, ta, start, end):
 def fname_pred_s(cls, ta, start, end):
     return cls + "_" + ta + "_" + start + "_"+end + ".s.csv"
 
-def last_trade_date():
+def get_last_trade_date():
     """
     get the last trade date
     """
-    df = pd.read_csv(os.path.join(dir_eod(), 'AAPL.csv'))
+    df = pd.read_csv(os.path.join(dir_eod(), 'sp100_snapshot_20091129', 'AAPL.csv'))
     return df.date.max()
 
 

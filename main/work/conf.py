@@ -100,10 +100,10 @@ class MltradeConf:
     def get_pred_file(self):
         return os.path.join(root, "data", "pred", "%s.pred.pkl" % self.name)
 class MyConfStableLTa(MltradeConf):
-    def __init__(self, ta = ta_set.TaSetBase1Ext4El()):
+    def __init__(self, ta = ta_set.TaSetBase1Ext4El(),classifier=RFCv1n2000md6msl100()):
 
         model_split=YearSpliter("2010", "2017", "1900", "2010")
-        classifier = RFCv1n2000md6msl100()
+        classifier = classifier
         score=5
         index="sp100_snapshot_20091129"
         week=-1

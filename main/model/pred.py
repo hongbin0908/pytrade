@@ -16,11 +16,10 @@ sys.path.append(local_path)
 
 import main.base as base
 
-def work(classifer, df_pred):
-    feat_names = base.get_feat_names(df_pred)
-    np_feat = df_pred.loc[:, feat_names].values
-    np_pred = classifer.predict_proba(np_feat)
+def work(confer):
+    ta_file = confer.get_ta_file()
+    
 
-    df_pred["pred"] = np_pred[:,1]
-    df_pred.sort_values(['pred'], ascending=False, inplace=True)
+
+
     return df_pred[["date", "sym", "open", "high", "low", "close", "pred"]].head(20)
