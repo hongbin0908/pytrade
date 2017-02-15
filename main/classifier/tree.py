@@ -60,7 +60,7 @@ class MyLogisticRegressClassifier(BaseClassifier):
         #self.classifier = linear_model.LogisticRegression(C=C, max_iter=2000, verbose=1, n_jobs = 30, tol=1e-6, solver='sag')
         #self.name = "lr-%f" % C
         self.classifier = linear_model.LogisticRegression(C=C, max_iter=2000, verbose=1, n_jobs = 30, tol=1e-6, solver='sag')
-        self.name = "lr-%f-%d" % (C,2000)
+        self.name = "lr-%f-%d" % (C,max_iter)
     def get_name(self):
 
         return self.name
@@ -88,7 +88,7 @@ class MyLogisticRegressClassifier(BaseClassifier):
 
 class MyRandomForestClassifier(BaseClassifier):
     def __init__(self, verbose=1, n_estimators = 2000, max_depth=8, min_samples_leaf=10000,
-                 n_jobs=25):
+                 n_jobs=40):
         self.classifier = RandomForestClassifier( **{'verbose': verbose,
                                                      'n_estimators': n_estimators,
                                                      'max_depth': max_depth, 'min_samples_leaf': min_samples_leaf,
@@ -115,7 +115,7 @@ class MyRfClassifier(BaseClassifier):
     def __init__(self, n_estimators, max_depth, min_samples_leaf):
         self.classifier = RandomForestClassifier(**{'verbose':1, 'n_estimators': n_estimators,
                                                     'max_depth':max_depth,'min_samples_leaf':min_samples_leaf,
-                                                    'n_jobs':25})
+                                                    'n_jobs':40})
         self.name = "rf_n{n}_md{md}_ms{ms}".format(
             **{"n": n_estimators, "md": max_depth, "ms": min_samples_leaf}
         )

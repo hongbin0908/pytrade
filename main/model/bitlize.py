@@ -14,7 +14,8 @@ import main.base as base
 from main.base.timer import Timer
 
 
-def feat_split(df, split_point, label, depth, min_, n_pool):
+def feat_split(dfo, start, end, split_point, label, depth, min_, n_pool):
+    df = dfo[(dfo.date>=start)&(dfo.date <end)]
     df_len = len(df)
     split_point = int(df_len * split_point)
     df1 = df.iloc[:split_point]
@@ -22,9 +23,9 @@ def feat_split(df, split_point, label, depth, min_, n_pool):
     if True:
         assert df_len == len(df1) + len(df2)
     df_bit1s = bitlize(df1, label, depth, min_, n_pool)
-    candis = [df[list(set(df.columns)-set(base.get_feat_names(df)))]]
+    candis = [dfo[list(set(dfo.columns)-set(base.get_feat_names(dfo)))]]
 
-    for i in range(0, 1):
+    for i in range(0, 2**depth):
         df_bit1 = df_bit1s[i]
         df_bit1.to_pickle(os.path.join(root, "data", "df_bit.pkl.%d" % i))
         if len(df2) > 0:
@@ -38,7 +39,7 @@ def feat_split(df, split_point, label, depth, min_, n_pool):
 
         feat_names = base.get_feat_names(df_bit1)
     
-        df_candi = (df[feat_names] >= df_bit1.loc["start"] ) & (df[feat_names] < df_bit1.loc["end"])
+        df_candi = (dfo[feat_names] >= df_bit1.loc["start"] ) & (dfo[feat_names] < df_bit1.loc["end"])
         pd.set_option('display.expand_frame_repr', False) 
         df_candi.columns = df_bit1.loc["name"]
         candis.append(df_candi)

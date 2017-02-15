@@ -32,7 +32,7 @@ def work2(syms, ta, score1, score2, confer, n_pool):
     assert isinstance(score1, ScoreLabel)
     assert isinstance(score2, ScoreLabel)
     assert isinstance(n_pool, int)
-    if os.path.exists(confer.get_ta_file()):
+    if os.path.exists(confer.get_ta_file()) and not confer.force :
         print("%s exists!" % confer.get_ta_file())
         return
     print(type(confer.syms))

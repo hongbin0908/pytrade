@@ -117,10 +117,10 @@ class Crosser:
         class_dump_file = self.confer.get_classifier_file()
         tmp = token.train.sort_values(["date"])
         is_to_fit = True
-        if os.path.exists(class_dump_file):
+        if os.path.exists(class_dump_file) and not self.confer.force:
             with open(class_dump_file, 'rb') as fin:
                 print("load %s" % class_dump_file)
-                self.confer.classifier = pickle.load(fin)
+                self.confer.classifier = pickle.load(fin, mmap_mode='C')
                 is_to_fit = False
         post =Poster(**model_work.post_valid(self.confer.classifier,
             token.train, token.test,
@@ -131,6 +131,8 @@ class Crosser:
         return post
 
     def pred(self, start = None):
+        #if start == None:
+        #    start = self.confer.model_split.test_start
         df = pd.read_pickle(self.confer.get_ta_file())
         # df = df.replace([np.inf,-np.inf],np.nan).dropna()
         # today = df.sort_values("date", ascending=False)["date"].unique()[0]

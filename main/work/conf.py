@@ -25,6 +25,7 @@ class MltradeConf:
         self.score2 = score2
         self.index = index
         self.week = week
+        self.force = True
 
         self.ta = ta
         self.name = "model_{index}_c{classifier}_m{model_split}_s{score1}-{score2}_ta{ta}_week{week}".format (
@@ -92,9 +93,11 @@ class MltradeConf:
                                 self.score1.get_name()))
 
     def get_ta_file(self):
-        return os.path.join(root, "data", "ta", "%s-%s-%d-%s.pkl"
+        return os.path.join(root, "data", "ta", "%s-%s-%s-%s-%d-%s.pkl"
                             % (self.syms.get_name(), 
                                 self.ta.get_name(), 
+                                self.model_split.train_start,
+                                self.model_split.train_end,
                                 self.week, 
                                 self.score1.get_name()))
     def get_pred_file(self):
@@ -105,7 +108,8 @@ class MyConfStableLTa(MltradeConf):
         model_split=YearSpliter("2010", "2017", "1900", "2010")
         classifier = classifier
         score=5
-        index="sp100_snapshot_20091129"
+        index="sp500_snapshot_20091231"
+        #index="sp100_snapshot_20091129"
         week=-1
         MltradeConf.__init__(self,
                 model_split=model_split,

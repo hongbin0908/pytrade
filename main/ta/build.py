@@ -62,7 +62,7 @@ def bit_apply(df, name, fname, start, end):
         assert False
 
 def work(pool_num, symset, ta, scores, confer, dirname = ""):
-    if not os.path.exists(confer.get_origin_ta_file()):
+    if not os.path.exists(confer.get_origin_ta_file()) or  confer.force:
         to_apends = []
         Executor = concurrent.futures.ProcessPoolExecutor
         with Executor(max_workers=pool_num) as executor:
@@ -80,6 +80,7 @@ def work(pool_num, symset, ta, scores, confer, dirname = ""):
                         assert isinstance(score, ScoreLabel)
                         data = score.agn_score(data)
                         data = data[data.ta_NATR_7 > 1.0]
+                        data = data[data.close > 10]
                     to_apends.append(data)
                     print(sym)
                 except Exception as exc:
@@ -91,7 +92,8 @@ def work(pool_num, symset, ta, scores, confer, dirname = ""):
         df.to_pickle(confer.get_origin_ta_file())
     else:
         df = pd.read_pickle(confer.get_origin_ta_file())
-    result = bitlize.feat_split(df, 0.8, confer.score1.get_name(), 1, 20000, confer.n_pool)
+    result = bitlize.feat_split(df, confer.model_split.train_start, 
+            confer.model_split.train_end, 0.8, confer.score1.get_name(), 2, 20000, confer.n_pool)
 
     ## 防止一致正在下跌的股票会持续被选中, 因此只对周一到周五的股票进行预测. 
     if confer.score1.get_name().startswith("score_label_5"):
