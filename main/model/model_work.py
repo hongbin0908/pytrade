@@ -41,13 +41,6 @@ def date_split(df, train_num, test_num):
         df_test.reset_index(drop=False, inplace=True)
         yield (df_train, df_test)
 
-def extract_feat_label(df, scorename, drop = True):
-    if drop:
-        df = df.replace([np.inf,-np.inf],np.nan).dropna()
-    feat_names = base.get_feat_names(df)
-    npFeat = df.loc[:,feat_names].values.copy()
-    npLabel = df.loc[:,scorename].values.copy()
-    return npFeat, npLabel
 
 
 def split(years, split_):
@@ -90,8 +83,9 @@ def post_valid(classifier, df_train, df_test, score, is_fit):
         probas_ = classifier.predict_proba(npTestFeat)
     d_feat_ipts = classifier.get_feature_importances(feat_names)
     ipts = []
-    for each in sorted(d_feat_ipts.items(), key=lambda a: a[1], reverse=True):
-        ipts.append({"name":each[0], "score": each[1]})
+    if len(d_feat_ipts) > 0:
+        for each in sorted(d_feat_ipts.items(), key=lambda a: a[1], reverse=True):
+            ipts.append({"name":each[0], "score": each[1]})
 
     fpr, tpr, thresholds = roc_curve(npTestLabel, probas_[:, 1])
     roc_auc = auc(fpr, tpr)
