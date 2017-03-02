@@ -7,34 +7,44 @@ sys.path.append(root)
 
 from main.ta.ta_set import TaSetBase1
 from main.ta import ta_set
-from main.base.score2 import ScoreLabel
+from main.score.score import ScoreLabel
+from main.score.score import ScoreRelative
 from main.yeod import yeod
 from main.classifier.tree import MyRandomForestClassifier
 from main.model.spliter import YearSpliter
 from main.classifier.tree import RFCv1n2000md6msl100
+from main.selector.selector import PnRatioSelector
+from main.selector.selector import MiSelector
 
 class MltradeConf:
-    def __init__(self, model_split,
+    def __init__(self, model_split, 
                  classifier = MyRandomForestClassifier(),
-                 score1=ScoreLabel(5, 1.0), score2 = ScoreLabel(5, 1.0),
-                 ta = TaSetBase1(), n_pool=10, index="dow30", week=0):
+                 scores = [ScoreLabel(5, 1.0), ScoreRelative(5)],
+                 ta = TaSetBase1(), selector = None, n_pool=10, index="dow30", week=0):
         self.model_split = model_split
         self.classifier = classifier
         self.n_pool = n_pool
-        self.score1 = score1
-        self.score2 = score2
+        self.scores = scores
         self.index = index
         self.week = week
-        self.force = True
-
+        self.force = False
         self.ta = ta
-        self.name = "model_{index}_c{classifier}_m{model_split}_s{score1}-{score2}_ta{ta}_week{week}".format (
-            **{"index": self.index,
-             "classifier":self.classifier.get_name(),
-             "model_split": self.model_split.get_name(),
-             "score1": self.score1.get_name(), "score2":self.score2.get_name(),
-             "ta":self.ta.get_name(),
-             "week":self.week})
+        #self.relative = False
+        if selector is None:
+            #self.selector = PnRatioSelector([self])
+            self.selector = MiSelector([self])
+        else:
+            self.selector = selector
+        
+
+        self.name_ta = "%s_%s" % (self.index, self.ta.get_name())
+        self.name_score = ""
+        for score in self.scores:
+            self.name_score += "%s_" % score.get_name()
+        self.name_bitlize = "%s_%s_%s_%s" % (self.name_ta, self.model_split.train_start, self.model_split.train_end, self.scores[0].get_name())
+
+        self.name_sel = "%s" % self.selector.get_name()
+        self.name_clazz = "%s_%s" % (self.name_sel, self.classifier.get_name())
 
         if index == "test":
             self.syms = yeod.get_test_list()
@@ -50,10 +60,8 @@ class MltradeConf:
             self.syms = yeod.get_sp100_snapshot_20140321()
         elif index == "sp100_snapshot_20151030":
             self.syms = yeod.get_sp100_snapshot_20151030()
-        elif index == "sp500_snapshot_20091231":
-            self.syms = yeod.get_sp500_snapshot_20091231()
         else:
-            assert(False)
+            self.syms = yeod.sp500_snapshot(index)
 
 
     def get_years(self, df):
@@ -62,58 +70,55 @@ class MltradeConf:
         years = df.sort_values(["yyyy"], ascending=True)["yyyy"].unique()
         return years
 
-    def get_cross_file(self):
-        return os.path.join(root, 'data', 'cross', '%s-%s'
-            % (self.name, self.syms.get_name()))
-
     def get_classifier_file(self):
-        return os.path.join(root, 'data', 'clazz', self.classifier.get_name() + "-" 
-                + self.index + "-"
-                + self.model_split.train_start + "-"
-                + self.model_split.train_end + "-"
-                + self.score1.get_name() + '-'
-                + self.ta.get_name() + '-'
-                + str(self.week))
-    def get_out_file_prefix(self):
-        return os.path.join(root, "report", "%s"
-                                 % (self.name))
+        return os.path.join(root, 'data', 'clazz', self.name_clazz)
 
-    def get_dump_name_prefix(self, conf_name):
-        return os.path.join(root, 'data',
-                                 'model',
-                                 self.name + "-" + conf_name + ".model")
-    def get_ta_bit_file(self):
-        return os.path.join(root, "data", "bit", self.syms.get_name() + "-"
-                + self.ta.get_name()+".pkl"
-                )
-    def get_origin_ta_file(self):
-        return os.path.join(root, "data", "tao", "%s-%s-%s.pkl"
-                            % (self.syms.get_name(), 
-                                self.ta.get_name(), 
-                                self.score1.get_name()))
-
+    
     def get_ta_file(self):
-        return os.path.join(root, "data", "ta", "%s-%s-%s-%s-%d-%s.pkl"
-                            % (self.syms.get_name(), 
-                                self.ta.get_name(), 
-                                self.model_split.train_start,
-                                self.model_split.train_end,
-                                self.week, 
-                                self.score1.get_name()))
-    def get_pred_file(self):
-        return os.path.join(root, "data", "pred", "%s.pred.pkl" % self.name)
-class MyConfStableLTa(MltradeConf):
-    def __init__(self, ta = ta_set.TaSetBase1Ext4El(),classifier=RFCv1n2000md6msl100()):
+        return os.path.join(root, "data", "ta", "%s.pkl" % self.name_ta)
 
-        model_split=YearSpliter("2010", "2017", "1900", "2010")
-        classifier = classifier
-        score=5
-        index="sp500_snapshot_20091231"
+    def get_bitlize_file(self):
+        return os.path.join(root, "data", "bitlize", "%s.pkl" % self.name_bitlize)
+        
+    def get_feat_file(self):
+        return os.path.join(root, "data", "feat", "%s.pkl" % self.name_bitlize)
+
+    def get_score_file(self):
+        return os.path.join(root, 'data', 'score', "%s.pkl" % self.name_score)
+
+    def get_sel_file(self):
+        return os.path.join(root, 'data', 'sel', "%s.pkl" % self.name_sel)
+
+    
+    def get_pred_file(self):
+        return os.path.join(root, "data", "pred", "%s.pkl" % self.name_clazz)
+class MyConfStableLTa(MltradeConf):
+    def __init__(self, ta = ta_set.TaSetBase1Ext4(),
+            classifier=RFCv1n2000md6msl100(),
+            train_start="1900",
+            train_end = "2010",
+            index="sp500_snapshot_20091231",
+            score=5
+            ):
+
+        model_split=YearSpliter(train_end, "2017", train_start, train_end)
         #index="sp100_snapshot_20091129"
         week=-1
         MltradeConf.__init__(self,
                 model_split=model_split,
                 classifier=classifier,
-                score1=ScoreLabel(score, 1.0),
-                score2 = ScoreLabel(score, 1.0),
+                ta = ta, n_pool=30, index=index, week = week)
+
+class MyConfStableLTa2(MltradeConf):
+    def __init__(self, train_end, test_start):
+        model_split=YearSpliter(test_start, "2017", "1900", train_end)
+        ta = ta_set.TaSetBase1Ext4El()
+        classifier=RFCv1n2000md6msl100()
+        index="sp500_snapshot_20091231"
+        score=5
+        #index="sp100_snapshot_20091129"
+        week=-1
+        MltradeConf.__init__(self,
+                model_split=model_split,
+                classifier=classifier,
                 ta = ta, n_pool=30, index=index, week = week)

@@ -43,10 +43,25 @@ def get2(snapname):
     urllib.request.urlretrieve(url, zfpath)
     zf = zipfile.ZipFile(zfpath)
     zf.extractall(os.path.join(root, 'data', 'yeod', dirname))
+def get_index():
+    dirname = "index"
+    url = "http://hongindex.com/yeod/index.zip"
+    zfpath = os.path.join(root, "data", "yeod", "%s.zip" % dirname)
+    urllib.request.urlretrieve(url, zfpath)
+    zf = zipfile.ZipFile(zfpath)
+    zf.extractall(os.path.join(root, 'data', 'yeod', dirname))
+
 if __name__  == '__main__':
-    get("20091129")
-    get("20100710")
-    get("20140321")
-    get("20161110")
-    get("20120316")
+    #get("20091129")
+    #get("20100710")
+    #get("20140321")
+    #get("20161110")
+    #get("20120316")
     get2("20091231")
+    #get2("20101207")
+    #get2("20111231")
+    #get2("20121229")
+    #get2("20131229")
+    #get2("20141229")
+    #get2("20151228")
+    get_index()

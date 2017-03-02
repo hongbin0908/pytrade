@@ -15,13 +15,10 @@ root = os.path.join(local_path, '..', '..')
 sys.path.append(root)
 
 import main.base as base
-from main.base.score2 import ScoreLabel
 from main.base.timer import Timer
 from main.ta import ta_set
 import talib
 from datetime import datetime
-from main.model import bitlize
-
 
 def is_trend_long(df):
     ma = talib.MA(df.close.values, timeperiod=10)
@@ -32,20 +29,39 @@ def is_trend_long(df):
         return True
     return False
 
+
 def _one_work(sym, ta, confer, dirname = ""):
+    if True:
+        filename = os.path.join(base.dir_eod(), dirname, sym + ".csv")
+    else:
+        filename = os.path.join(base.dir_eod(), dirname, sym + ".rel.csv")
     try:
-        if not os.path.exists(os.path.join(base.dir_eod(), dirname, sym + ".csv")):
-            print("Not exsits %s!!!!!!" % os.path.join(base.dir_eod(), dirname, sym + ".csv"))
+        if not os.path.exists(filename):
+            print("Not exsits %s!!!!!!" % filename)
             return None
-        df = pd.read_csv(os.path.join(base.dir_eod(),dirname, sym + ".csv"))
-        df = df[["date", "open", "high", "low", "close", "volume"]]
+        df = pd.read_csv(filename)
+        #df = df[["date", "open", "high", "low", "close", "volume"]]
         df[['volume']] = df[["volume"]].astype(float)
         if df is None:
             print(sym)
             return
         df["sym"] = sym
+        if (len(df) < 300):
+            print(sym, "too short!")
+            return None
+        if (len(df[df.close/df["adjrate"]< 10])/len(df) > 0.5):
+            print(sym, "price too low!")
+            return None
+        if (len(df[df.volume< 100000])/len(df) > 0.5):
+            print(sym, "volume too low!")
+            return None
+        if len(df[df["high"] < df['close']])>0 or len(df[df["low"] > df["close"]])>0:
+            print(sym, "high < close or low > close ")
+            return None
+
         df = ta.get_ta(df, confer)
-        df.to_pickle(os.path.join(base.dir_ta(ta.get_name()), sym+".pkl"))
+
+        #df.to_pickle(os.path.join(base.dir_ta(ta.get_name()), sym+".pkl"))
         return df
     except:
         traceback.print_exc()
@@ -61,8 +77,8 @@ def bit_apply(df, name, fname, start, end):
         traceback.print_exc()
         assert False
 
-def work(pool_num, symset, ta, scores, confer, dirname = ""):
-    if not os.path.exists(confer.get_origin_ta_file()) or  confer.force:
+def work(pool_num, symset, ta, confer, dirname = ""):
+    if not os.path.exists(confer.get_ta_file()) or  confer.force:
         to_apends = []
         Executor = concurrent.futures.ProcessPoolExecutor
         with Executor(max_workers=pool_num) as executor:
@@ -73,14 +89,11 @@ def work(pool_num, symset, ta, scores, confer, dirname = ""):
                     data = future.result()
                     if data is None:
                         continue
+                    #data = data[data.ta_NATR_7 > 1.0]
+                    data = data[data.close > 10]
                     if (len(data) < 300):
                         print(sym, "too short!")
                         continue
-                    for score in scores:
-                        assert isinstance(score, ScoreLabel)
-                        data = score.agn_score(data)
-                        data = data[data.ta_NATR_7 > 1.0]
-                        data = data[data.close > 10]
                     to_apends.append(data)
                     print(sym)
                 except Exception as exc:
@@ -89,19 +102,18 @@ def work(pool_num, symset, ta, scores, confer, dirname = ""):
                     sys.exit(1)
         df = pd.concat(to_apends)
         df = df.sort_values(["sym", "date"])
-        df.to_pickle(confer.get_origin_ta_file())
-    else:
-        df = pd.read_pickle(confer.get_origin_ta_file())
-    result = bitlize.feat_split(df, confer.model_split.train_start, 
-            confer.model_split.train_end, 0.8, confer.score1.get_name(), 2, 20000, confer.n_pool)
+        df.reset_index(drop=True).to_pickle(confer.get_ta_file())
+    #else:
+    #    df = pd.read_pickle(confer.get_ta_file())
+    #result, df_feat = bitlize.feat_split(df, confer.model_split.train_start, 
+    #        confer.model_split.train_end, 0.5, confer.score1.get_name(), 2, 20000, confer.n_pool)
 
     ## 防止一致正在下跌的股票会持续被选中, 因此只对周一到周五的股票进行预测. 
-    if confer.score1.get_name().startswith("score_label_5"):
-        if confer.week > 0:
-            print("filter....")
-            result = result[result.apply(lambda x: datetime.strptime(x['date'], "%Y-%m-%d").weekday()==confer.week, axis=1) ]
-
-    return result
+    #if confer.score1.get_name().startswith("score_label_5"):
+    #    if confer.week > 0:
+    #        print("filter....")
+    #        result = result[result.apply(lambda x: datetime.strptime(x['date'], "%Y-%m-%d").weekday()==confer.week, axis=1) ]
+    #return df
 
 
 if __name__ == '__main__':
