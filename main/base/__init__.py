@@ -72,6 +72,11 @@ def get_feat_names(df):
     the the columns of feature names to train
     """
     return sorted([x for x in df.columns if x.startswith('ta_')])
+def get_tabase_names(df):
+    """
+    the the columns of feature names to train
+    """
+    return list(set(df.columns) - set([x for x in df.columns if x.startswith('ta_')]))
 
 def get_all(taname, lsym, start="",end=""):
     sym2df = {}
@@ -219,7 +224,7 @@ def get_last_trade_date():
     """
     get the last trade date
     """
-    df = pd.read_csv(os.path.join(dir_eod(), 'sp100_snapshot_20091129', 'AAPL.csv'))
+    df = pd.read_csv(os.path.join(dir_eod(), 'index', '^GSPC.csv'))
     return df.date.max()
 
 
