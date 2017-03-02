@@ -31,7 +31,54 @@ class TaSet():
         pass
     def get_ta(self, df, confer):
         pass
+class TaSetSma1(TaSet):
+    def get_name(self):
+        return "base1"
+    def sma_ratio(self,closes, first, second):
+        ta_sma_first = talib.SMA(closes, first)
+        ta_sma_second = talib.SMA(closes, second)
+        res = ta_sma_second / ta_sma_first
+        return res
+    def get_ta(self, df, confer):
+        opens = df['open'].values
+        highs = df['high'].values
+        lows = df['low'].values
+        closes=df['close'].values
+        volumes = df['volume'].values
+        for i in range(5, 52):
+            df["ta_sma_%d_%d" % (i, i+2)] = self.sma_ratio(closes, i, i+2)
+        for i in range(5, 52):
+            df["ta_sma_%d_%d" % (i, i+4)] = self.sma_ratio(closes, i, i+4)
+        for i in range(5, 52):
+            df["ta_sma_%d_%d" % (i, i+6)] = self.sma_ratio(closes, i, i+6)
+        df = df.round(4)
+        return df
 
+class TaSetSma2(TaSet):
+    def get_name(self):
+        return "base1"
+    def sma_ratio(self,closes, first, second, third):
+        ta_sma_first = talib.SMA(closes, first)
+        ta_sma_second = talib.SMA(closes, second)
+        ta_sma_third = talib.SMA(closes, third)
+        res1 = ta_sma_second / ta_sma_first
+        res2 = ta_sma_third / ta_sma_second
+        res = res2/res1
+        return res
+    def get_ta(self, df, confer):
+        opens = df['open'].values
+        highs = df['high'].values
+        lows = df['low'].values
+        closes=df['close'].values
+        volumes = df['volume'].values
+        for i in range(5, 52):
+            df["ta_sma_%d_%d_%d" % (i, i+2, i+4)] = self.sma_ratio(closes, i, i+2,i+4)
+        for i in range(5, 52):
+            df["ta_sma_%d_%d_%d" % (i, i+4, i+8)] = self.sma_ratio(closes, i, i+4,i+8)
+        for i in range(5, 52):
+            df["ta_sma_%d_%d_%d" % (i, i+6, i+12)] = self.sma_ratio(closes, i, i+6,i+12)
+        df = df.round(4)
+        return df
 class TaSetBase1(TaSet):
     def get_name(self):
         return "base1"
@@ -88,15 +135,20 @@ class TaSetBase1(TaSet):
             df['ta_PPO_%d_%d'%(couple[0],couple[1])] = talib.PPO(closes, couple[0],couple[1])
         for i in [2,5,7,10,14,28]:
             df['ta_ROC_%d'% i] = talib.ROC(closes, i)
-            df['ta_ROCP_%d'%i] = talib.ROCP(closes, i)
-            df['ta_ROCR_%d'%i] = talib.ROCR(closes, i)
-            df['ta_ROCR100_%d'%i] = talib.ROCR100(closes,i)
+            #df['ta_ROCP_%d'%i] = talib.ROCP(closes, i)
+            #df['ta_ROCR_%d'%i] = talib.ROCR(closes, i)
+            #df['ta_ROCR100_%d'%i] = talib.ROCR100(closes,i)
             df['ta_RSI_%d'%i] = talib.RSI(closes, i)
         for tri in [(5,3,3),(10,6,6),(20,12,12)]:
             stoch = talib.STOCH(highs,lows,closes, fastk_period=tri[0],slowk_period=tri[1],slowd_period=tri[2])
             df['ta_STOCH_slowk_%d_%d_%d' % (tri[0],tri[1],tri[2])] = stoch[0]
             df['ta_STOCH_slowd_%d_%d_%d' % (tri[0],tri[1],tri[2])] = stoch[1]
         for i in [2,5,7,10,14,28]:
+            for c in [(5,3),(10,6),(20,12)]:
+                stochrsi = talib.STOCHRSI(closes,i,c[0],c[1])
+                df['ta_STOCHRSI_slowk_%d_%d_%d'%(i,c[0],c[1])] = stochrsi[0]
+                df['ta_STOCHRSI_slowd_%d_%d_%d'%(i,c[0],c[1])] = stochrsi[1]
+        for i in [28,30,32,40,56]:
             for c in [(5,3),(10,6),(20,12)]:
                 stochrsi = talib.STOCHRSI(closes,i,c[0],c[1])
                 df['ta_STOCHRSI_slowk_%d_%d_%d'%(i,c[0],c[1])] = stochrsi[0]
@@ -132,7 +184,8 @@ class TaSetBase1(TaSet):
         #    df['ta_WMA_%d'%i] = talib.WMA(closes, i)
 
         # 'Pattern Recognition': [
-        #df = cdl(df)
+        from main.ta import ta_cdl
+        df = ta_cdl.main(df)
 
         # 'Volatility Indicators': [
         for i in [7,10,14,28]:
@@ -163,6 +216,7 @@ class TaSetBase1Ext4(TaSet):
         df = sig_ta_PLUS_DM_28.main(df)
         del df["ta_PLUS_DM_28"]
         return df
+
 class TaSetBase1Ext4El(TaSet):
     def get_name(self):
         return "TaBase1Ext4El"
@@ -179,38 +233,8 @@ class TaSetBase1Ext4El(TaSet):
                         del df[line[0]]
                 else:
                     if not line[0] in df:
-                        print(line[0])
-                        assert 0
+                        pass
         return df
-class TaSetBaseExt4ELBit(TaSet):
-    def get_name(self):
-        return "TaBase1Ext4ElBit"
-    def get_ta(self, df, confer):
-        df = df.reset_index("date", drop=True)
-        if TEST:
-            print("TEST")
-            df = TaSetBase1().get_ta(df)
-        else:
-            df = TaSetBase1Ext4El().get_ta(df)
-        df = confer.score1.agn_score(df)
-        df = df[df.ta_NATR_7 > 1.0]
-        print("step 1")
-        from main.model import bitlize
-        df_bit = bitlize.feat_select(df, 0.8, confer.score1.get_name(), 1, 100)
-        tobe = [df[["date", "open", "high", "low", "close","volume"]]]
-        for i, each in df_bit.iterrows():
-            name = each["name"]
-            fname = each["fname"]
-            start = each["start"]
-            end = each["end"]
-
-            new = df.apply(lambda row: 1 if (row[fname]>=start and row[fname]<end) else 0, axis=1)
-            s = pd.Series(new, name = fname)
-            assert len(s) == len(tobe[0])
-            tobe.append(pd.Series(new, name = fname))
-        result = pd.concat(tobe, axis=1)
-        assert len(df) == len(result)
-        return result
 
 def get_sp500():
     df = pd.read_csv(os.path.join(root, "constituents-financials.csv"))
