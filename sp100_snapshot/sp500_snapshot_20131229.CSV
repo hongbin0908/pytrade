@@ -1,4 +1,4 @@
-Ticker symbol,Company,SEC filings,GICS?Sector,GICS Sub Industry,Address of Headquarters,Date first added
+Symbol,Company,SEC filings,GICS?Sector,GICS Sub Industry,Address of Headquarters,Date first added
 MMM,3M Company,reports,Industrials,Industrial Conglomerates,"St Paul, Minnesota",
 ABT,Abbott Laboratories,reports,Health Care,Health Care Equipment & Services,"North Chicago, Illinois",
 ABBV,AbbVie,reports,Health Care,Pharmaceuticals,"North Chicago, Illinois",2012/12/31

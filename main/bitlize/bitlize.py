@@ -25,9 +25,9 @@ def feat_split(dfo, start, end, split_point, label, depth, min_, n_pool):
     df_bit1s = bitlize(df1, label, depth, min_, n_pool)
     candis = [dfo[list(set(dfo.columns)-set(base.get_feat_names(dfo)))]]
 
+    l_feat = []
     for i in range(0, 2**depth):
         df_bit1 = df_bit1s[i]
-        df_bit1.to_pickle(os.path.join(root, "data", "df_bit.pkl.%d" % i))
         if len(df2) > 0:
             df_bit2 = apply(df_bit1, df2, label)
 
@@ -42,10 +42,16 @@ def feat_split(dfo, start, end, split_point, label, depth, min_, n_pool):
         df_candi = (dfo[feat_names] >= df_bit1.loc["start"] ) & (dfo[feat_names] < df_bit1.loc["end"])
         pd.set_option('display.expand_frame_repr', False) 
         df_candi.columns = df_bit1.loc["name"]
+
+        feat_cur = df_bit1.copy()
+        feat_cur.columns = feat_cur.loc["name"]
+        l_feat.append(feat_cur)
         candis.append(df_candi)
     df_res = pd.concat(candis, axis=1)
     df_res.sort_values(["sym","date"])
-    return df_res
+
+    df_feat = pd.concat(l_feat, axis=1)
+    return df_res, df_feat
         
 
 def apply(dfBit, df, label):
@@ -268,9 +274,6 @@ if __name__ == "__main__":
     build.work(confer)
     df = pd.read_pickle(os.path.join(root, "data", "ta",
                                      "sp500w5i0-TaBase1Ext4El-score_label_5_100.pkl"))
-    feat_select(df, 0.8, confer.score1.get_name(), 1, 100)
-    #dfMetas = bitlize(df, confer.score1.get_name(),1, 100)
-    #print(dfMetas.sort_values("p_chvfa", ascending=False)[["name","fname", "p_chvfa","n_chvfa", "p"]].head(10))
-    #print(dfMetas.sort_values("n_chvfa", ascending=False)[["name","fname", "n_chvfa","p_chvfa", "p"]].head(10))
+    feat_select(df, 0.8, confer.scores[0].get_name(), 1, 100)
 
 

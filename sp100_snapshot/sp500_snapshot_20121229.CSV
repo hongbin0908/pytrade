@@ -1,4 +1,4 @@
-Ticker symbol,Company,SEC filings,GICS?Sector,Address of Headquarters,Date first added
+Symbol,Company,SEC filings,GICS?Sector,Address of Headquarters,Date first added
 MMM,3M Co.,reports,Industrials,"St Paul, Minnesota",
 ABT,Abbott Laboratories,reports,Health Care,"North Chicago, Illinois",
 ANF,Abercrombie & Fitch Company A,reports,Consumer Discretionary,"New Albany, Ohio",

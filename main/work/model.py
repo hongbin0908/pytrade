@@ -22,8 +22,18 @@ from main.model import ana
 from main.work.conf import MltradeConf
 from sklearn.base import clone
 from main.base import decision_path
-from main.model.post import Crosser
+from main.model.post import Poster
 
+def get_ipts(confer):
+    df = pd.read_pickle(confer.get_sel_file())
+    d_feat_ipts = confer.classifier.get_feature_importances(base.get_feat_names(df))
+    ipts = []
+    if len(d_feat_ipts) > 0:
+        for each in sorted(d_feat_ipts.items(), key = lambda a: a[1], reverse=True):
+            ipts.append({"name":each[0], "score":each[1]})
+    df_ipts = pd.DataFrame(data=ipts)
+    df_ipts = df_ipts.set_index("name")
+    return df_ipts
 def work(confer):
     def accurate(crosses, crossname):
         print('\n\n|symset|glo_l1|sel_l1|glo_l2|sel_l2|select_len|min|max|', file=out_file)
@@ -85,17 +95,17 @@ def work(confer):
                                         % (each["symsetname"], i))
                 print("![](%s.png)" % (dot_file), file=out_file)
 
-    assert isinstance(confer, MltradeConf)
-    out_file_name = confer.get_out_file_prefix() + ".model.md"
-    print(out_file_name)
-    out_file = open(out_file_name, "w", encoding="utf-8")
-    stuff_dir_name = out_file_name + ".data"
-    os.makedirs(stuff_dir_name, exist_ok=True)
+    #out_file_name = confer.get_out_file_prefix() + ".model.md"
+    #out_file = open(out_file_name, "w", encoding="utf-8")
+    #stuff_dir_name = out_file_name + ".data"
+    #os.makedirs(stuff_dir_name, exist_ok=True)
 
-
-    crosser = Crosser(confer)
-    cross_dump_file = os.path.join(root, 'data', 'cross', '%s-%s'
-            % (confer.name, confer.syms.get_name()))
+    if os.path.exists(confer.get_pred_file()) and not confer.force :
+        return
+    post = Poster(confer)
+    post.work()
+    df_pred = post.pred()
+    df_pred.to_pickle(confer.get_pred_file())
     #if not os.path.exists(cross_dump_file):
     #    print("%s Not exists, need to build!" %  cross_dump_file )
     #    crosser = Crosser(confer)
@@ -107,8 +117,6 @@ def work(confer):
     #        crosser = pickle.load(fin)
 
 
-    df_pred = crosser.pred()
-    df_pred.to_pickle(confer.get_pred_file())
 
     #crosser_set = CrosserSet(confer)
     #print("\n" + crosser_set.to_table("model").round(4).to_html(), file=out_file)

@@ -40,10 +40,20 @@ class sp500_snapshot(YeodBase):
     def __init__(self, snap):
         self.snap = snap
     def get_name(self):
-        return "sp500_snapshot_%s" % (self.snap)
+        return self.snap
     def get_syms(self):
-        df = pd.read_csv(os.path.join(root, "sp100_snapshot", "sp500_%s.CSV" % self.snap))
+        df = pd.read_csv(os.path.join(root, "sp100_snapshot", "sp500_snapshot_%s.CSV" % self.snap))
         s = [each["Symbol"].strip() for i, each in df.iterrows()]
+        return s
+class index(YeodBase):
+    """
+    """
+    def __init__(self):
+        pass
+    def get_name(self):
+        return "index"
+    def get_syms(self):
+        s = ["^IXIC", "^GSPC", "^DJI"]
         return s
 class TestSyms(YeodBase):
     """
