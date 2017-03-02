@@ -6,7 +6,8 @@ import sys
 import os
 import pandas as pd
 import numpy as np
-from sklearn.metrics import roc_curve, auc
+from sklearn.metrics import roc_curve, auc,precision_recall_curve
+import matplotlib.pyplot as plt
 
 local_path = os.path.dirname(__file__)
 root = os.path.join(local_path, '..', '..')
@@ -48,9 +49,48 @@ def group_by_month(df, df2, score1, score2):
 
 def accurate(df, score):
     if len(df) > 0:
-        return len(df[df[score.get_name()] == 1]) * 1.0 /len(df)
+        return len(df[df[score.get_name()] > 0.5]) * 1.0 /len(df)
     else:
         return 0.0
+
+def accurate_level(df, score):
+    df = df.sort_values(["pred"], ascending=False)
+    index = ["top", "accurate", "threshold"]
+    res = pd.DataFrame(data=None, columns=index)
+    for top in [1000, 5000, 10000, 100000]:
+        res = res.append(pd.Series(("%s"%top, accurate(df.head(top),score), float(df.head(top).tail(1)["pred"].values)),index=index), ignore_index=True)
+    return res
+
+
+def roi(df, score):
+    num = 1000/df.loc[:, "close"]
+    nValue = df.loc[:, "close"]*df.loc[:,score.get_name()]*num
+    profile = nValue - 1000
+    res = float(profile.sum())
+    return res/len(df)
+
+def roi_level(df, score):
+    df = df.sort_values(["pred"], ascending=False)
+    index = ["top", "roi", "threshold"]
+    res = pd.DataFrame(data=None, columns=index)
+    for top in [1000, 5000, 10000, 100000]:
+        res = res.append(pd.Series((top, roi(df.head(top), score), float(df.head(top).tail(1)["pred"].values)), index=index), ignore_index=True)
+
+
+    res = res.append(pd.Series(("total", accurate(df,score), 0.5),index=index), ignore_index=True)
+    return res
+
+def accurate_level_per_year(df, score):
+    index = ["year", "top", "accurate", "threshold"]
+    res = pd.DataFrame(data=None, columns=index)
+    df['yyyy'] = df.date.str.slice(0,4)
+    years = df["yyyy"].unique()
+    for year in years:
+        df_cur = df[df.yyyy == year]
+        acc = accurate_level(df_cur, score)
+        acc["year"] = year
+        res = res.append(acc)
+    return res
 
 
 def _group_by_xxxx(df, df2, scorename, xxxx):
@@ -125,7 +165,7 @@ def extract_feat_label(df, scorename):
     return npFeat, npLabel, npPred
 
 def roc_auc(df, confer):
-    npTFeat, npLabel, npPred = extract_feat_label(df, confer.score1.get_name())
+    npFeat, npLabel, npPred = extract_feat_label(df, confer.scores[0].get_name())
     fpr, tpr, thresholds = roc_curve(npLabel, npPred)
     roc_auc = auc(fpr, tpr)
     return roc_auc
@@ -139,3 +179,21 @@ def roc_auc_per_year(df, confer):
         res.append({"yyyy":year, "roc":roc_auc(df_cur,confer)})
     return pd.DataFrame(data = res).sort_values("yyyy")
 
+def plot_roc(df, confer, outfile):
+    npFeat, npLabel, npPred = extract_feat_label(df, confer.score1.get_name())
+    fpr, tpr, thresholds = roc_curve(npLabel, npPred)
+    plt.plot(fpr, tpr, lw=2)
+    plt.plot([0,1],[0,1], linestyle='--', lw=1, color='k')
+    plt.savefig(outfile)
+    plt.cla()
+
+def plot_precision_recall_per_year(df, confer, outfile):
+    df['yyyy'] = df.date.str.slice(0,4)
+    years = df['yyyy'].unique()
+    for year in years:
+        df_cur = df[df.yyyy == year]
+        npFeat, npLabel, npPred = extract_feat_label(df_cur, confer.score1.get_name())
+        precision, recall, thresholds = precision_recall_curve(npLabel, npPred)
+        plt.plot(recall, precision, lw=2)
+    plt.savefig(outfile)
+    plt.cla()
