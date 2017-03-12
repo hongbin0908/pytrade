@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 # author hongbin0908@126.com
 
-import pandas as pd
 
 class BaseScore():
     def get_name(self):
         pass
+
 
 class ScoreRelative():
     def __init__(self, interval, index=False):
