@@ -61,7 +61,7 @@ class Poster:
             df_all = df_all[df_all.date >= start]
         feat_names = base.get_feat_names(df_all)
         np_feat = df_all.loc[:, feat_names].values
-        np_pred = self.posts.classifier.predict_proba(np_feat)
+        np_pred = self.confer.classifier.predict_proba(np_feat)
         df_all["pred"] = np_pred[:, 1]
         df_all = df_all.sample(frac=1.0)
         return df_all.sort_values("pred", ascending=False)

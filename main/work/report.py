@@ -23,3 +23,4 @@ def work(confer):
     print(ana.accurate_level(df, confer.scores[0]))
     print(df.head())
     print(ana.roi_level(df, confer.scores[1]))
+    print(ana.roi_level_per_year(df, confer.scores[1]))
