@@ -9,18 +9,18 @@ from main.ta.ta_set import TaSetBase1
 from main.ta import ta_set
 from main.score.score import ScoreLabel
 from main.score.score import ScoreRelative
+from main.score.score import ScoreRelativeOpen
 from main.yeod import yeod
 from main.classifier.tree import MyRandomForestClassifier
 from main.model.spliter import YearSpliter
 from main.classifier.tree import RFCv1n2000md6msl100
-from main.selector.selector import PnRatioSelector
 from main.selector.selector import MiSelector
 
 class MltradeConf:
     def __init__(self, model_split, 
-                 classifier = MyRandomForestClassifier(),
-                 scores = [ScoreLabel(5, 1.0), ScoreRelative(5)],
-                 ta = TaSetBase1(), selector = None, n_pool=10, index="dow30", week=0):
+                 classifier=MyRandomForestClassifier(),
+                 scores=[ScoreLabel(5, 1.0), ScoreRelative(5), ScoreRelativeOpen(5)],
+                 ta=TaSetBase1(), selector=None, n_pool=10, index="dow30", week=0):
         self.model_split = model_split
         self.classifier = classifier
         self.n_pool = n_pool
@@ -31,7 +31,6 @@ class MltradeConf:
         self.ta = ta
         #self.relative = False
         if selector is None:
-            #self.selector = PnRatioSelector([self])
             self.selector = MiSelector([self])
         else:
             self.selector = selector
