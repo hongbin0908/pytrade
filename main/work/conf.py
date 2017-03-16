@@ -74,22 +74,33 @@ class MltradeConf:
 
     
     def get_ta_file(self):
+        if not os.path.exists(os.path.join(root, 'data', 'ta')):
+            os.makedirs(os.path.join(root,'data','ta'))
         return os.path.join(root, "data", "ta", "%s.pkl" % self.name_ta)
 
     def get_bitlize_file(self):
+        if not os.path.exists(os.path.join(root, 'data', 'bitlize')):
+            os.makedirs(os.path.join(root, 'data', 'bitlize'))
         return os.path.join(root, "data", "bitlize", "%s.pkl" % self.name_bitlize)
         
     def get_feat_file(self):
+        if not os.path.exists(os.path.join(root, 'data', 'feat')):
+            os.makedirs(os.path.join(root, 'data', 'feat'))
         return os.path.join(root, "data", "feat", "%s.pkl" % self.name_bitlize)
 
     def get_score_file(self):
+        if not os.path.exists(os.path.join(root, 'data', 'score')):
+            os.makedirs(os.path.join(root, 'data', 'score'))
         return os.path.join(root, 'data', 'score', "%s.pkl" % self.name_score)
 
     def get_sel_file(self):
+        if not os.path.exists(os.path.join(root, 'data', 'sel')):
+            os.makedirs(os.path.join(root, 'data', 'sel'))
         return os.path.join(root, 'data', 'sel', "%s.pkl" % self.name_sel)
 
-    
     def get_pred_file(self):
+        if not os.path.exists(os.path.join(root, 'data', 'pred')):
+            os.makedirs(os.path.join(root, 'data', 'pred'))
         return os.path.join(root, "data", "pred", "%s.pkl" % self.name_clazz)
 class MyConfStableLTa(MltradeConf):
     def __init__(self, ta = ta_set.TaSetBase1Ext4(),
