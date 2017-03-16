@@ -42,7 +42,7 @@ class ScoreRelativeOpen(BaseScore):
         df.sort_values("date", ascending=True, inplace=True)
         df.loc[:,"open2"] = df.loc[:,"open"].shift(-1)
         df.loc[:, "open_shift"] = df["open2"].shift(-1 * self.interval)
-        df.loc[:, self.get_name()] = df["close_shift"]/df["close2"]
+        df.loc[:, self.get_name()] = df["open_shift"]/df["open2"]
         del df["open_shift"]
         del df["open2"]
         return df
