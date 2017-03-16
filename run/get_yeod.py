@@ -39,6 +39,9 @@ def get(snapname):
 def get2(snapname):
     dirname = "sp500_snapshot_%s" % snapname
     url = "http://hongindex.com/yeod/%s.zip" % dirname
+    zfdir = os.path.join(root, "data", "yeod")
+    if not os.path.exists(zfdir):
+        os.makedirs(zfdir)
     zfpath = os.path.join(root, "data", "yeod", "%s.zip" % dirname)
     urllib.request.urlretrieve(url, zfpath)
     zf = zipfile.ZipFile(zfpath)
