@@ -65,7 +65,7 @@ def accurate_level(df, score):
 def roi(df, score, max_hold_num=-1):
     if max_hold_num > 0:
         print(df.sort_values("date").head())
-        df = df.groupby('date').top(max_hold_num)
+        df = df.groupby('date').head(max_hold_num)
         print(df.sort_values("date").head())
         sys.exit(0)
     num = 1000/df.loc[:, "close"]
