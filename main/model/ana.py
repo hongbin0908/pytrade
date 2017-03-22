@@ -90,6 +90,9 @@ def roi_level_per_year(df, score):
         roi = roi_level(df_cur, score)
         roi["year"] = year
         res = res.append(roi)
+        #if year == "2017":
+        #    print(df_cur.head(100)[["open", "high", "low", "close", "pred", score.get_name()]])
+        #    sys.exit(0)
     res = res.append(pd.Series(("all", "total", accurate(df,score), 0.5),index=index), ignore_index=True)
     return res
 
