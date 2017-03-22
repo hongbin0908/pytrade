@@ -75,7 +75,7 @@ def roi(df, score, max_hold_num=-1):
 
 def roi_level(df, score, max_hold_num=-1):
     df = df.sort_values(["pred"], ascending=False)
-    index = ["top", "roi", "threshold"]
+    index = ["top", "num","roi", "threshold"]
     res = pd.DataFrame(data=None, columns=index)
     for top in [1000, 5000, 10000, 100000]:
         r, num = roi(df.head(top), score, max_hold_num)
