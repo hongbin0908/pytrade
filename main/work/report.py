@@ -22,8 +22,11 @@ def work(confer):
     print(ana.roc_auc_per_year(df, confer))
     print(ana.accurate_level(df, confer.scores[0]))
     print(df.head())
-    print(ana.roi_level(df, confer.scores[1]))
-    print(ana.roi_level(df, confer.scores[2]))
+    print(ana.roi_level(df, confer.scores[1]), max_hold_num=1)
+    print(ana.roi_level(df, confer.scores[1]), max_hold_num=-1)
+
+
+    print(ana.roi_level(df, confer.scores[2]), max_hold_num=1)
     print(ana.roi_level_per_year(df, confer.scores[1]))
     print(ana.roi_level_per_year(df, confer.scores[2]))
 
