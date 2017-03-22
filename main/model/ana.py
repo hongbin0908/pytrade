@@ -81,8 +81,8 @@ def roi_level(df, score, max_hold_num=-1):
         r, num = roi(df.head(top), score, max_hold_num)
         res = res.append(pd.Series((top, num, r, float(df.head(top).tail(1)["pred"].values)), index=index), ignore_index=True)
 
-
-    res = res.append(pd.Series(("total", accurate(df,score), 0.5),index=index), ignore_index=True)
+    r, num = roi(df, score, max_hold_num)
+    res = res.append(pd.Series(("total", num, r, 0.0),index=index), ignore_index=True)
     return res
 
 def roi_level_per_year(df, score, max_hold_num=-1):
