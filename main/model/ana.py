@@ -71,14 +71,15 @@ def roi(df, score, max_hold_num=-1):
     nValue = df.loc[:, "close"]*df.loc[:,score.get_name()]*num
     profile = nValue - 1000
     res = float(profile.sum())
-    return res/len(df)
+    return res/len(df), len(df)
 
 def roi_level(df, score, max_hold_num=-1):
     df = df.sort_values(["pred"], ascending=False)
     index = ["top", "roi", "threshold"]
     res = pd.DataFrame(data=None, columns=index)
     for top in [1000, 5000, 10000, 100000]:
-        res = res.append(pd.Series((top, roi(df.head(top), score, max_hold_num), float(df.head(top).tail(1)["pred"].values)), index=index), ignore_index=True)
+        roi, num = roi(df.head(top), score, max_hold_num)
+        res = res.append(pd.Series((top, num, roi, float(df.head(top).tail(1)["pred"].values)), index=index), ignore_index=True)
 
 
     res = res.append(pd.Series(("total", accurate(df,score), 0.5),index=index), ignore_index=True)
