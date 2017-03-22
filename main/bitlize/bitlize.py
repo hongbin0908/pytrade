@@ -131,7 +131,6 @@ def bitlize(df, label, depth, min_, n_pool):
             # d["direct"] = 1 if d["p_chvfa"] > 1.0 else 0
             fmetas[i].append(d)
     dfs = [pd.DataFrame(fmetas[i]).transpose() for i in range(0, 2**depth)]
-    #dfs = [dfs[i].sort_values("c_p", ascending=False) for i in range(0, 2**depth)]
     for i in range(0, len(dfs)):
         dfs[i].columns= dfs[i].loc["fname"]
     return dfs
