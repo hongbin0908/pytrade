@@ -25,5 +25,5 @@ def work(confer):
     print(ana.roi_level(df, confer.scores[1]))
     print(ana.roi_level(df, confer.scores[2]))
     print(ana.roi_level_per_year(df, confer.scores[1]))
-    print(ana.roi_level_per_year(df, confer.scores[1]))
+    print(ana.roi_level_per_year(df, confer.scores[2]))
 
