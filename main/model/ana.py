@@ -64,9 +64,7 @@ def accurate_level(df, score):
 
 def roi(df, score, max_hold_num=-1):
     if max_hold_num > 0:
-        #print(df.sort_values("date").head()[["date","sym","close", "pred"]])
         df = df.groupby('date').head(max_hold_num)
-        #print(df.sort_values("date").head()[["date","sym","close", "pred"]])
     num = 1000/df.loc[:, "close"]
     nValue = df.loc[:, "close"]*df.loc[:,score.get_name()]*num
     profile = nValue - 1000
