@@ -62,25 +62,28 @@ def accurate_level(df, score):
     return res
 
 
-def roi(df, score):
+def roi(df, score, max_hold_num=-1):
+    if max_hold_num > 0:
+        df = df.groupby('date').head(max_hold_num)
     num = 1000/df.loc[:, "close"]
     nValue = df.loc[:, "close"]*df.loc[:,score.get_name()]*num
     profile = nValue - 1000
     res = float(profile.sum())
-    return res/len(df)
+    return res/len(df), len(df)
 
-def roi_level(df, score):
+def roi_level(df, score, max_hold_num=-1):
     df = df.sort_values(["pred"], ascending=False)
-    index = ["top", "roi", "threshold"]
+    index = ["top", "num","roi", "threshold"]
     res = pd.DataFrame(data=None, columns=index)
     for top in [1000, 5000, 10000, 100000]:
-        res = res.append(pd.Series((top, roi(df.head(top), score), float(df.head(top).tail(1)["pred"].values)), index=index), ignore_index=True)
+        r, num = roi(df.head(top), score, max_hold_num)
+        res = res.append(pd.Series((top, num, r, float(df.head(top).tail(1)["pred"].values)), index=index), ignore_index=True)
 
-
-    res = res.append(pd.Series(("total", accurate(df,score), 0.5),index=index), ignore_index=True)
+    r, num = roi(df, score, max_hold_num)
+    res = res.append(pd.Series(("total", num, r, 0.0),index=index), ignore_index=True)
     return res
 
-def roi_level_per_year(df, score):
+def roi_level_per_year(df, score, max_hold_num=-1):
     df = df.sort_values(["pred"], ascending=False)
     index = ["year", "top", "roi", "threshold"]
     years = df["yyyy"].unique()
@@ -90,6 +93,9 @@ def roi_level_per_year(df, score):
         roi = roi_level(df_cur, score)
         roi["year"] = year
         res = res.append(roi)
+        #if year == "2017":
+        #    print(df_cur.head(100)[["open", "high", "low", "close", "pred", score.get_name()]])
+        #    sys.exit(0)
     res = res.append(pd.Series(("all", "total", accurate(df,score), 0.5),index=index), ignore_index=True)
     return res
 

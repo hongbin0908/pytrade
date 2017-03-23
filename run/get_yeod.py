@@ -30,7 +30,7 @@ import zipfile
 import urllib.request
 def get(snapname):
     dirname = "sp100_snapshot_%s" % snapname
-    url = "http://hongindex.com/yeod/%s.zip" % dirname
+    url = "http://www.hongindex.com/yeod/%s.zip" % dirname
     zfpath = os.path.join(root, "data", "yeod", "%s.zip" % dirname)
     urllib.request.urlretrieve(url, zfpath)
     zf = zipfile.ZipFile(zfpath)
@@ -38,7 +38,7 @@ def get(snapname):
 
 def get2(snapname):
     dirname = "sp500_snapshot_%s" % snapname
-    url = "http://hongindex.com/yeod/%s.zip" % dirname
+    url = "http://www.hongindex.com/yeod/%s.zip" % dirname
     zfdir = os.path.join(root, "data", "yeod")
     if not os.path.exists(zfdir):
         os.makedirs(zfdir)
@@ -48,7 +48,7 @@ def get2(snapname):
     zf.extractall(os.path.join(root, 'data', 'yeod', dirname))
 def get_index():
     dirname = "index"
-    url = "http://hongindex.com/yeod/index.zip"
+    url = "http://www.hongindex.com/yeod/index.zip"
     zfpath = os.path.join(root, "data", "yeod", "%s.zip" % dirname)
     urllib.request.urlretrieve(url, zfpath)
     zf = zipfile.ZipFile(zfpath)

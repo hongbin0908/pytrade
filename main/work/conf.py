@@ -92,7 +92,7 @@ class MyConfStableLTa(MltradeConf):
             classifier=RFCv1n2000md6msl100(),
             train_start="1900",
             train_end = "2010",
-            index="sp500_snapshot_20091231",
+            syms=yeod.sp500_snapshot("sp500_snapshot_20091231"),
             score=5
             ):
 
@@ -102,7 +102,7 @@ class MyConfStableLTa(MltradeConf):
         MltradeConf.__init__(self,
                 model_split=model_split,
                 classifier=classifier,
-                ta = ta, n_pool=30, index=index, week = week)
+                ta = ta, n_pool=30, syms=syms, week = week)
 
 class MyConfForTest(MltradeConf):
     def __init__(self):
