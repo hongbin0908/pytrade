@@ -57,10 +57,11 @@ if __name__ == '__main__':
         #confer = MyConfStableLTa(classifier = MyLogisticRegressClassifier(max_iter=10), score=score)
         if base.is_test_flag():
             confer = MyConfForTest()
-            confer.force = False
+            confer.force = True
         else:
             confer = MyConfStableLTa(classifier=RFCv1n2000md6msl100(),score=score)
-        confer.force = False
+            confer.force = False
+
         build.work(confer)
         score_build.work(confer)
         bitlize.work(confer)
