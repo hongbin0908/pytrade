@@ -67,6 +67,8 @@ if __name__ == '__main__':
         bitlize.work(confer)
         selected.work(confer)
         model.work(confer)
+        pd.set_option('display.expand_frame_repr', False)
+        pd.options.display.max_rows = 999
         report.work(confer)
         dfo = pd.read_pickle(confer.get_pred_file())
         df = dfo[(dfo.date >=confer.model_split.test_start)]
