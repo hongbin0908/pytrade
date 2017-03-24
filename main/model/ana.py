@@ -73,7 +73,7 @@ def roi(df, score, max_hold_num=-1):
 
 def roi_level(df, score):
     df = df.sort_values(["pred"], ascending=False)
-    index = ["top", "threshold", "num1", "roi2", "num2", "roi2", "num3", "roi3"]
+    index = ["top", "threshold", "num1", "roi2", "num2", "roi2", "num3", "roi3", "num4", "roi4"]
     res = pd.DataFrame(data=None, columns=index)
     for top in [1000, 5000, 10000, 100000, -1]:
         if top < 0:
@@ -84,7 +84,7 @@ def roi_level(df, score):
         r2, num2 = roi(df_cur, score, 5)
         r3, num3 = roi(df_cur, score, 10)
         r4, num4 = roi(df_cur, score, -1)
-        res = res.append(pd.Series((top, float(df_cur.tail(1)["pred"].values), num1, r1, num2, r2, num3, r3), index=index), ignore_index=True)
+        res = res.append(pd.Series((top, float(df_cur.tail(1)["pred"].values), num1, r1, num2, r2, num3, r3, num4, r4), index=index), ignore_index=True)
     return res
 
 def roi_level_per_year(df, score, max_hold_num=-1):
