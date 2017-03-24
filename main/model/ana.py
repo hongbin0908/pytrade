@@ -71,16 +71,20 @@ def roi(df, score, max_hold_num=-1):
     res = float(profile.sum())
     return res/len(df), len(df)
 
-def roi_level(df, score, max_hold_num=-1):
+def roi_level(df, score):
     df = df.sort_values(["pred"], ascending=False)
-    index = ["top", "num","roi", "threshold"]
+    index = ["top", "threshold", "num1", "roi2", "num2", "roi2", "num3", "roi3"]
     res = pd.DataFrame(data=None, columns=index)
-    for top in [1000, 5000, 10000, 100000]:
-        r, num = roi(df.head(top), score, max_hold_num)
-        res = res.append(pd.Series((top, num, r, float(df.head(top).tail(1)["pred"].values)), index=index), ignore_index=True)
-
-    r, num = roi(df, score, max_hold_num)
-    res = res.append(pd.Series(("total", num, r, 0.0),index=index), ignore_index=True)
+    for top in [1000, 5000, 10000, 100000, -1]:
+        if top < 0:
+            df_cur = df.copy()
+        else:
+            df_cur = df.head(top)
+        r1, num1 = roi(df_cur, score, 1)
+        r2, num2 = roi(df_cur, score, 5)
+        r3, num3 = roi(df_cur, score, 10)
+        r4, num4 = roi(df_cur, score, -1)
+        res = res.append(pd.Series((top, float(df_cur.tail(1)["pred"].values), num1, r1, num2, r2, num3, r3), index=index), ignore_index=True)
     return res
 
 def roi_level_per_year(df, score, max_hold_num=-1):
