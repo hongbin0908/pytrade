@@ -57,7 +57,7 @@ class ccl(BaseClassifier):
         self.classifier.compile(loss='binary_crossentropy', optimizer='sgd', metrics=['accuracy'])
         self.classifier.fit(X, y, batch_size=self.batch_size, nb_epoch=self.nb_epoch)
     def predict_proba(self, X):
-        X = np.reshape(X, (X.shape[0], 1, X.shape[1]))
+        X = np.reshape(X, (-1, 10, X.shape[1]))
         re = self.classifier.predict_proba(X)
         re = np.hstack([1-re, re])
         return re
