@@ -43,8 +43,8 @@ class ccl(BaseClassifier):
         return "ccl"
     def fit(self, X, y):
         X = np.reshape(X, (X.shape[0], 1, X.shape[1]))
-        self.classifier.add(LSTM(input_shape=(1, X.shape[2]),  output_dim =128, return_sequences = True))
-        self.classifier.add(LSTM(128, return_sequences=False))
+        self.classifier.add(LSTM(input_shape=(1, X.shape[2]),  output_dim =16, return_sequences = True))
+        self.classifier.add(LSTM(16, return_sequences=False))
         self.classifier.add(Dense(output_dim=1))
         self.classifier.add(Activation('sigmoid'))
 
