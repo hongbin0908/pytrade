@@ -68,6 +68,7 @@ if __name__ == '__main__':
         score_build.work(confer)
         bitlize.work(confer)
         selected.work(confer)
+        confer.force = True
         model.work(confer)
         pd.set_option('display.expand_frame_repr', False)
         pd.options.display.max_rows = 999
