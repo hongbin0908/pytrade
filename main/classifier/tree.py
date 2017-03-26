@@ -44,20 +44,22 @@ class ccl(BaseClassifier):
     def fit(self, X, y):
         X = np.reshape(X, (X.shape[0], 1, X.shape[1]))
         self.classifier.add(LSTM(input_shape=(1, X.shape[2]),  output_dim =30, return_sequences = True))
-        self.classifer.add(Flatten())
-        self.classifer.add(Activation('linear'))
-        self.classifer.add(Dense( output_dim=30))
-        self.classifer.add(Activation('linear'))
-        self.classifer.add(Dropout(0.3))
-        self.classifer.add(Dense(output_dim=10))
-        self.classifer.add(Activation('tanh'))
-        self.classifer.add(Dense(output_dim=1))
-        self.classifer.add(Activation('sigmoid'))
+        self.classifier.add(Flatten())
+        self.classifier.add(Activation('linear'))
+        self.classifier.add(Dense( output_dim=30))
+        self.classifier.add(Activation('linear'))
+        self.classifier.add(Dropout(0.3))
+        self.classifier.add(Dense(output_dim=10))
+        self.classifier.add(Activation('tanh'))
+        self.classifier.add(Dense(output_dim=1))
+        self.classifier.add(Activation('sigmoid'))
         sgd = SGD(lr=0.05, decay=1e-5, momentum=0.9, nesterov=True)
-        self.classifer.compile(loss='binary_crossentropy', optimizer='sgd', metrics=['accuracy'])
+        self.classifier.compile(loss='binary_crossentropy', optimizer='sgd', metrics=['accuracy'])
         self.classifier.fit(X, y, batch_size=self.batch_size, nb_epoch=self.nb_epoch)
     def predict_proba(self, X):
+        X = np.reshape(X, (X.shape[0], 1, X.shape[1]))
         re = self.classifier.predict_proba(X)
+        re = np.hstack([1-re, re])
         return re
 
 class MyLogisticRegressClassifier(BaseClassifier):

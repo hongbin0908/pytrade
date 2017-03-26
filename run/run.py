@@ -58,7 +58,7 @@ if __name__ == '__main__':
         #confer = MyConfStableLTa(classifier = MyLogisticRegressClassifier(max_iter=10), score=score)
         if base.is_test_flag():
             confer = MyConfForTest()
-            confer.force = True
+            confer.force = False
         else:
             confer = MyConfStableLTa(classifier=RFCv1n2000md6msl100(),score=score)
             confer = MyConfStableLTa(classifier=ccl(),score=score)
