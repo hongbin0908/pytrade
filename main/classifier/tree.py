@@ -33,7 +33,7 @@ import numpy as np
 #from keras.optimizers import SGD
 #from keras.layers.core import Flatten
 class ccl(BaseClassifier):
-    def __init__(self, batch_size = 1000, nb_epoch=10):
+    def __init__(self, batch_size = 1000, nb_epoch=20):
         model = Sequential()
         self.classifier = model
         self.batch_size = batch_size
@@ -42,24 +42,27 @@ class ccl(BaseClassifier):
     def get_name(self):
         return "ccl"
     def fit(self, X, y):
-        X = X[0:int(X.shape[0]/5) * 5]
-        X = np.reshape(X, (-1, 5, X.shape[1]))
-        self.classifier.add(LSTM(input_shape=(5, X.shape[2]),  output_dim =30, return_sequences = True))
-        self.classifier.add(Flatten())
-        self.classifier.add(Activation('linear'))
-        self.classifier.add(Dense( output_dim=30))
-        self.classifier.add(Activation('linear'))
-        self.classifier.add(Dropout(0.3))
-        self.classifier.add(Dense(output_dim=10))
-        self.classifier.add(Activation('tanh'))
+        X = np.reshape(X, (X.shape[0], 1, X.shape[1]))
+        self.classifier.add(LSTM(input_shape=(1, X.shape[2]),  output_dim =128, return_sequences = True))
+        self.classifier.add(LSTM(128, return_sequences=True))
         self.classifier.add(Dense(output_dim=1))
         self.classifier.add(Activation('sigmoid'))
+
+        #self.classifier.add(Flatten())
+        #self.classifier.add(Activation('linear'))
+        #self.classifier.add(Dense( output_dim=30))
+        #self.classifier.add(Activation('linear'))
+        #self.classifier.add(Dropout(0.3))
+        #self.classifier.add(Dense(output_dim=10))
+        #self.classifier.add(Activation('tanh'))
+        #self.classifier.add(Dense(output_dim=1))
+        #self.classifier.add(Activation('sigmoid'))
+
         sgd = SGD(lr=0.05, decay=1e-5, momentum=0.9, nesterov=True)
         self.classifier.compile(loss='binary_crossentropy', optimizer='sgd', metrics=['accuracy'])
         self.classifier.fit(X, y, batch_size=self.batch_size, nb_epoch=self.nb_epoch)
     def predict_proba(self, X):
-        X = X[0:int(X.shape[0]/5) * 5]
-        X = np.reshape(X, (-1, 5, X.shape[1]))
+        X = np.reshape(X, (X.shape[0], 1, X.shape[1]))
         re = self.classifier.predict_proba(X)
         re = np.hstack([1-re, re])
         return re
