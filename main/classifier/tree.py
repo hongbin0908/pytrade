@@ -40,7 +40,7 @@ class ccl(BaseClassifier):
     def fit(self, X, y):
         model = Sequential()
         X = np.reshape(X, (X.shape[0], 1, X.shape[1]))
-        model.add(LSTM(input_dim=X.shape[1],  output_dim =30, return_sequences = True))
+        model.add(LSTM(input_shape=(1, X.shape[1]),  output_dim =30, return_sequences = True))
         model.add(Flatten())
         model.add(Activation('linear'))
         model.add(Dense( output_dim=30))
@@ -51,7 +51,7 @@ class ccl(BaseClassifier):
         model.add(Dense(output_dim=1))
         model.add(Activation('sigmoid'))
         sgd = SGD(lr=0.05, decay=1e-5, momentum=0.9, nesterov=True)
-        model.compile(loss='binary_crossentropy', optimizer='sgd')
+        model.compile(loss='binary_crossentropy', optimizer='sgd', metrics=['accuracy'])
         model.fit(X, y, batch_size=200, nb_epoch=100)
     def predict_proba(self, X):
         return model.predict_proba(X)
