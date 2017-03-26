@@ -40,7 +40,7 @@ class ccl(BaseClassifier):
     def fit(self, X, y):
         model = Sequential()
         X = np.reshape(X, (X.shape[0], 1, X.shape[1]))
-        model.add(LSTM(input_shape=(1, X.shape[1]),  output_dim =30, return_sequences = True))
+        model.add(LSTM(input_shape=(1, X.shape[2]),  output_dim =30, return_sequences = True))
         model.add(Flatten())
         model.add(Activation('linear'))
         model.add(Dense( output_dim=30))
