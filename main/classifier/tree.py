@@ -45,9 +45,6 @@ class ccl(BaseClassifier):
         X = np.reshape(X, (X.shape[0], 1, X.shape[1]))
         self.classifier.add(LSTM(input_shape=(1, X.shape[2]),  output_dim =128, return_sequences = True))
         self.classifier.add(LSTM(128, return_sequences=False))
-        self.classifier.add(Dropout(0.3))
-        self.classifier.add(Dense(output_dim=10))
-        self.classifier.add(Activation('tanh'))
         self.classifier.add(Dense(output_dim=1))
         self.classifier.add(Activation('sigmoid'))
 
