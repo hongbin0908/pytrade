@@ -36,6 +36,7 @@ from main.model import feat_select
 from main.classifier.tree import MyRandomForestClassifier
 from main.classifier.tree import MyLogisticRegressClassifier
 from main.classifier.tree import RFCv1n2000md6msl100
+from main.classifier.tree import ccl
 from main.classifier.tree import RFCv1n2000md3msl100
 from main.classifier.tree import RFCv1n2000md2msl100
 from main.classifier.tree import RFCv1n200md2msl100
@@ -60,6 +61,7 @@ if __name__ == '__main__':
             confer.force = True
         else:
             confer = MyConfStableLTa(classifier=RFCv1n2000md6msl100(),score=score)
+            confer = MyConfStableLTa(classifier=ccl(),score=score)
             confer.force = False
 
         build.work(confer)
