@@ -1,7 +1,10 @@
 #!/usr/bin/env python2.7
 # -*- coding: utf-8 -*-
 #@author  Bin Hong
-
+from keras.layers import Flatten, Activation, Dense, Dropout
+from keras.layers import LSTM
+from keras.models import Sequential
+from keras.optimizers import SGD
 from main.classifier.base_classifier import BaseClassifier
 from sklearn.ensemble.forest import RandomForestClassifier
 from sklearn.ensemble.gradient_boosting import GradientBoostingClassifier
@@ -36,7 +39,8 @@ class ccl(BaseClassifier):
         return "ccl"
     def fit(self, X, y):
         model = Sequential()
-        model.add(LSTM(input_shape=[X.reshap(-1, 118,1).shape[1], 1],  output_dim =30, return_sequences = True))
+        X = np.reshape(X, (X.shape[0], 1, X.shape[1]))
+        model.add(LSTM(input_dim=X.shape[1],  output_dim =30, return_sequences = True))
         model.add(Flatten())
         model.add(Activation('linear'))
         model.add(Dense( output_dim=30))
@@ -48,7 +52,6 @@ class ccl(BaseClassifier):
         model.add(Activation('sigmoid'))
         sgd = SGD(lr=0.05, decay=1e-5, momentum=0.9, nesterov=True)
         model.compile(loss='binary_crossentropy', optimizer='sgd')
-
         model.fit(X, y, batch_size=200, nb_epoch=100)
     def predict_proba(self, X):
         return model.predict_proba(X)
