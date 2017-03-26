@@ -33,28 +33,32 @@ import numpy as np
 #from keras.optimizers import SGD
 #from keras.layers.core import Flatten
 class ccl(BaseClassifier):
-    def __init__(self):
+    def __init__(self, batch_size = 200, nb_epoch=100):
+        model = Sequential()
+        self.classifier = model
+        self.batch_size = batch_size
+        self.nb_epoch = nb_epoch
         pass
     def get_name(self):
         return "ccl"
     def fit(self, X, y):
-        model = Sequential()
         X = np.reshape(X, (X.shape[0], 1, X.shape[1]))
-        model.add(LSTM(input_shape=(1, X.shape[2]),  output_dim =30, return_sequences = True))
-        model.add(Flatten())
-        model.add(Activation('linear'))
-        model.add(Dense( output_dim=30))
-        model.add(Activation('linear'))
-        model.add(Dropout(0.3))
-        model.add(Dense(output_dim=10))
-        model.add(Activation('tanh'))
-        model.add(Dense(output_dim=1))
-        model.add(Activation('sigmoid'))
+        self.classifier.add(LSTM(input_shape=(1, X.shape[2]),  output_dim =30, return_sequences = True))
+        self.classifer.add(Flatten())
+        self.classifer.add(Activation('linear'))
+        self.classifer.add(Dense( output_dim=30))
+        self.classifer.add(Activation('linear'))
+        self.classifer.add(Dropout(0.3))
+        self.classifer.add(Dense(output_dim=10))
+        self.classifer.add(Activation('tanh'))
+        self.classifer.add(Dense(output_dim=1))
+        self.classifer.add(Activation('sigmoid'))
         sgd = SGD(lr=0.05, decay=1e-5, momentum=0.9, nesterov=True)
-        model.compile(loss='binary_crossentropy', optimizer='sgd', metrics=['accuracy'])
-        model.fit(X, y, batch_size=200, nb_epoch=100)
+        self.classifer.compile(loss='binary_crossentropy', optimizer='sgd', metrics=['accuracy'])
+        self.classifier.fit(X, y, batch_size=self.batch_size, nb_epoch=self.nb_epoch)
     def predict_proba(self, X):
-        return model.predict_proba(X)
+        re = self.classifier.predict_proba(X)
+        return re
 
 class MyLogisticRegressClassifier(BaseClassifier):
     """
