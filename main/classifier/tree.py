@@ -42,8 +42,8 @@ class ccl(BaseClassifier):
     def get_name(self):
         return "ccl"
     def fit(self, X, y):
-        X = np.reshape(X, (-1, 10, X.shape[1]))
-        self.classifier.add(LSTM(input_shape=(10, X.shape[2]),  output_dim =30, return_sequences = True))
+        X = np.reshape(X, (-1, 5, X.shape[1]))
+        self.classifier.add(LSTM(input_shape=(5, X.shape[2]),  output_dim =30, return_sequences = True))
         self.classifier.add(Flatten())
         self.classifier.add(Activation('linear'))
         self.classifier.add(Dense( output_dim=30))
@@ -57,7 +57,7 @@ class ccl(BaseClassifier):
         self.classifier.compile(loss='binary_crossentropy', optimizer='sgd', metrics=['accuracy'])
         self.classifier.fit(X, y, batch_size=self.batch_size, nb_epoch=self.nb_epoch)
     def predict_proba(self, X):
-        X = np.reshape(X, (-1, 10, X.shape[1]))
+        X = np.reshape(X, (-1, 5, X.shape[1]))
         re = self.classifier.predict_proba(X)
         re = np.hstack([1-re, re])
         return re
