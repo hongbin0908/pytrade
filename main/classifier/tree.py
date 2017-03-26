@@ -57,7 +57,7 @@ class ccl(BaseClassifier):
         self.classifier.add(Activation('sigmoid'))
         sgd = SGD(lr=0.05, decay=1e-5, momentum=0.9, nesterov=True)
         self.classifier.compile(loss='binary_crossentropy', optimizer='sgd', metrics=['accuracy'])
-        self.classifier.fit(X, y, batch_size=self.batch_size, nb_epoch=self.nb_epoch)
+        self.classifier.fit(X, y, validation_split=0.1, batch_size=self.batch_size, nb_epoch=self.nb_epoch)
     def predict_proba(self, X):
         X = np.reshape(X, (X.shape[0], 1, X.shape[1]))
         re = self.classifier.predict_proba(X)
