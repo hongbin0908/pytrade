@@ -33,7 +33,7 @@ import numpy as np
 #from keras.optimizers import SGD
 #from keras.layers.core import Flatten
 class ccl(BaseClassifier):
-    def __init__(self, batch_size = 10, nb_epoch=20):
+    def __init__(self, batch_size = 10, nb_epoch=100):
         model = Sequential()
         self.classifier = model
         self.batch_size = batch_size
