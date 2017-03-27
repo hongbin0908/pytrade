@@ -38,16 +38,18 @@ class Poster:
                 print("load %s" % class_dump_file)
                 self.confer.classifier = pickle.load(fin)
         else:
-            self._train(token.train, self.confer.scores[0])
+            self._train(token.train, token.test, self.confer.scores[0])
             if self.confer.classifier.get_name() != "ccl":
                 with open(class_dump_file, 'wb') as fout:
                     pickle.dump(self.confer.classifier, fout, protocol=-1)
 
 
-    def _train(self, df_train, score):
+    def _train(self, df_train, df_test, score):
         df_train = df_train.sort_values(["sym", "date"])
         npTrainFeat, npTrainLabel = self._extract_feat_label(df_train, score.get_name())
-        self.confer.classifier.fit(npTrainFeat, npTrainLabel)
+        df_test = df_test.sort_values(["sym", "date"])
+        npTestFeat, npTestLabel = self._extract_feat_label(df_test, score.get_name())
+        self.confer.classifier.fit(npTrainFeat, npTrainLabel, npTestFeat, npTestLabel)
     def _extract_feat_label(self, df, scorename, drop = True):
         if drop:
             df = df.replace([np.inf,-np.inf],np.nan).dropna()

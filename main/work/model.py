@@ -17,10 +17,7 @@ root = os.path.join(local_path, '..', "..")
 sys.path.append(root)
 
 import main.base as base
-from main.model import model_work
 from main.model import ana
-from main.work.conf import MltradeConf
-from sklearn.base import clone
 from main.base import decision_path
 from main.model.post import Poster
 
