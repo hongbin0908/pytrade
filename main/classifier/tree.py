@@ -32,6 +32,19 @@ import numpy as np
 #from keras.layers.recurrent import LSTM
 #from keras.optimizers import SGD
 #from keras.layers.core import Flatten
+
+def d2tod3(fro, window):
+    row = fro.shape[0]
+    feat_num = fro.shape[1]
+
+    d1 = row - window +1
+    d2 = window
+    d3 = feat_num
+
+    to = np.zeros(d1*d2*d3).reshape(d1,d2,d3)
+    for i in range(len(fro)-window + 1):
+        to[i] = fro[i:i+window]
+    return to
 class ccl(BaseClassifier):
     def __init__(self, batch_size = 10, nb_epoch=10):
         model = Sequential()
@@ -43,12 +56,15 @@ class ccl(BaseClassifier):
         return "ccl"
 
     def transfer_shape(self,X):
-        return np.reshape(X, (X.shape[0], 1, X.shape[1]))
+        return d2tod3(X, window=30)
+        #return np.reshape(X, (X.shape[0], 1, X.shape[1]))
 
     def fit(self, X, y, X_t, y_t):
         X = self.transfer_shape(X)
         X_t = self.transfer_shape(X_t)
-        self.classifier.add(LSTM(input_shape=(1, X.shape[2]),  output_dim =30, return_sequences = True))
+        y = y[30-1:]
+        y_t = y_t[30-1:]
+        self.classifier.add(LSTM(input_shape=(30, X.shape[2]),  output_dim =30, return_sequences = True))
         self.classifier.add(Flatten())
         #self.classifier.add(Activation('linear'))
         self.classifier.add(Activation('relu'))
