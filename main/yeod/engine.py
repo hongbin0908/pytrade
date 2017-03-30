@@ -77,7 +77,7 @@ def get_stock3(symbol):
     import urllib.request
     count = 1
     while count > 0 :
-        url = 'http://hongindex.com/yeod/dead_20170304/%s.csv' % symbol
+        url = 'http://www.hongindex.com/yeod/dead_20170304/%s.csv' % symbol
         print(url)
         response = urllib.request.urlopen(url)
         try:
