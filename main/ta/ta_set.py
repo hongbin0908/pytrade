@@ -79,6 +79,23 @@ class TaSetSma2(TaSet):
             df["ta_sma_%d_%d_%d" % (i, i+6, i+12)] = self.sma_ratio(closes, i, i+6,i+12)
         df = df.round(4)
         return df
+
+
+class TaSetRocs(TaSet):
+    def get_name(self):
+        return "rocs"
+
+    def get_ta(self, df, confer):
+        opens = df['open'].values
+        highs = df['high'].values
+        lows = df['low'].values
+        closes=df['close'].values
+        volumes = df['volume'].values
+        for i in range(1):
+            df['ta_ROC_%d'% i] = talib.ROC(closes, i)
+        df = df.round(4)
+        return df
+
 class TaSetBase1(TaSet):
     def get_name(self):
         return "base1"

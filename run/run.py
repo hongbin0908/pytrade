@@ -46,6 +46,7 @@ from main.classifier.tree import MyBayesClassifier
 from main.classifier.tree import MySGDClassifier
 from main.work.conf import MyConfStableLTa
 from main.work.conf import MyConfForTest
+from main.ta import ta_set
 
 
 if __name__ == '__main__':
@@ -61,7 +62,7 @@ if __name__ == '__main__':
             confer.force = False
         else:
             confer = MyConfStableLTa(classifier=RFCv1n2000md6msl100(),score=score)
-            confer = MyConfStableLTa(classifier=ccl(),score=score)
+            confer = MyConfStableLTa(ta=ta_set.TaSetRocs(), classifier=ccl(),score=score)
             confer.force = False
 
         build.work(confer)
