@@ -91,7 +91,7 @@ class TaSetRocs(TaSet):
         lows = df['low'].values
         closes=df['close'].values
         volumes = df['volume'].values
-        for i in range(1):
+        for i in range(2):
             df['ta_ROC_%d'% i] = talib.ROC(closes, i)
         df = df.round(4)
         return df
