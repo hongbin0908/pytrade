@@ -14,6 +14,17 @@ pytrade基于python, 依赖以下开源库:
 5. sklearn
 建议python3以上版本.
 
+## 如何运行
+正式运行至少10G内存, 4核CPU. 但是可以通过环境变量来控制是否在测试环境中运行还是正式环境中运行. 普通的
+PC就可以支持测试环境运行.
+1. 设置执行环境
+export PYTEST = True # 测试环境
+export PYTEST = False # 正式环境
+2. 下载当天数据
+python3 run/get_yeod.py
+3. 运行, 并查看结果
+python3 run/run.py
+
 ## pytrade代码逻辑简介
 执行路径:
 pytrade/run/run.py
