@@ -7,7 +7,7 @@ import os
 import numpy as np
 import pandas as pd
 import pickle
-from scipy import interp
+import keras
 
 local_path = os.path.dirname(__file__)
 root = os.path.join(local_path, '..', '..')
@@ -34,14 +34,19 @@ class Poster:
         tmp = token.train.sort_values(["date"])
         is_to_fit = True
         if os.path.exists(class_dump_file) and not self.confer.force:
-            with open(class_dump_file, 'rb') as fin:
-                print("load %s" % class_dump_file)
-                self.confer.classifier = pickle.load(fin)
+            if self.confer.classifier.get_name() != "ccl":
+                with open(class_dump_file, 'rb') as fin:
+                    print("load %s" % class_dump_file)
+                    self.confer.classifier = pickle.load(fin)
+            else:
+                self.confer.classifier.classifier = keras.models.load_model(class_dump_file)
         else:
             self._train(token.train, token.test, self.confer.scores[0])
             if self.confer.classifier.get_name() != "ccl":
                 with open(class_dump_file, 'wb') as fout:
                     pickle.dump(self.confer.classifier, fout, protocol=-1)
+            else:
+                self.confer.classifier.classifier.save(class_dump_file)
 
 
     def _train(self, df_train, df_test, score):
