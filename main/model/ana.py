@@ -59,7 +59,7 @@ def count_level(df, score):
     res = pd.DataFrame(data=None, columns=columns)
 
     def cal(x):
-        return pd.DataFrame({"roi":[roi(x, score)[0],], "count":[len(x),]})
+        return pd.DataFrame({"roi":[roi2(x, score)[0],], "count":[len(x),]})
     for top in [1,2,3,4,5,10, ]:
         df_tmp = df.head(top).groupby("date").apply(lambda x: cal(x)).reset_index(drop=False)
         df_tmp['top'] = top
