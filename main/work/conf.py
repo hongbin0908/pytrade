@@ -103,6 +103,7 @@ class MyConfStableLTa(MltradeConf):
         MltradeConf.__init__(self,
                 model_split=model_split,
                 classifier=classifier,
+                scores = [ScoreLabel(score, 1.0), ScoreRelative(score), ScoreRelativeOpen(score)],
                 ta = ta, n_pool=30, syms=syms, week = week)
 
 class MyConfForTest(MltradeConf):
