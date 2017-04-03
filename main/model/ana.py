@@ -63,10 +63,10 @@ def count_level(df, score):
     for top in [1,2, 10, ]:
         df_tmp = df.head(top).groupby("date").apply(lambda x: cal(x)).reset_index(drop=False)
         df_tmp['top'] = top
-        res = pd.concat([res, df_tmp[["top", 'date', 'count', 'roi']]])
-    res = res[["top", "date", "count", "roi"]]
-    res["cumcount"] = res["count"].cumsum()
-    res["cumroi"] = res["roi"].cumsum()
+        df_tmp["cumcount"] = df_tmp["count"].cumsum()
+        df_tmp["cumroi"] = df_tmp["roi"].cumsum()
+        res = pd.concat([res, df_tmp[["top", 'date', 'count', 'roi', "cumcount", "cumroi"]]])
+    res = res[["top", "date", "count", "roi", "cumcount", "cumroi"]]
     return res
 def accurate_level(df, score):
     df = df.sort_values(["pred"], ascending=False)
