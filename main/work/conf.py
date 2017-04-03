@@ -98,7 +98,6 @@ class MyConfStableLTa(MltradeConf):
             ):
 
         model_split=YearSpliter(train_end, "2017", train_start, train_end)
-        #index="sp100_snapshot_20091129"
         week=-1
         MltradeConf.__init__(self,
                 model_split=model_split,

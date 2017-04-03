@@ -52,7 +52,7 @@ from main.ta import ta_set
 if __name__ == '__main__':
 
 
-    for score in [2,]:#5,10] :
+    for score in [2,5,10] :
         #confer = MyConfStableLTa(classifier=MySGDClassifier(),score=score)
         #confer = MyConfStableLTa(ta = ta_set.TaSetSma2(),     classifier=MySGDClassifier(),score=score)
         #confer = MyConfStableLTa(classifier=MyGradientBoostingClassifier(),score=score)
