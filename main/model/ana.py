@@ -53,6 +53,14 @@ def accurate(df, score):
     else:
         return 0.0
 
+def count_level(df):
+    df = df.sort_values(["pred"], ascending=False)
+    columns = ["top", "date", "count"]
+    res = pd.DataFrame(data=None, columns=columns)
+    for top in [1000, ]:
+        res = df.head(top).groupby("date", as_index=False)['pred'].agg({'count':np.size})
+        res['top'] = top
+    return res[["top", "date", "count"]]
 def accurate_level(df, score):
     df = df.sort_values(["pred"], ascending=False)
     index = ["top", "accurate", "threshold"]
@@ -64,7 +72,7 @@ def accurate_level(df, score):
 
 def roi(df, score, max_hold_num=-1):
     if max_hold_num > 0:
-        df = df.groupby('date').tail(max_hold_num)
+        df = df.groupby('date').head(max_hold_num)
     num = 1000/df.loc[:, "close"]
     nValue = df.loc[:, "close"]*df.loc[:,score.get_name()]*num
     profile = nValue - 1000
@@ -80,6 +88,9 @@ def roi_level(df, score):
             df_cur = df.copy()
         else:
             df_cur = df.head(top)
+        if top == 1000:
+            df_tmp = df_cur.groupby('date').head(1000)
+
         r1, num1 = roi(df_cur, score, 1)
         r2, num2 = roi(df_cur, score, 5)
         r3, num3 = roi(df_cur, score, 10)
