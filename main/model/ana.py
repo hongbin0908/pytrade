@@ -53,14 +53,18 @@ def accurate(df, score):
     else:
         return 0.0
 
-def count_level(df):
+def count_level(df, score):
     df = df.sort_values(["pred"], ascending=False)
-    columns = ["top", "date", "count"]
+    columns = ["top", "date", "count", "roi"]
     res = pd.DataFrame(data=None, columns=columns)
+
+    def cal(x):
+        return pd.DataFrame({"roi":[roi(x, score)[0],], "count":[len(x),]})
     for top in [1000, ]:
-        res = df.head(top).groupby("date", as_index=False)['pred'].agg({'count':np.size})
-        res['top'] = top
-    return res[["top", "date", "count"]]
+        df_tmp = df.head(top).groupby("date").apply(lambda x: cal(x)).reset_index(drop=False)
+        df_tmp['top'] = top
+        res = pd.concat([res, df_tmp[["top", 'date', 'count', 'roi']]])
+    return res[["top", "date", "count", "roi"]]
 def accurate_level(df, score):
     df = df.sort_values(["pred"], ascending=False)
     index = ["top", "accurate", "threshold"]
