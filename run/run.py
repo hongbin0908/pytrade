@@ -52,7 +52,7 @@ from main.ta import ta_set
 if __name__ == '__main__':
 
 
-    for score in [2,5,10] :
+    for score in [4,5,6] :
         #confer = MyConfStableLTa(classifier=MySGDClassifier(),score=score)
         #confer = MyConfStableLTa(ta = ta_set.TaSetSma2(),     classifier=MySGDClassifier(),score=score)
         #confer = MyConfStableLTa(classifier=MyGradientBoostingClassifier(),score=score)
@@ -63,7 +63,7 @@ if __name__ == '__main__':
         else:
             confer = MyConfStableLTa(classifier=RFCv1n2000md6msl100(),score=score)
             confer = MyConfStableLTa(classifier=ccl(),score=score)
-            confer.force = False
+            confer.force = True
 
         build.work(confer)
         score_build.work(confer)
@@ -72,7 +72,7 @@ if __name__ == '__main__':
         model.work(confer)
         pd.set_option('display.expand_frame_repr', False)
         pd.options.display.max_rows = 999
-        confer.force = False
+        confer.force = True
         report.work(confer)
         dfo = pd.read_pickle(confer.get_pred_file())
         df = dfo[(dfo.date >=confer.model_split.test_start)]
