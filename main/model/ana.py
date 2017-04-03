@@ -67,6 +67,7 @@ def count_level(df, score):
         df_tmp["cumroi"] = df_tmp["roi"].cumsum()
         res = pd.concat([res, df_tmp[["top", 'date', 'count', 'roi', "cumcount", "cumroi"]]])
     res = res[["top", "date", "count", "roi", "cumcount", "cumroi"]]
+    res["roip"] = res["roi"]/res["count"]
     return res
 def accurate_level(df, score):
     df = df.sort_values(["pred"], ascending=False)
