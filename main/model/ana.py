@@ -87,9 +87,10 @@ def roi_level(df, score):
         res = res.append(pd.Series((top, float(df_cur.tail(1)["pred"].values), num1, r1, num2, r2, num3, r3, num4, r4), index=index), ignore_index=True)
     return res
 
-def roi_level_per_year(df, score, max_hold_num=-1):
+def roi_level_per_year(df, score):
     df = df.sort_values(["pred"], ascending=False)
-    index = ["year", "top", "roi", "threshold"]
+    index = ["year", "top", "threshold", "num1", "roi1", "num2", "roi2", "num3", "roi3", "num4", "roi4"]
+    df['yyyy'] = df.date.str.slice(0,4)
     years = df["yyyy"].unique()
     res = pd.DataFrame(data=None, columns=index)
     for year in years:
@@ -100,8 +101,8 @@ def roi_level_per_year(df, score, max_hold_num=-1):
         #if year == "2017":
         #    print(df_cur.head(100)[["open", "high", "low", "close", "pred", score.get_name()]])
         #    sys.exit(0)
-    res = res.append(pd.Series(("all", "total", accurate(df,score), 0.5),index=index), ignore_index=True)
-    return res
+    #res = res.append(pd.Series(("all", "total", accurate(df,score), 0.5),index=index), ignore_index=True)
+    return res[["year", "top", "threshold", "num1", "roi1", "num2", "roi2", "num3", "roi3", "num4", "roi4"]]
 
 def accurate_level_per_year(df, score):
     index = ["year", "top", "accurate", "threshold"]
