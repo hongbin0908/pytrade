@@ -64,7 +64,10 @@ def count_level(df, score):
         df_tmp = df.head(top).groupby("date").apply(lambda x: cal(x)).reset_index(drop=False)
         df_tmp['top'] = top
         res = pd.concat([res, df_tmp[["top", 'date', 'count', 'roi']]])
-    return res[["top", "date", "count", "roi"]]
+    res = res[["top", "date", "count", "roi"]]
+    res["cumcount"] = res["count"].cumsum()
+    res["cumroi"] = res["roi"].cumsum()
+    return res
 def accurate_level(df, score):
     df = df.sort_values(["pred"], ascending=False)
     index = ["top", "accurate", "threshold"]
@@ -73,6 +76,15 @@ def accurate_level(df, score):
         res = res.append(pd.Series(("%s"%top, accurate(df.head(top),score), float(df.head(top).tail(1)["pred"].values)),index=index), ignore_index=True)
     return res
 
+
+def roi2(df, score, max_hold_num=-1):
+    if max_hold_num > 0:
+        df = df.groupby('date').head(max_hold_num)
+    num = 1000/df.loc[:, "close"]
+    nValue = df.loc[:, "close"]*df.loc[:,score.get_name()]*num
+    profile = nValue - 1000
+    res = float(profile.sum())
+    return res
 
 def roi(df, score, max_hold_num=-1):
     if max_hold_num > 0:
