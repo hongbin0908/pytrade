@@ -60,7 +60,7 @@ def count_level(df, score):
 
     def cal(x):
         return pd.DataFrame({"roi":[roi2(x, score),], "count":[len(x),]})
-    for top in [1,2,3,4,5,10, ]:
+    for top in [1000, ]:
         df_tmp = df.head(top).groupby("date").apply(lambda x: cal(x)).reset_index(drop=False)
         df_tmp['top'] = top
         df_tmp["cumcount"] = df_tmp["count"].cumsum()
@@ -99,7 +99,7 @@ def roi_level(df, score):
     df = df.sort_values(["pred"], ascending=False)
     index = ["top", "threshold", "num1", "roi1", "num2", "roi2", "num3", "roi3", "num4", "roi4"]
     res = pd.DataFrame(data=None, columns=index)
-    for top in [1,2,3,4,5, 10, 1000, 5000, 10000, 100000, -1]:
+    for top in [1000, 5000, 10000, 100000, -1]:
         if top < 0:
             df_cur = df.copy()
         else:
