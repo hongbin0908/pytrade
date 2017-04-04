@@ -89,7 +89,7 @@ def roi2(df, score, max_hold_num=-1):
 
 def roi(df, score, max_hold_num=-1, threshold=2):
     if max_hold_num > 0:
-        df = df.groupby('date').filter(lambda x: x.size>=2).head(max_hold_num)
+        df = df.groupby('date').filter(lambda x: len(x)>=2).groupby('date').head(max_hold_num)
     num = 1000/df.loc[:, "close"]
     nValue = df.loc[:, "close"]*df.loc[:,score.get_name()]*num
     profile = nValue - 1000
