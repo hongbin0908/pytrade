@@ -105,9 +105,6 @@ def roi_level(df, score):
             df_cur = df.copy()
         else:
             df_cur = df.head(top)
-        if top == 1000:
-            df_tmp = df_cur.groupby('date').head(1000)
-
         r1, num1 = roi(df_cur, score, 1)
         r2, num2 = roi(df_cur, score, 5)
         r3, num3 = roi(df_cur, score, 10)
