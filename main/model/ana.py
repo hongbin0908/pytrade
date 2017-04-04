@@ -73,7 +73,7 @@ def accurate_level(df, score):
     df = df.sort_values(["pred"], ascending=False)
     index = ["top", "accurate", "threshold"]
     res = pd.DataFrame(data=None, columns=index)
-    for top in [1000, 5000, 10000, 100000]:
+    for top in [1000,2000, 5000, 10000, 100000]:
         res = res.append(pd.Series(("%s"%top, accurate(df.head(top),score), float(df.head(top).tail(1)["pred"].values)),index=index), ignore_index=True)
     return res
 
@@ -100,7 +100,7 @@ def roi_level(df, score):
     df = df.sort_values(["pred"], ascending=False)
     index = ["top", "threshold", "num1", "roi1", "num2", "roi2", "num3", "roi3", "num4", "roi4"]
     res = pd.DataFrame(data=None, columns=index)
-    for top in [1000, -1]:
+    for top in [1000,2000, -1]:
         if top < 0:
             df_cur = df.copy()
         else:
