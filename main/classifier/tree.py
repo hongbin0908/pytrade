@@ -47,7 +47,7 @@ def d2tod3(fro, window):
         to[i] = fro[i:i+window]
     return to
 class ccl(BaseClassifier):
-    def __init__(self, batch_size = 64, nb_epoch=40):
+    def __init__(self, batch_size = 64, nb_epoch=20):
         model = Sequential()
         self.classifier = model
         self.batch_size = batch_size
@@ -78,7 +78,7 @@ class ccl(BaseClassifier):
         self.classifier.add(Dense(output_dim=1))
         self.classifier.add(Activation('sigmoid'))
         sgd = SGD(lr=0.05, decay=1e-5, momentum=0.9, nesterov=True)
-        self.classifier.compile(loss='binary_crossentropy', optimizer='sgd', metrics=['accuracy'])
+        self.classifier.compile(loss='binary_crossentropy', optimizer=sgd, metrics=['accuracy'])
         self.classifier.fit(X, y, validation_data=(X_t, y_t), batch_size=self.batch_size, nb_epoch=self.nb_epoch)
     def predict_proba(self, X):
         X = self.transfer_shape(X)
