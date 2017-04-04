@@ -54,7 +54,7 @@ class ccl(BaseClassifier):
         self.nb_epoch = nb_epoch
         pass
     def get_name(self):
-        return "ccl-%d" % (self.np_epoch)
+        return "ccl-%d" % (self.nb_epoch)
 
     def transfer_shape(self,X):
         return d2tod3(X, window=5)
