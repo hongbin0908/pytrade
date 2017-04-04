@@ -21,7 +21,7 @@ from main.selector.selector import MiSelector
 class MltradeConf:
     def __init__(self, model_split, 
                  classifier=MyRandomForestClassifier(),
-                 scores=[ScoreLabel(5, 1.0), ScoreRelative(5), ScoreRelativeOpen(5)],
+             scores=[ScoreLabel(5, 1.0), ScoreRelative(5), ScoreRelativeOpen(5)],
                  ta=TaSetBase1(), selector=None, n_pool=10,
                  syms=yeod.sp500_snapshot("sp500_snapshot_20091231"),
                  week=0):

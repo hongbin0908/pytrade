@@ -63,7 +63,7 @@ if __name__ == '__main__':
         else:
             confer = MyConfStableLTa(classifier=RFCv1n2000md6msl100(),score=score)
             confer = MyConfStableLTa(classifier=ccl(),score=score)
-            confer.force = True
+            confer.force = False
 
         build.work(confer)
         score_build.work(confer)
@@ -72,7 +72,6 @@ if __name__ == '__main__':
         model.work(confer)
         pd.set_option('display.expand_frame_repr', False)
         pd.options.display.max_rows = 999
-        confer.force = True
         report.work(confer)
         dfo = pd.read_pickle(confer.get_pred_file())
         df = dfo[(dfo.date >=confer.model_split.test_start)]
