@@ -52,7 +52,7 @@ from main.ta import ta_set
 if __name__ == '__main__':
 
 
-    for score in [4,5,6] :
+    for score in [4,4,4] :
         #confer = MyConfStableLTa(classifier=MySGDClassifier(),score=score)
         #confer = MyConfStableLTa(ta = ta_set.TaSetSma2(),     classifier=MySGDClassifier(),score=score)
         #confer = MyConfStableLTa(classifier=MyGradientBoostingClassifier(),score=score)
@@ -63,7 +63,7 @@ if __name__ == '__main__':
         else:
             confer = MyConfStableLTa(classifier=RFCv1n2000md6msl100(),score=score)
             confer = MyConfStableLTa(classifier=ccl(),score=score)
-            confer.force = False
+            confer.force = True
 
         build.work(confer)
         score_build.work(confer)
