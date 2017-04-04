@@ -34,7 +34,7 @@ class Poster:
         tmp = token.train.sort_values(["date"])
         is_to_fit = True
         if os.path.exists(class_dump_file) and not self.confer.force:
-            if self.confer.classifier.get_name() != "ccl":
+            if not self.confer.classifier.get_name().startswith("ccl"):
                 with open(class_dump_file, 'rb') as fin:
                     print("load %s" % class_dump_file)
                     self.confer.classifier = pickle.load(fin)
@@ -42,7 +42,7 @@ class Poster:
                 self.confer.classifier.classifier = keras.models.load_model(class_dump_file)
         else:
             self._train(token.train, token.test, self.confer.scores[0])
-            if self.confer.classifier.get_name() != "ccl":
+            if not self.confer.classifier.get_name().startswith("ccl"):
                 with open(class_dump_file, 'wb') as fout:
                     pickle.dump(self.confer.classifier, fout, protocol=-1)
             else:
