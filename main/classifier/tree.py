@@ -47,7 +47,7 @@ def d2tod3(fro, window):
         to[i] = fro[i:i+window]
     return to
 class ccl(BaseClassifier):
-    def __init__(self, batch_size = 64, nb_epoch=20):
+    def __init__(self, batch_size = 64, nb_epoch=40):
         model = Sequential()
         self.classifier = model
         self.batch_size = batch_size
