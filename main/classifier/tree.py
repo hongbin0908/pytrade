@@ -47,14 +47,14 @@ def d2tod3(fro, window):
         to[i] = fro[i:i+window]
     return to
 class ccl(BaseClassifier):
-    def __init__(self, batch_size = 64, nb_epoch=20):
+    def __init__(self, batch_size = 64, nb_epoch=40):
         model = Sequential()
         self.classifier = model
         self.batch_size = batch_size
         self.nb_epoch = nb_epoch
         pass
     def get_name(self):
-        return "ccl"
+        return "ccl-%d" % (self.nb_epoch)
 
     def transfer_shape(self,X):
         return d2tod3(X, window=5)
@@ -65,15 +65,15 @@ class ccl(BaseClassifier):
         X_t = self.transfer_shape(X_t)
         y = y[5-1:]
         y_t = y_t[5-1:]
-        self.classifier.add(LSTM(input_shape=(5, X.shape[2]),  output_dim =16, return_sequences = True))
+        self.classifier.add(LSTM(input_shape=(5, X.shape[2]),  output_dim =8, return_sequences = True))
         self.classifier.add(Flatten())
         #self.classifier.add(Activation('linear'))
         self.classifier.add(Activation('relu'))
-        self.classifier.add(Dense( output_dim=16))
+        self.classifier.add(Dense( output_dim=8))
         #self.classifier.add(Activation('linear'))
         self.classifier.add(Activation('relu'))
         self.classifier.add(Dropout(0.3))
-        self.classifier.add(Dense(output_dim=16))
+        self.classifier.add(Dense(output_dim=8))
         self.classifier.add(Activation('tanh'))
         self.classifier.add(Dense(output_dim=1))
         self.classifier.add(Activation('sigmoid'))

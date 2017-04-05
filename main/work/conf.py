@@ -21,7 +21,7 @@ from main.selector.selector import MiSelector
 class MltradeConf:
     def __init__(self, model_split, 
                  classifier=MyRandomForestClassifier(),
-                 scores=[ScoreLabel(5, 1.0), ScoreRelative(5), ScoreRelativeOpen(5)],
+             scores=[ScoreLabel(5, 1.0), ScoreRelative(5), ScoreRelativeOpen(5)],
                  ta=TaSetBase1(), selector=None, n_pool=10,
                  syms=yeod.sp500_snapshot("sp500_snapshot_20091231"),
                  week=0):
@@ -98,11 +98,11 @@ class MyConfStableLTa(MltradeConf):
             ):
 
         model_split=YearSpliter(train_end, "2017", train_start, train_end)
-        #index="sp100_snapshot_20091129"
         week=-1
         MltradeConf.__init__(self,
                 model_split=model_split,
                 classifier=classifier,
+                scores = [ScoreLabel(score, 1.0), ScoreRelative(score), ScoreRelativeOpen(score)],
                 ta = ta, n_pool=30, syms=syms, week = week)
 
 class MyConfForTest(MltradeConf):

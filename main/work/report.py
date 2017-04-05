@@ -17,13 +17,12 @@ def work(confer):
     dfo = pd.read_pickle(confer.get_pred_file())
     df = dfo[(dfo.date >=confer.model_split.test_start)]
     df_sort = df.sort_values('pred', ascending=False)[["date", "sym", "open", "high", "low", "close", "pred"]]
-    print(df_sort.head())
     print(ana.roc_auc(df, confer))
-    print(ana.roc_auc_per_year(df, confer))
+    #print(ana.roc_auc_per_year(df, confer))
+    #print(ana.count_level(df, confer.scores[1]))
     print(ana.accurate_level(df, confer.scores[0]))
     print(ana.roi_level(df, confer.scores[1]))
-
-    print(ana.roi_level(df, confer.scores[2]))
+    #print(ana.roi_level(df, confer.scores[2]))
     print(ana.roi_level_per_year(df, confer.scores[1]))
-    print(ana.roi_level_per_year(df, confer.scores[2]))
+    #print(ana.roi_level_per_year(df, confer.scores[2]))
 
