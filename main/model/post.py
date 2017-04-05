@@ -42,6 +42,8 @@ class Poster:
             if self.confer.classifier.get_name() != "ccl":
                 with open(class_dump_file, 'wb') as fout:
                     pickle.dump(self.confer.classifier, fout, protocol=-1)
+            else:
+                self.confer.classifier
 
 
     def _train(self, df_train, df_test, score):
