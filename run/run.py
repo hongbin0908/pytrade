@@ -52,7 +52,7 @@ from main.ta import ta_set
 if __name__ == '__main__':
 
 
-    for score in [5,] :
+    for score in [5,5,5] :
         #confer = MyConfStableLTa(classifier=MySGDClassifier(),score=score)
         #confer = MyConfStableLTa(ta = ta_set.TaSetSma2(),     classifier=MySGDClassifier(),score=score)
         #confer = MyConfStableLTa(classifier=MyGradientBoostingClassifier(),score=score)
@@ -69,6 +69,7 @@ if __name__ == '__main__':
         score_build.work(confer)
         bitlize.work(confer)
         selected.work(confer)
+        confer.force = True
         model.work(confer)
         pd.set_option('display.expand_frame_repr', False)
         pd.options.display.max_rows = 999
