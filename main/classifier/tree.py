@@ -1,6 +1,8 @@
 #!/usr/bin/env python2.7
 # -*- coding: utf-8 -*-
 #@author  Bin Hong
+import numpy as np
+np.random.seed(7)
 from keras.layers import Flatten, Activation, Dense, Dropout
 from keras.layers import LSTM
 from keras.models import Sequential
@@ -47,7 +49,7 @@ def d2tod3(fro, window):
         to[i] = fro[i:i+window]
     return to
 class ccl(BaseClassifier):
-    def __init__(self, batch_size = 64, nb_epoch=5):
+    def __init__(self, batch_size = 64, nb_epoch=20):
         model = Sequential()
         self.classifier = model
         self.batch_size = batch_size
