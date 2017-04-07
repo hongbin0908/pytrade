@@ -62,7 +62,7 @@ if __name__ == '__main__':
             confer.force = False
         else:
             confer = MyConfStableLTa(classifier=RFCv1n2000md6msl100(),score=score)
-            confer = MyConfStableLTa(classifier=ccl(),score=score)
+            #confer = MyConfStableLTa(classifier=ccl(),score=score)
             confer.force = False
 
         build.work(confer)
