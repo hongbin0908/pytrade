@@ -47,7 +47,7 @@ def d2tod3(fro, window):
         to[i] = fro[i:i+window]
     return to
 class ccl(BaseClassifier):
-    def __init__(self, batch_size = 64, nb_epoch=40):
+    def __init__(self, batch_size = 64, nb_epoch=5):
         model = Sequential()
         self.classifier = model
         self.batch_size = batch_size
@@ -70,10 +70,10 @@ class ccl(BaseClassifier):
         self.classifier.add(Activation('linear'))
         #self.classifier.add(Activation('relu'))
         self.classifier.add(Dense( output_dim=8))
-        self.classifier.add(Activation('linear'))
+        #self.classifier.add(Activation('linear'))
         #self.classifier.add(Activation('relu'))
-        self.classifier.add(Dropout(0.3))
-        self.classifier.add(Dense(output_dim=8))
+        #self.classifier.add(Dropout(0.3))
+        #self.classifier.add(Dense(output_dim=8))
         self.classifier.add(Activation('tanh'))
         self.classifier.add(Dense(output_dim=1))
         self.classifier.add(Activation('sigmoid'))
