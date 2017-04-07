@@ -57,16 +57,18 @@ class ccl(BaseClassifier):
         return "ccl-%d" % (self.nb_epoch)
 
     def transfer_shape(self,X):
-        return d2tod3(X, window=5)
+        return X
+        #return d2tod3(X, window=5)
         #return np.reshape(X, (X.shape[0], 1, X.shape[1]))
 
     def fit(self, X, y, X_t, y_t):
         X = self.transfer_shape(X)
         X_t = self.transfer_shape(X_t)
-        y = y[5-1:]
-        y_t = y_t[5-1:]
-        self.classifier.add(LSTM(input_shape=(5, X.shape[2]),  output_dim =8, return_sequences = True))
-        self.classifier.add(Flatten())
+        #y = y[5-1:]
+        #y_t = y_t[5-1:]
+        self.classifier.add(Dense(500, input_shape=( X.shape[1],)))
+        #self.classifier.add(LSTM(input_shape=(5, X.shape[2]),  output_dim =8, return_sequences = True))
+        #self.classifier.add(Flatten())
         self.classifier.add(Activation('linear'))
         #self.classifier.add(Activation('relu'))
         self.classifier.add(Dense( output_dim=8))
