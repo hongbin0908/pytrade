@@ -191,7 +191,7 @@ class MyRfClassifier(BaseClassifier):
     def get_name(self):
         return self.name
 
-    def fit(self, X, y):
+    def fit(self, X, y, X_t, y_t):
         return self.classifier.fit(X, y)
 
     def predict_proba(self, X):
