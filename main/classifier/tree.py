@@ -7,6 +7,7 @@ from keras.layers import Flatten, Activation, Dense, Dropout
 from keras.layers import LSTM
 from keras.models import Sequential
 from keras.optimizers import SGD
+from keras import initializers
 from main.classifier.base_classifier import BaseClassifier
 from sklearn.ensemble.forest import RandomForestClassifier
 from sklearn.ensemble.gradient_boosting import GradientBoostingClassifier
@@ -49,7 +50,7 @@ def d2tod3(fro, window):
         to[i] = fro[i:i+window]
     return to
 class ccl(BaseClassifier):
-    def __init__(self, batch_size = 64, nb_epoch=20):
+    def __init__(self, batch_size = 32, nb_epoch=20):
         model = Sequential()
         self.classifier = model
         self.batch_size = batch_size
@@ -59,30 +60,30 @@ class ccl(BaseClassifier):
         return "ccl-%d" % (self.nb_epoch)
 
     def transfer_shape(self,X):
-        return X
-        #return d2tod3(X, window=5)
-        #return np.reshape(X, (X.shape[0], 1, X.shape[1]))
+        return d2tod3(X, window=2)
+        return np.reshape(X, (X.shape[0], 1, X.shape[1]))
 
     def fit(self, X, y, X_t, y_t):
         X = self.transfer_shape(X)
         X_t = self.transfer_shape(X_t)
-        #y = y[5-1:]
-        #y_t = y_t[5-1:]
-        self.classifier.add(Dense(500, input_shape=( X.shape[1],)))
-        #self.classifier.add(LSTM(input_shape=(5, X.shape[2]),  output_dim =8, return_sequences = True))
-        #self.classifier.add(Flatten())
-        self.classifier.add(Activation('linear'))
-        #self.classifier.add(Activation('relu'))
-        self.classifier.add(Dense( output_dim=8))
+        y = y[2-1:]
+        y_t = y_t[2-1:]
+        #self.classifier.add(Dense(500, input_shape=( X.shape[1],)))
+        self.classifier.add(LSTM(input_shape=(2, X.shape[2]),  output_dim =8,
+                                 return_sequences = True ))
+        self.classifier.add(Flatten())
         #self.classifier.add(Activation('linear'))
-        #self.classifier.add(Activation('relu'))
-        #self.classifier.add(Dropout(0.3))
-        #self.classifier.add(Dense(output_dim=8))
+        self.classifier.add(Activation('relu'))
+        self.classifier.add(Dense( output_dim=8))
+        self.classifier.add(Activation('linear'))
+        self.classifier.add(Activation('relu'))
+        self.classifier.add(Dropout(0.3, seed=7))
+        self.classifier.add(Dense(output_dim=8))
         self.classifier.add(Activation('tanh'))
         self.classifier.add(Dense(output_dim=1))
         self.classifier.add(Activation('sigmoid'))
-        sgd = SGD(lr=0.05, decay=1e-5, momentum=0.9, nesterov=True)
-        self.classifier.compile(loss='binary_crossentropy', optimizer='sgd', metrics=['accuracy'])
+        sgd = SGD(lr=0.01)
+        self.classifier.compile(loss='binary_crossentropy', optimizer=sgd, metrics=['accuracy'])
         self.classifier.fit(X, y, validation_data=(X_t, y_t), batch_size=self.batch_size, nb_epoch=self.nb_epoch)
     def predict_proba(self, X):
         X = self.transfer_shape(X)
