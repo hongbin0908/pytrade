@@ -89,8 +89,8 @@ class cnn(BaseClassifier):
 
 
         """Hyperparameters"""
-        num_filt_1 = 16     #Number of filters in first conv layer
-        num_filt_2 = 14      #Number of filters in second conv layer
+        num_filt_1 = 6     #Number of filters in first conv layer
+        num_filt_2 = 4      #Number of filters in second conv layer
         num_filt_3 = 8      #Number of filters in thirs conv layer
         num_fc_1 = 40       #Number of neurons in hully connected layer
         max_iterations = 20000
