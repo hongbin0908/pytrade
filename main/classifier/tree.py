@@ -159,7 +159,7 @@ class cnn(BaseClassifier):
         # loss = tf.nn.sparse_softmax_cross_entropy_with_logits(logits=h_fc2,labels=y_)
         # cost = tf.reduce_sum(loss) / batch_size
         self.classifier.add(Activation('softmax'))
-        self.classifier.compile(loss='categorical_crossentropy', optimizer=Adam(lr=learning_rate),matrics=['accuracy'])
+        self.classifier.compile(loss='binary_crossentropy', optimizer=Adam(lr=learning_rate),matrics=['accuracy'])
         self.classifier.fit(X, y, validation_data=(X_t, y_t), batch_size=self.batch_size, nb_epoch=self.nb_epoch)
          #    cost += regularization*regularizers
          #loss_summ = tf.summary.scalar("cross entropy_loss", cost)
