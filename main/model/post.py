@@ -51,7 +51,8 @@ class Poster:
 
     def _train(self, df_train, df_test, score):
         df_train = df_train.sort_values(["sym", "date"])
-        print("train start : %s train end: %s" % (df_train.sort_values('date').head(1)['date'].values[0], df_train.sort_values('date').tail(1)['date'].values[0]))
+        print("train start : %s train end: %s" % (df_train.sort_values('date').head(1)['date'].values[0],
+                                                  df_train.sort_values('date').tail(1)['date'].values[0]))
         npTrainFeat, npTrainLabel = self._extract_feat_label(df_train, score.get_name())
         df_test = df_test.sort_values(["sym", "date"])
         npTestFeat, npTestLabel = self._extract_feat_label(df_test, score.get_name())
