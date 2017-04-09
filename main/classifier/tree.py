@@ -60,7 +60,7 @@ def max_pool_2x2(x):
                           strides=[1, 2, 2, 1], padding='SAME')
 
 class cnn(BaseClassifier):
-    def __init__(self, batch_size = 200, nb_epoch=3):
+    def __init__(self, batch_size = 100, nb_epoch=3):
         model = Sequential()
         self.classifier = model
         self.batch_size = batch_size
@@ -161,7 +161,7 @@ class cnn(BaseClassifier):
         # cost = tf.reduce_sum(loss) / batch_size
         self.classifier.add(Activation('softmax'))
         self.classifier.compile(loss='binary_crossentropy', optimizer=Adam(lr=learning_rate),metrics=['accuracy'])
-        self.classifier.fit(X, y, validation_data=(X_t, y_t), batch_size=self.batch_size, nb_epoch=self.nb_epoch)
+        self.classifier.fit(X, y, validation_data=(X_t, y_t), batch_size=self.batch_size, nb_epoch=self.nb_epoch, shuffle=False)
          #    cost += regularization*regularizers
          #loss_summ = tf.summary.scalar("cross entropy_loss", cost)
          #3with tf.name_scope("train") as scope:
