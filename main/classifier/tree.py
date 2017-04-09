@@ -60,7 +60,7 @@ def max_pool_2x2(x):
                           strides=[1, 2, 2, 1], padding='SAME')
 
 class cnn(BaseClassifier):
-    def __init__(self, batch_size = 200, nb_epoch=100):
+    def __init__(self, batch_size = 200, nb_epoch=3):
         model = Sequential()
         self.classifier = model
         self.batch_size = batch_size
@@ -118,7 +118,7 @@ class cnn(BaseClassifier):
         #    a_conv1 = tf.contrib.layers.batch_norm(a_conv1,is_training=bn_train,updates_collections=None)
         #    h_conv1 = tf.nn.relu(a_conv1)
 
-        #model.add(BatchNormalization())
+        self.classifier.add(BatchNormalization())
         self.classifier.add(Activation('relu'))
 
         #with tf.name_scope("Conv2") as scope:
@@ -132,6 +132,7 @@ class cnn(BaseClassifier):
         #with tf.name_scope('Batch_norm_conv2') as scope:
         #    a_conv2 = tf.contrib.layers.batch_norm(a_conv2,is_training=bn_train,updates_collections=None)
         #    h_conv2 = tf.nn.relu(a_conv2)
+        self.classifier.add(BatchNormalization())
         self.classifier.add(Activation('relu'))
 
         #with tf.name_scope("Fully_Connected1") as scope:
