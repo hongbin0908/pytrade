@@ -99,14 +99,14 @@ class cnn(BaseClassifier):
         initializer = initializers.glorot_uniform(seed=123)
         self.classifier.add(Conv2D(filters=num_filt_1, kernel_size=[5,1], padding='same',
                                    kernel_initializer=initializer,
-                                   bias_initializer=initializer,
+                                   bias_initializer=initializers.zeros,
                                    input_shape=X.shape[1:]))
         #self.classifier.add(BatchNormalization())
         self.classifier.add(Activation('relu'))
 
         self.classifier.add(Conv2D(filters=num_filt_2, kernel_size=[4,1],
                                    kernel_initializer=initializer,
-                                   bias_initializer=initializer,
+                                   bias_initializer=initializers.zeros,
                                    padding='same'))
 
         #self.classifier.add(BatchNormalization())
