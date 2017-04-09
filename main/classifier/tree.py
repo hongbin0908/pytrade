@@ -60,7 +60,7 @@ def max_pool_2x2(x):
                           strides=[1, 2, 2, 1], padding='SAME')
 
 class cnn(BaseClassifier):
-    def __init__(self, batch_size = 100, nb_epoch=3):
+    def __init__(self, batch_size = 100, nb_epoch=10):
         model = Sequential()
         self.classifier = model
         self.batch_size = batch_size
