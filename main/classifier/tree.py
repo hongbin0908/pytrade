@@ -119,7 +119,8 @@ class cnn(BaseClassifier):
         self.classifier.add(Dense(2, kernel_initializer=initializer, bias_initializer=initializers.Constant(0.1)))
 
         self.classifier.add(Activation('softmax'))
-        self.classifier.compile(loss='binary_crossentropy', optimizer=Adam(lr=learning_rate),metrics=['accuracy'])
+        #self.classifier.compile(loss='binary_crossentropy', optimizer=Adam(lr=learning_rate),metrics=['accuracy'])
+        self.classifier.compile(loss='binary_crossentropy', optimizer='sgd',metrics=['accuracy'])
         self.classifier.fit(X, y, validation_data=(X_t, y_t), batch_size=self.batch_size, nb_epoch=self.nb_epoch, shuffle=False)
     def predict_proba(self, X):
         X = self.transfer_shape(X)
