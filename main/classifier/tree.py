@@ -143,6 +143,7 @@ class cnn(BaseClassifier):
         self.classifier.add(Flatten())
         self.classifier.add(Dense(num_fc_1, kernel_initializer=initializer))
         self.classifier.add(Activation('relu'))
+        self.classifier.add(Dropout=0.5)
 
         #with tf.name_scope("Fully_Connected2") as scope:
         #    h_fc1_drop = tf.nn.dropout(h_fc1, keep_prob)
