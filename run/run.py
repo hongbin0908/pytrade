@@ -56,8 +56,13 @@ from main.ta import ta_set
 
 def get_confs():
     score = 5
-    return [MyConfStableLTa(classifier=ccl(),score=score),
-            MyConfStableLTa(classifier=ccl2(), score=score)]
+    return [
+        MyConfStableLTa(classifier=cnn(nb_epoch=5), score=score)
+        MyConfStableLTa(classifier=cnn(),score=score),
+        MyConfStableLTa(classifier=cnn(num_filt_2=4), score=score)
+        MyConfStableLTa(classifier=cnn(num_filt_1=6, num_filt_2=4), score=score)
+        MyConfStableLTa(classifier=cnn(batch_size=1000), score=score)
+    ]
 if __name__ == '__main__':
 
 

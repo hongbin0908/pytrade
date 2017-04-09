@@ -60,11 +60,14 @@ def max_pool_2x2(x):
                           strides=[1, 2, 2, 1], padding='SAME')
 
 class cnn(BaseClassifier):
-    def __init__(self, batch_size = 100, nb_epoch=10):
+    def __init__(self, batch_size = 100, nb_epoch=10, num_filt_1 = 16, num_filt_2 = 14, num_fc_1 = 40):
         model = Sequential()
         self.classifier = model
         self.batch_size = batch_size
         self.nb_epoch = nb_epoch
+        self.num_filt_1 = num_filt_1
+        self.num_filt_2 = num_filt_2
+        self.num_fc_1 = num_fc_1
         pass
     def transfer_shape(self,X):
         return np.reshape(X, (X.shape[0], X.shape[1],1,1))
@@ -83,16 +86,12 @@ class cnn(BaseClassifier):
             X_test, X_val = np.split(X_t[:-1,:], 2)
             y_test, y_val = np.split(y_t[:-1], 2)
         assert(len(X_test) == len(y_test))
-        N = X.shape[0]
-        Ntest = X_test.shape[0]
-        D = X.shape[1]
-
 
         """Hyperparameters"""
-        num_filt_1 = 6     #Number of filters in first conv layer
-        num_filt_2 = 4      #Number of filters in second conv layer
-        num_filt_3 = 8      #Number of filters in thirs conv layer
-        num_fc_1 = 40       #Number of neurons in hully connected layer
+        num_filt_1 = self.num_filt_1     #Number of filters in first conv layer
+        num_filt_2 = self.num_filt_2      #Number of filters in second conv layer
+        num_filt_3 = 3      #Number of filters in thirs conv layer
+        num_fc_1 = self.num_fc_1      #Number of neurons in hully connected layer
         max_iterations = 20000
         learning_rate = 2e-5
         #initializer = tf.contrib.layers.xavier_initializer(),
