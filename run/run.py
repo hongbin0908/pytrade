@@ -40,6 +40,7 @@ from main.classifier.tree import MyRandomForestClassifier
 from main.classifier.tree import MyLogisticRegressClassifier
 from main.classifier.tree import RFCv1n2000md6msl100
 from main.classifier.tree import ccl
+from main.classifier.tree import ccl2
 from main.classifier.tree import cnn
 from main.classifier.tree import RFCv1n2000md3msl100
 from main.classifier.tree import RFCv1n2000md2msl100
@@ -53,10 +54,14 @@ from main.work.conf import MyConfForTest
 from main.ta import ta_set
 
 
+def get_confs():
+    score = 5
+    return [MyConfStableLTa(classifier=ccl(),score=score),
+            MyConfStableLTa(classifier=ccl2(), score=score)]
 if __name__ == '__main__':
 
 
-    for score in [5,5,5] :
+    for confer in get_confs():
         #confer = MyConfStableLTa(classifier=MySGDClassifier(),score=score)
         #confer = MyConfStableLTa(ta = ta_set.TaSetSma2(),     classifier=MySGDClassifier(),score=score)
         #confer = MyConfStableLTa(classifier=MyGradientBoostingClassifier(),score=score)
@@ -66,7 +71,7 @@ if __name__ == '__main__':
             confer.force = False
         else:
             #confer = MyConfStableLTa(classifier=RFCv1n2000md6msl100(),score=score)
-            confer = MyConfStableLTa(classifier=cnn(),score=score)
+            #confer = MyConfStableLTa(classifier=cnn(),score=score)
             confer.force = False
 
         build.work(confer)
