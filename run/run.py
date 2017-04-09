@@ -16,6 +16,9 @@ import pickle
 import matplotlib
 matplotlib.use('Agg')
 
+np.random.seed(123)
+import tensorflow as tf
+tf.set_random_seed(123)
 local_path = os.path.dirname(__file__)
 root = os.path.join(local_path, '..')
 sys.path.append(root)
