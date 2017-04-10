@@ -7,7 +7,7 @@ import os
 import numpy as np
 import pandas as pd
 import pickle
-from scipy import interp
+import keras
 
 local_path = os.path.dirname(__file__)
 root = os.path.join(local_path, '..', '..')
@@ -34,18 +34,25 @@ class Poster:
         tmp = token.train.sort_values(["date"])
         is_to_fit = True
         if os.path.exists(class_dump_file) and not self.confer.force:
-            with open(class_dump_file, 'rb') as fin:
-                print("load %s" % class_dump_file)
-                self.confer.classifier = pickle.load(fin)
+            if not self.confer.classifier.get_name().startswith("ccl"):
+                with open(class_dump_file, 'rb') as fin:
+                    print("load %s" % class_dump_file)
+                    self.confer.classifier = pickle.load(fin)
+            else:
+                self.confer.classifier.classifier = keras.models.load_model(class_dump_file)
         else:
             self._train(token.train, token.test, self.confer.scores[0])
-            if self.confer.classifier.get_name() != "ccl":
+            if not self.confer.classifier.get_name().startswith("ccl"):
                 with open(class_dump_file, 'wb') as fout:
                     pickle.dump(self.confer.classifier, fout, protocol=-1)
+            else:
+                self.confer.classifier.classifier.save(class_dump_file)
 
 
     def _train(self, df_train, df_test, score):
         df_train = df_train.sort_values(["sym", "date"])
+        print("train start : %s train end: %s" % (df_train.sort_values('date').head(1)['date'].values[0],
+                                                  df_train.sort_values('date').tail(1)['date'].values[0]))
         npTrainFeat, npTrainLabel = self._extract_feat_label(df_train, score.get_name())
         df_test = df_test.sort_values(["sym", "date"])
         npTestFeat, npTestLabel = self._extract_feat_label(df_test, score.get_name())
@@ -65,7 +72,7 @@ class Poster:
         feat_names = base.get_feat_names(df_all)
         np_feat = df_all.loc[:, feat_names].values
         np_pred = self.confer.classifier.predict_proba(np_feat)
-        df_all = df_all.iloc[5-1:]
+        #df_all = df_all.iloc[2-1:]
         df_all["pred"] = np_pred[:, 1]
         df_all = df_all.sample(frac=1.0)
         return df_all.sort_values("pred", ascending=False)

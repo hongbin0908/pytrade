@@ -16,6 +16,9 @@ import pickle
 import matplotlib
 matplotlib.use('Agg')
 
+np.random.seed(123)
+import tensorflow as tf
+tf.set_random_seed(123)
 local_path = os.path.dirname(__file__)
 root = os.path.join(local_path, '..')
 sys.path.append(root)
@@ -37,6 +40,8 @@ from main.classifier.tree import MyRandomForestClassifier
 from main.classifier.tree import MyLogisticRegressClassifier
 from main.classifier.tree import RFCv1n2000md6msl100
 from main.classifier.tree import ccl
+from main.classifier.tree import ccl2
+from main.classifier.tree import cnn
 from main.classifier.tree import RFCv1n2000md3msl100
 from main.classifier.tree import RFCv1n2000md2msl100
 from main.classifier.tree import RFCv1n200md2msl100
@@ -49,10 +54,19 @@ from main.work.conf import MyConfForTest
 from main.ta import ta_set
 
 
+def get_confs():
+    score = 5
+    return [
+        MyConfStableLTa(classifier=cnn(nb_epoch=5), score=score),
+        MyConfStableLTa(classifier=cnn(),score=score),
+        MyConfStableLTa(classifier=cnn(num_filt_2=4), score=score),
+        MyConfStableLTa(classifier=cnn(num_filt_1=6, num_filt_2=4), score=score),
+        MyConfStableLTa(classifier=cnn(batch_size=1000), score=score),
+    ]
 if __name__ == '__main__':
 
 
-    for score in [2,5,10] :
+    for confer in get_confs():
         #confer = MyConfStableLTa(classifier=MySGDClassifier(),score=score)
         #confer = MyConfStableLTa(ta = ta_set.TaSetSma2(),     classifier=MySGDClassifier(),score=score)
         #confer = MyConfStableLTa(classifier=MyGradientBoostingClassifier(),score=score)
@@ -61,8 +75,8 @@ if __name__ == '__main__':
             confer = MyConfForTest()
             confer.force = False
         else:
-            confer = MyConfStableLTa(classifier=RFCv1n2000md6msl100(),score=score)
-            confer = MyConfStableLTa(classifier=ccl(),score=score)
+            #confer = MyConfStableLTa(classifier=RFCv1n2000md6msl100(),score=score)
+            #confer = MyConfStableLTa(classifier=cnn(),score=score)
             confer.force = False
 
         build.work(confer)

@@ -1,10 +1,15 @@
 #!/usr/bin/env python2.7
 # -*- coding: utf-8 -*-
 #@author  Bin Hong
+import numpy as np
+
+import keras
 from keras.layers import Flatten, Activation, Dense, Dropout
 from keras.layers import LSTM
+from keras.layers import Conv2D, MaxPooling2D, BatchNormalization, Reshape
 from keras.models import Sequential
-from keras.optimizers import SGD
+from keras.optimizers import SGD, Adam
+from keras import initializers
 from main.classifier.base_classifier import BaseClassifier
 from sklearn.ensemble.forest import RandomForestClassifier
 from sklearn.ensemble.gradient_boosting import GradientBoostingClassifier
@@ -12,6 +17,10 @@ from sklearn.naive_bayes import GaussianNB
 
 from sklearn import linear_model
 import main.base as base
+
+import tensorflow as tf
+from tensorflow.python.framework import ops
+from tensorflow.python.ops import clip_ops
 
 
 #from lasagne import layers  
@@ -33,6 +42,89 @@ import numpy as np
 #from keras.optimizers import SGD
 #from keras.layers.core import Flatten
 
+# Define functions for initializing variables and standard layers
+#For now, this seems superfluous, but in extending the code
+#to many more layers, this will keep our code
+#read-able
+import os, sys
+local_path = os.path.dirname(__file__)
+root = os.path.join(local_path, '..', "..")
+sys.path.append(root)
+def bias_variable(shape, name):
+    initial = tf.constant(0.1, shape=shape)
+    return tf.Variable(initial, name = name)
+def conv2d(x, W):
+    return tf.nn.conv2d(x, W, strides=[1, 1, 1, 1], padding='SAME')
+def max_pool_2x2(x):
+    return tf.nn.max_pool(x, ksize=[1, 2, 2, 1],
+                          strides=[1, 2, 2, 1], padding='SAME')
+
+class cnn(BaseClassifier):
+    def __init__(self, batch_size = 100, nb_epoch=10, num_filt_1 = 16, num_filt_2 = 14, num_fc_1 = 40):
+        model = Sequential()
+        self.classifier = model
+        self.batch_size = batch_size
+        self.nb_epoch = nb_epoch
+        self.num_filt_1 = num_filt_1
+        self.num_filt_2 = num_filt_2
+        self.num_fc_1 = num_fc_1
+        pass
+    def transfer_shape(self,X):
+        return np.reshape(X, (X.shape[0], X.shape[1],1,1))
+    def get_name(self):
+        return "ccl-cnn"
+    def fit(self, X, y, X_t, y_t):
+        X = self.transfer_shape(X)
+        X_t = self.transfer_shape(X_t)
+        y = keras.utils.to_categorical(y, 2)
+        y_t = keras.utils.to_categorical(y_t, 2)
+        print(X.shape)
+        if len(X_t) % 2==0:
+            X_test, X_val = np.split(X_t, 2)
+            y_test, y_val = np.split(y_t, 2)
+        else:
+            X_test, X_val = np.split(X_t[:-1,:], 2)
+            y_test, y_val = np.split(y_t[:-1], 2)
+        assert(len(X_test) == len(y_test))
+
+        """Hyperparameters"""
+        num_filt_1 = self.num_filt_1     #Number of filters in first conv layer
+        num_filt_2 = self.num_filt_2      #Number of filters in second conv layer
+        num_filt_3 = 3      #Number of filters in thirs conv layer
+        num_fc_1 = self.num_fc_1      #Number of neurons in hully connected layer
+        max_iterations = 20000
+        learning_rate = 2e-5
+        #initializer = tf.contrib.layers.xavier_initializer(),
+        initializer = initializers.glorot_uniform(seed=123)
+        self.classifier.add(Conv2D(filters=num_filt_1, kernel_size=[5,1], padding='same',
+                                   kernel_initializer=initializer,
+                                   bias_initializer=initializers.zeros(),
+                                   input_shape=X.shape[1:]))
+        #self.classifier.add(BatchNormalization())
+        self.classifier.add(Activation('relu'))
+
+        self.classifier.add(Conv2D(filters=num_filt_2, kernel_size=[4,1],
+                                   kernel_initializer=initializer,
+                                   bias_initializer=initializers.zeros(),
+                                   padding='same'))
+
+        #self.classifier.add(BatchNormalization())
+        self.classifier.add(Activation('relu'))
+        self.classifier.add(Flatten())
+        self.classifier.add(Dense(num_fc_1, kernel_initializer=initializer,bias_initializer=initializer))
+        self.classifier.add(Activation('relu'))
+        self.classifier.add(Dropout(0.2, seed=123))
+
+        self.classifier.add(Dense(2, kernel_initializer=initializer, bias_initializer=initializers.Constant(0.1)))
+
+        self.classifier.add(Activation('softmax'))
+        #self.classifier.compile(loss='binary_crossentropy', optimizer=Adam(lr=learning_rate),metrics=['accuracy'])
+        self.classifier.compile(loss='binary_crossentropy', optimizer='sgd',metrics=['accuracy'])
+        self.classifier.fit(X, y, validation_data=(X_t, y_t), batch_size=self.batch_size, nb_epoch=self.nb_epoch, shuffle=False)
+    def predict_proba(self, X):
+        X = self.transfer_shape(X)
+        re = self.classifier.predict_proba(X)
+        return re
 def d2tod3(fro, window):
     row = fro.shape[0]
     feat_num = fro.shape[1]
@@ -46,39 +138,82 @@ def d2tod3(fro, window):
     for i in range(len(fro)-window + 1):
         to[i] = fro[i:i+window]
     return to
-class ccl(BaseClassifier):
-    def __init__(self, batch_size = 64, nb_epoch=20):
+class ccl2(BaseClassifier):
+    def __init__(self, batch_size = 32, nb_epoch=10):
         model = Sequential()
         self.classifier = model
         self.batch_size = batch_size
         self.nb_epoch = nb_epoch
         pass
     def get_name(self):
-        return "ccl"
+        return "ccl-2-%d" % (self.nb_epoch)
 
     def transfer_shape(self,X):
-        return d2tod3(X, window=5)
-        #return np.reshape(X, (X.shape[0], 1, X.shape[1]))
+        return d2tod3(X, window=2)
+        return np.reshape(X, (X.shape[0], 1, X.shape[1]))
 
     def fit(self, X, y, X_t, y_t):
         X = self.transfer_shape(X)
         X_t = self.transfer_shape(X_t)
-        y = y[5-1:]
-        y_t = y_t[5-1:]
-        self.classifier.add(LSTM(input_shape=(5, X.shape[2]),  output_dim =16, return_sequences = True))
+        y = y[2-1:]
+        y_t = y_t[2-1:]
+        #self.classifier.add(Dense(500, input_shape=( X.shape[1],)))
+        self.classifier.add(LSTM(input_shape=(2, X.shape[2]),  output_dim =8,
+                                 return_sequences = True, kernel_initializer=initializers.glorot_normal(123) ))
         self.classifier.add(Flatten())
         #self.classifier.add(Activation('linear'))
         self.classifier.add(Activation('relu'))
-        self.classifier.add(Dense( output_dim=16))
+        self.classifier.add(Dense( output_dim=8, kernel_initializer=initializers.glorot_normal(123)))
         #self.classifier.add(Activation('linear'))
         self.classifier.add(Activation('relu'))
-        self.classifier.add(Dropout(0.3))
-        self.classifier.add(Dense(output_dim=16))
+        self.classifier.add(Dropout(0.3, seed=123))
+        self.classifier.add(Dense(output_dim=8))
+        self.classifier.add(Activation('tanh'))
+        self.classifier.add(Dense(output_dim=1, kernel_initializer=initializers.glorot_normal(123)))
+        self.classifier.add(Activation('sigmoid'))
+        sgd = SGD(lr=0.01)
+        self.classifier.compile(loss='binary_crossentropy', optimizer=sgd, metrics=['accuracy'])
+        self.classifier.fit(X, y, validation_data=(X_t, y_t), batch_size=self.batch_size, nb_epoch=self.nb_epoch)
+    def predict_proba(self, X):
+        X = self.transfer_shape(X)
+        re = self.classifier.predict_proba(X)
+        re = np.hstack([1-re, re])
+        return re
+class ccl(BaseClassifier):
+    def __init__(self, batch_size = 32, nb_epoch=10):
+        model = Sequential()
+        self.classifier = model
+        self.batch_size = batch_size
+        self.nb_epoch = nb_epoch
+        pass
+    def get_name(self):
+        return "ccl-%d" % (self.nb_epoch)
+
+    def transfer_shape(self,X):
+        return d2tod3(X, window=2)
+        return np.reshape(X, (X.shape[0], 1, X.shape[1]))
+
+    def fit(self, X, y, X_t, y_t):
+        X = self.transfer_shape(X)
+        X_t = self.transfer_shape(X_t)
+        y = y[2-1:]
+        y_t = y_t[2-1:]
+        #self.classifier.add(Dense(500, input_shape=( X.shape[1],)))
+        self.classifier.add(LSTM(input_shape=(2, X.shape[2]),  output_dim =8,
+                                 return_sequences = True ))
+        self.classifier.add(Flatten())
+        #self.classifier.add(Activation('linear'))
+        self.classifier.add(Activation('relu'))
+        self.classifier.add(Dense( output_dim=8))
+        self.classifier.add(Activation('linear'))
+        self.classifier.add(Activation('relu'))
+        self.classifier.add(Dropout(0.3, seed=7))
+        self.classifier.add(Dense(output_dim=8))
         self.classifier.add(Activation('tanh'))
         self.classifier.add(Dense(output_dim=1))
         self.classifier.add(Activation('sigmoid'))
-        sgd = SGD(lr=0.05, decay=1e-5, momentum=0.9, nesterov=True)
-        self.classifier.compile(loss='binary_crossentropy', optimizer='sgd', metrics=['accuracy'])
+        sgd = SGD(lr=0.01)
+        self.classifier.compile(loss='binary_crossentropy', optimizer=sgd, metrics=['accuracy'])
         self.classifier.fit(X, y, validation_data=(X_t, y_t), batch_size=self.batch_size, nb_epoch=self.nb_epoch)
     def predict_proba(self, X):
         X = self.transfer_shape(X)
@@ -164,7 +299,7 @@ class MyRandomForestClassifier(BaseClassifier):
     def get_name(self):
         return self.name
 
-    def fit(self, X, y):
+    def fit(self, X, y, X_t, y_t):
         return self.classifier.fit(X, y)
 
     def predict_proba(self, X):
@@ -186,7 +321,7 @@ class MyRfClassifier(BaseClassifier):
     def get_name(self):
         return self.name
 
-    def fit(self, X, y):
+    def fit(self, X, y, X_t, y_t):
         return self.classifier.fit(X, y)
 
     def predict_proba(self, X):
