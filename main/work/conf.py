@@ -108,6 +108,6 @@ class MyConfStableLTa(MltradeConf):
 
 class MyConfForTest(MltradeConf):
     def __init__(self):
-        classifier = cnn(batch_size=100, nb_epoch=1)
+        classifier = cnn(batch_size=10000, nb_epoch=1, verbose=0)
         model_split=YearSpliter('2010', "2017", "1990", "2010")
         MltradeConf.__init__(self, model_split=model_split, classifier=classifier, n_pool=1, syms=yeod.SymsForTest())

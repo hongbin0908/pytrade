@@ -60,7 +60,7 @@ def max_pool_2x2(x):
                           strides=[1, 2, 2, 1], padding='SAME')
 
 class cnn(BaseClassifier):
-    def __init__(self, batch_size = 100, nb_epoch=10, num_filt_1 = 16, num_filt_2 = 14, num_fc_1 = 40):
+    def __init__(self, batch_size = 100, nb_epoch=10, num_filt_1 = 16, num_filt_2 = 14, num_fc_1 = 40, verbose = 1):
         model = Sequential()
         self.classifier = model
         self.batch_size = batch_size
@@ -68,11 +68,12 @@ class cnn(BaseClassifier):
         self.num_filt_1 = num_filt_1
         self.num_filt_2 = num_filt_2
         self.num_fc_1 = num_fc_1
+        self.verbose = verbose
         pass
     def transfer_shape(self,X):
         return np.reshape(X, (X.shape[0], X.shape[1],1,1))
     def get_name(self):
-        return "ccl-cnn"
+        return "ccl-cnn-%d-%d-%d-%d" % (self.nb_epoch, self.num_filt_1, self.num_filt_2, self.batch_size)
     def fit(self, X, y, X_t, y_t):
         X = self.transfer_shape(X)
         X_t = self.transfer_shape(X_t)
@@ -90,17 +91,13 @@ class cnn(BaseClassifier):
         """Hyperparameters"""
         num_filt_1 = self.num_filt_1     #Number of filters in first conv layer
         num_filt_2 = self.num_filt_2      #Number of filters in second conv layer
-        num_filt_3 = 3      #Number of filters in thirs conv layer
         num_fc_1 = self.num_fc_1      #Number of neurons in hully connected layer
-        max_iterations = 20000
-        learning_rate = 2e-5
-        #initializer = tf.contrib.layers.xavier_initializer(),
+
         initializer = initializers.glorot_uniform(seed=123)
         self.classifier.add(Conv2D(filters=num_filt_1, kernel_size=[5,1], padding='same',
                                    kernel_initializer=initializer,
                                    bias_initializer=initializers.zeros(),
                                    input_shape=X.shape[1:]))
-        #self.classifier.add(BatchNormalization())
         self.classifier.add(Activation('relu'))
 
         self.classifier.add(Conv2D(filters=num_filt_2, kernel_size=[4,1],
@@ -120,10 +117,10 @@ class cnn(BaseClassifier):
         self.classifier.add(Activation('softmax'))
         #self.classifier.compile(loss='binary_crossentropy', optimizer=Adam(lr=learning_rate),metrics=['accuracy'])
         self.classifier.compile(loss='binary_crossentropy', optimizer='sgd',metrics=['accuracy'])
-        self.classifier.fit(X, y, validation_data=(X_t, y_t), batch_size=self.batch_size, nb_epoch=self.nb_epoch, shuffle=False)
+        self.classifier.fit(X, y, verbose=self.verbose,validation_data=(X_t, y_t), batch_size=self.batch_size, nb_epoch=self.nb_epoch, shuffle=False)
     def predict_proba(self, X):
         X = self.transfer_shape(X)
-        re = self.classifier.predict_proba(X)
+        re = self.classifier.predict_proba(X, verbose=0)
         return re
 def d2tod3(fro, window):
     row = fro.shape[0]

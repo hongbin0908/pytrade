@@ -2,23 +2,16 @@
 # -*- coding: utf-8 -*-
 # @author  Bin Hong
 
-"""
-"""
-
 import sys
 import os
-import platform
-import socket
 import numpy as np
 import pandas as pd
-import pickle
-
 import matplotlib
 matplotlib.use('Agg')
-
 np.random.seed(123)
 import tensorflow as tf
 tf.set_random_seed(123)
+
 local_path = os.path.dirname(__file__)
 root = os.path.join(local_path, '..')
 sys.path.append(root)
@@ -29,26 +22,8 @@ from main.work import score as score_build
 from main.work import bitlize
 from main.work import selected
 from main.work import report
-#from main.work import pred
 from main import base
-from main.work.conf import MltradeConf
-from main.ta import ta_set
-from main.model.spliter import YearSpliter
-from main.model import ana
-from main.model import feat_select
-from main.classifier.tree import MyRandomForestClassifier
-from main.classifier.tree import MyLogisticRegressClassifier
-from main.classifier.tree import RFCv1n2000md6msl100
-from main.classifier.tree import ccl
-from main.classifier.tree import ccl2
 from main.classifier.tree import cnn
-from main.classifier.tree import RFCv1n2000md3msl100
-from main.classifier.tree import RFCv1n2000md2msl100
-from main.classifier.tree import RFCv1n200md2msl100
-from main.classifier.tree import RFCv1n2000md6msl10000
-from main.classifier.tree import MyGradientBoostingClassifier
-from main.classifier.tree import MyBayesClassifier
-from main.classifier.tree import MySGDClassifier
 from main.work.conf import MyConfStableLTa
 from main.work.conf import MyConfForTest
 from main.ta import ta_set
@@ -63,22 +38,14 @@ def get_confs():
         MyConfStableLTa(classifier=cnn(num_filt_1=6, num_filt_2=4), score=score),
         MyConfStableLTa(classifier=cnn(batch_size=1000), score=score),
     ]
+
+def get_test_confs():
+    score = 5
+    return [
+        MyConfForTest()
+    ]
 if __name__ == '__main__':
-
-
-    for confer in get_confs():
-        #confer = MyConfStableLTa(classifier=MySGDClassifier(),score=score)
-        #confer = MyConfStableLTa(ta = ta_set.TaSetSma2(),     classifier=MySGDClassifier(),score=score)
-        #confer = MyConfStableLTa(classifier=MyGradientBoostingClassifier(),score=score)
-        #confer = MyConfStableLTa(classifier = MyLogisticRegressClassifier(max_iter=10), score=score)
-        if base.is_test_flag():
-            confer = MyConfForTest()
-            confer.force = False
-        else:
-            #confer = MyConfStableLTa(classifier=RFCv1n2000md6msl100(),score=score)
-            #confer = MyConfStableLTa(classifier=cnn(),score=score)
-            confer.force = False
-
+    for confer in get_confs() if not base.is_test_flag() else get_test_confs():
         build.work(confer)
         score_build.work(confer)
         bitlize.work(confer)
