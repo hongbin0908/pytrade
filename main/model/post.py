@@ -64,6 +64,7 @@ class Poster:
         df_train_2 = df_train_2.sample(n = len(df_train_1))
         assert(len(df_train_2) == len(df_train_1))
         df_train = pd.concat([df_train_1, df_train_2], axis=0)
+        df_train = df_train.sample(frac=1.0)
         assert(len(df_train) == 2*len(df_train_1))
 
         print("train start : %s train end: %s" % (df_train.sort_values('date').head(1)['date'].values[0],
@@ -77,6 +78,7 @@ class Poster:
         assert(len(df_test_2) == len(df_test_1))
         df_test = pd.concat([df_test_1, df_test_2], axis=0)
         assert(len(df_test) == 2*len(df_test_1))
+        df_test = df_test.sample(frac=1.0, random_state = 1253)
         npTestFeat, npTestLabel = self._extract_feat_label(df_test, score.get_name())
         #self.confer.classifier.fit(npTrainFeat, npTrainLabel, npTestFeat, npTestLabel, npTestFeat, npTestLabel)
         self.confer.classifier.fit(npTrainFeat, npTrainLabel, npTestFeat, npTestLabel)
