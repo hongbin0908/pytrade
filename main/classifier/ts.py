@@ -70,17 +70,18 @@ class Ts(BaseClassifier):
             a_conv1 = tf.contrib.layers.batch_norm(a_conv1,is_training=self.bn_train,updates_collections=None)
             h_conv1 = tf.nn.relu(a_conv1)
 
-        with tf.name_scope("Conv2") as scope:
-            W_conv2 = tf.get_variable("Conv_Layer_2", shape=[4, 1, num_filt_1, num_filt_2],initializer=initializer)
-            b_conv2 = bias_variable([num_filt_2], 'bias_for_Conv_Layer_2')
-            a_conv2 = conv2d(h_conv1, W_conv2) + b_conv2
-        with tf.name_scope('Batch_norm_conv2') as scope:
-            a_conv2 = tf.contrib.layers.batch_norm(a_conv2,is_training=self.bn_train,updates_collections=None)
-            h_conv2 = tf.nn.relu(a_conv2)
+        #with tf.name_scope("Conv2") as scope:
+        #    W_conv2 = tf.get_variable("Conv_Layer_2", shape=[4, 1, num_filt_1, num_filt_2],initializer=initializer)
+        #    b_conv2 = bias_variable([num_filt_2], 'bias_for_Conv_Layer_2')
+        #    a_conv2 = conv2d(h_conv1, W_conv2) + b_conv2
+        #with tf.name_scope('Batch_norm_conv2') as scope:
+        #    a_conv2 = tf.contrib.layers.batch_norm(a_conv2,is_training=self.bn_train,updates_collections=None)
+        #    h_conv2 = tf.nn.relu(a_conv2)
         with tf.name_scope("Fully_Connected1") as scope:
             W_fc1 = tf.get_variable("Fully_Connected_layer_1", shape=[D*num_filt_2, num_fc_1],initializer=initializer)
             b_fc1 = bias_variable([num_fc_1], 'bias_for_Fully_Connected_Layer_1')
-            h_conv3_flat = tf.reshape(h_conv2, [-1, D*num_filt_2])
+            #h_conv3_flat = tf.reshape(h_conv2, [-1, D*num_filt_2])
+            h_conv3_flat = tf.reshape(h_conv1, [-1, D*num_filt_2])
             h_fc1 = tf.nn.relu(tf.matmul(h_conv3_flat, W_fc1) + b_fc1)
         with tf.name_scope("Fully_Connected2") as scope:
             h_fc1_drop = tf.nn.dropout(h_fc1, self.keep_prob)
