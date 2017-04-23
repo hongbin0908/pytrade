@@ -160,6 +160,7 @@ class ccl2(BaseClassifier):
                                  return_sequences = True, kernel_initializer=initializers.glorot_normal(123) ))
         self.classifier.add(Flatten())
         self.classifier.add(Activation('relu'))
+        self.classifier.add(Dropout(0.3, seed=1234))
         self.classifier.add(Dense( output_dim=4, kernel_initializer=initializers.glorot_normal(123)))
         self.classifier.add(Activation('relu'))
         self.classifier.add(Dropout(0.3, seed=123))
