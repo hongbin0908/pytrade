@@ -43,7 +43,7 @@ dropout = 1.0       #Dropout rate in the fully connected layer
 plot_row = 5        #How many rows do you want to plot in the visualization
 learning_rate = 2e-5
 input_norm = False   # Do you want z-score input normalization?
-num_classes = 2
+num_classes = 3
 class Ts(BaseClassifier):
     def __init__(self, max_iterations=2000):
         self.max_iterations = max_iterations
@@ -95,23 +95,24 @@ class Ts(BaseClassifier):
             grads = tf.gradients(self.cost, tvars)
             optimizer = tf.train.AdamOptimizer(learning_rate)
             gradients = zip(grads, tvars)
-            self.train_step = optimizer.apply_gradients(gradients)
+            #self.train_step = optimizer.apply_gradients(gradients)
+            self.train_step = optimizer.minimize(self.cost)
             # The following block plots for every trainable variable
             #  - Histogram of the entries of the Tensor
             #  - Histogram of the gradient over the Tensor
             #  - Histogram of the grradient-norm over the Tensor
-            self.numel = tf.constant([[0]])
-            for gradient, variable in gradients:
-                if isinstance(gradient, ops.IndexedSlices):
-                    grad_values = gradient.values
-                else:
-                    grad_values = gradient
+            #self.numel = tf.constant([[0]])
+            #for gradient, variable in gradients:
+            #    if isinstance(gradient, ops.IndexedSlices):
+            #        grad_values = gradient.values
+            #    else:
+            #        grad_values = gradient
 
-                self.numel +=tf.reduce_sum(tf.size(variable))
+            #    self.numel +=tf.reduce_sum(tf.size(variable))
 
-                h1 = tf.histogram_summary(variable.name, variable)
-                h2 = tf.histogram_summary(variable.name + "/gradients", grad_values)
-                h3 = tf.histogram_summary(variable.name + "/gradient_norm", clip_ops.global_norm([grad_values]))
+            #    h1 = tf.histogram_summary(variable.name, variable)
+            #    h2 = tf.histogram_summary(variable.name + "/gradients", grad_values)
+            #    h3 = tf.histogram_summary(variable.name + "/gradient_norm", clip_ops.global_norm([grad_values]))
         with tf.name_scope("Evaluating_accuracy") as scope:
             correct_prediction = tf.equal(tf.argmax(self.h_fc2,1), self.y_)
             self.accuracy = tf.reduce_mean(tf.cast(correct_prediction, "float"))
@@ -177,11 +178,13 @@ class Ts(BaseClassifier):
                                                      self.keep_prob: dropout,self.bn_train : True})
 
         selected = np.random.choice(X_test.shape[0], int(X_test.shape[0]/10), replace=False)
-        result = self.sess.run([self.accuracy,self.numel],
+        #result = self.sess.run([self.accuracy,self.numel],
+        result = self.sess.run(self.accuracy,
                                feed_dict={ self.x: X_test[selected], self.y_: y_test[selected],
                                            self.keep_prob: 1.0, self.bn_train : False})
-        acc_test = result[0]
-        print('The network has %s trainable parameters'%(result[1]))
+        #acc_test = result[0]
+        acc_test = result
+        #print('The network has %s trainable parameters'%(result[1]))
         print('The accuracy on the test data is %.3f, before training was %.3f' % (acc_test, acc_test_before))
     def predict_proba(self, X):
         return self.sess.run(self.y, feed_dict={self.x: X, self.keep_prob:1.0, self.bn_train:False})
@@ -219,7 +222,8 @@ if __name__ == "__main__":
         y_val -= base
         y_test -= base
 
-    model = Ts(X_train.shape[0], X_train.shape[1], max_iterations=20000)
+    model = Ts( max_iterations=20000)
+    model.init_cnn(X_train.shape[1])
     model.fit(X_train, y_train, X_test, y_test, X_val, y_val)
     model.save(os.path.join(local_path, 'model.ckpt'))
 
