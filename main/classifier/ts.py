@@ -127,7 +127,7 @@ class Ts(BaseClassifier):
         acc_ma = 0.0
 
         self.saver = tf.train.Saver()
-        self.sess = tf.Session(config=tf.ConfigProto( intra_op_parallelism_threads=20))
+        self.sess = tf.Session(config=tf.ConfigProto( intra_op_parallelism_threads=30))
         #self.sess = tf.Session()
         self.writer = tf.summary.FileWriter(os.path.join(local_path, "log_tb"), self.sess.graph_def)
         self.sess.run(tf.initialize_all_variables())
@@ -162,7 +162,7 @@ class Ts(BaseClassifier):
                 #Check training performance
                 print("Check training performance")
                 result = self.sess.run([self.cost,self.accuracy],
-                                       feed_dict = { self.x: X_train, self.y_: y_train,
+                                       feed_dict = { self.x: X_train[100000:], self.y_: y_train[100000:],
                                                      self.keep_prob: 1.0, self.bn_train : False},)
                 self.perf_collect[1,step] = acc_train = result[1]
                 cost_train = result[0]
