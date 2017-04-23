@@ -49,7 +49,7 @@ def get_confs1():
 def get_confs():
     score = 5
     return [
-        MyConfStableLTa(classifier=ccl2(batch_size=64, nb_epoch=2), score=score),
+        MyConfStableLTa(classifier=ccl2(batch_size=32, nb_epoch=2), score=score),
     ]
 def get_test_confs():
     score = 5
