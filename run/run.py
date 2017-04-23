@@ -24,12 +24,18 @@ from main.work import selected
 from main.work import report
 from main import base
 from main.classifier.tree import cnn
+from main.classifier.ts import Ts
 from main.work.conf import MyConfStableLTa
 from main.work.conf import MyConfForTest
 from main.ta import ta_set
 
 
 def get_confs():
+    score = 5
+    return [
+        MyConfStableLTa(classifier=Ts(max_iterations=20000), score=score),
+    ]
+def get_confs2():
     score = 5
     return [
         MyConfStableLTa(classifier=cnn(nb_epoch=5), score=score),
