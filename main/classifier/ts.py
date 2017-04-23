@@ -32,10 +32,10 @@ def print_tvars():
     return
 initializer = tf.contrib.layers.xavier_initializer()
 """Hyperparameters"""
-#num_filt_1 = 16     #Number of filters in first conv layer
-#num_filt_2 = 14      #Number of filters in second conv layer
-num_filt_1 = 6     #Number of filters in first conv layer
-num_filt_2 = 4      #Number of filters in second conv layer
+num_filt_1 = 16     #Number of filters in first conv layer
+num_filt_2 = 14      #Number of filters in second conv layer
+#num_filt_1 = 6     #Number of filters in first conv layer
+#num_filt_2 = 4      #Number of filters in second conv layer
 #num_filt_3 = 8      #Number of filters in thirs conv layer
 num_fc_1 = 40       #Number of neurons in hully connected layer
 batch_size = 64
@@ -133,17 +133,6 @@ class Ts(BaseClassifier):
         self.sess.run(tf.initialize_all_variables())
     def get_name(self):
         return "ts"
-    def batch_run(self, name, X, y, keep_prob, bn_train):
-        cursor = 0
-        while cursor < X.shape[0]:
-            end = cursor + 100000
-            if cursor + 100000 >= X.shape[0]:
-                end = X.shape[0]
-            X_batch = X[cursor:cursor + 100000]
-            y_batch = y[cursor:cursor + 100000]
-            self.sess.run(name, feed_dict={self.X:X_batch, self.y:y_batch, self.keep_prob:keep_prob, self.bn_train:bn_train})
-            cursor = end
-
     def fit(self, X_train, y_train, X_test, y_test, X_val, y_val):
         N = X_train.shape[1]
         step = 0      # Step is a counter for filling the numpy array perf_collect
