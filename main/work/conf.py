@@ -15,7 +15,6 @@ from main.classifier.tree import MyRandomForestClassifier
 from main.classifier.tree import MyLogisticRegressClassifier
 from main.model.spliter import YearSpliter
 from main.classifier.tree import RFCv1n2000md6msl100
-from main.classifier.tree import ccl
 from main.classifier.tree import ccl2
 from main.classifier.tree import cnn
 from main.classifier.ts import Ts
