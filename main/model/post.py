@@ -57,6 +57,14 @@ class Poster:
 
     def _train(self, df_train, df_test, score):
         df_train = df_train.sort_values(["sym", "date"])
+        df_train_1 = df_train[df_train[score.get_name()] == 0]
+        df_train_2 = df_train[df_train[score.get_name()] == 1]
+        assert len(df_train_1) + len(df_train_2) == len(df_train)
+        df_train_2 = df_train_2.sample(n = len(df_train_1))
+        assert(len(df_train_2) == len(df_train_1))
+        df_train = pd.concat([df_train_1, df_train_2], axis=0)
+        assert(len(df_train) == 2*len(df_train_1))
+
         print("train start : %s train end: %s" % (df_train.sort_values('date').head(1)['date'].values[0],
                                                   df_train.sort_values('date').tail(1)['date'].values[0]))
         npTrainFeat, npTrainLabel = self._extract_feat_label(df_train, score.get_name())
