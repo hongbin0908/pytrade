@@ -47,8 +47,9 @@ learning_rate =  2e-5
 #learning_rate =  0.5
 input_norm = False   # Do you want z-score input normalization?
 class Ts(BaseClassifier):
-    def __init__(self, max_iterations=2000):
+    def __init__(self, max_iterations=2000, sample=10):
         self.max_iterations = max_iterations
+        self.sample = sample
     def init_cnn(self, D, num_class):
         self.D = D
         self.num_class = num_class
@@ -147,7 +148,7 @@ class Ts(BaseClassifier):
         for i in range(self.max_iterations):
             if i==0:
                 # Use this line to check before-and-after test accuracy
-                selected = np.random.choice(X_test.shape[0], int(X_test.shape[0]/10), replace=False)
+                selected = np.random.choice(X_test.shape[0], int(X_test.shape[0]/self.sample), replace=False)
                 result = self.sess.run(self.accuracy,
                                        feed_dict={ self.x: X_test[selected], self.y_: y_test[selected],
                                                    self.keep_prob: 1.0, self.bn_train : False},
@@ -157,7 +158,7 @@ class Ts(BaseClassifier):
             if i%200 == 0:
             #if i%1 == 0:
                 #Check training performance
-                selected = np.random.choice(X_train.shape[0], int(X_train.shape[0]/10), replace=False)
+                selected = np.random.choice(X_train.shape[0], int(X_train.shape[0]/self.sample), replace=False)
                 result = self.sess.run([self.cost,self.accuracy],
                                        feed_dict = { self.x: X_train[selected], self.y_: y_train[selected],
                                                      self.keep_prob: 1.0, self.bn_train : False},)
@@ -165,7 +166,7 @@ class Ts(BaseClassifier):
                 cost_train = result[0]
                 #Check validation performance
 
-                selected = np.random.choice(X_val.shape[0], int(X_val.shape[0]/10), replace=False)
+                selected = np.random.choice(X_val.shape[0], int(X_val.shape[0]/self.sample), replace=False)
                 result = self.sess.run([self.accuracy, self.cost, self.merged],
                                        feed_dict={ self.x: X_val[selected], self.y_: y_val[selected],
                                                    self.keep_prob: 1.0, self.bn_train : False})
@@ -185,7 +186,7 @@ class Ts(BaseClassifier):
             self.sess.run(self.train_step,feed_dict={self.x:X_train[batch_ind], self.y_: y_train[batch_ind],
                                                      self.keep_prob: dropout,self.bn_train : True})
 
-        selected = np.random.choice(X_test.shape[0], int(X_test.shape[0]/10), replace=False)
+        selected = np.random.choice(X_test.shape[0], int(X_test.shape[0]/self.sample), replace=False)
         #result = self.sess.run([self.accuracy,self.numel],
         result = self.sess.run(self.accuracy,
                                feed_dict={ self.x: X_test[selected], self.y_: y_test[selected],
@@ -230,7 +231,7 @@ if __name__ == "__main__":
         y_val -= base
         y_test -= base
 
-    model = Ts( max_iterations=20000)
+    model = Ts( max_iterations=20000, sample=1)
     model.init_cnn(X_train.shape[1],3)
     model.fit(X_train, y_train, X_test, y_test, X_val, y_val)
     model.save(os.path.join(local_path, 'model.ckpt'))
