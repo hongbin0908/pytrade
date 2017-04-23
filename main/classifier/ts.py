@@ -135,6 +135,7 @@ class Ts(BaseClassifier):
         N = X_train.shape[1]
         step = 0      # Step is a counter for filling the numpy array perf_collect
         for i in range(self.max_iterations):
+            print("iter #### %d" % i)
             batch_ind = np.random.choice(N,batch_size,replace=False)
             if i==0:
                 # Use this line to check before-and-after test accuracy
