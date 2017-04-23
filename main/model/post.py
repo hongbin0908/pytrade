@@ -94,7 +94,7 @@ class Poster:
         df_all = pd.read_pickle(self.confer.get_sel_file())
         if start != None:
             df_all = df_all[df_all.date >= start]
-        score = self.conf.scores[0]
+        score = self.confer.scores[0]
         df_all_1 = df_all[df_all[score.get_name()] == 0]
         df_all_2 = df_all[df_all[score.get_name()] == 1]
         assert len(df_all_1) + len(df_all_2) == len(df_all)
