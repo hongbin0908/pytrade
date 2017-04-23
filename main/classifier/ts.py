@@ -41,7 +41,8 @@ num_fc_1 = 40       #Number of neurons in hully connected layer
 batch_size = 64
 dropout = 1.0       #Dropout rate in the fully connected layer
 plot_row = 5        #How many rows do you want to plot in the visualization
-learning_rate =  2e-5
+#learning_rate =  2e-5
+learning_rate =  0.5
 input_norm = False   # Do you want z-score input normalization?
 num_classes = 2
 class Ts(BaseClassifier):
@@ -86,6 +87,7 @@ class Ts(BaseClassifier):
             self.h_fc2 = tf.matmul(h_fc1_drop, W_fc2) + b_fc2
             self.y = tf.nn.softmax(self.h_fc2)
         with tf.name_scope("SoftMax") as scope:
+            #loss = tf.nn.sparse_softmax_cross_entropy_with_logits(logits=self.h_fc2, labels=self.y_)
             loss = tf.nn.sparse_softmax_cross_entropy_with_logits(logits=self.h_fc2, labels=self.y_)
             #self.cost = tf.reduce_sum(loss) / batch_size
             self.cost = tf.reduce_mean(loss)
