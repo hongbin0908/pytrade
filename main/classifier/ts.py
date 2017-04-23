@@ -31,9 +31,11 @@ def print_tvars():
     return
 initializer = tf.contrib.layers.xavier_initializer()
 """Hyperparameters"""
-num_filt_1 = 16     #Number of filters in first conv layer
-num_filt_2 = 14      #Number of filters in second conv layer
-num_filt_3 = 8      #Number of filters in thirs conv layer
+#num_filt_1 = 16     #Number of filters in first conv layer
+#num_filt_2 = 14      #Number of filters in second conv layer
+num_filt_1 = 6     #Number of filters in first conv layer
+num_filt_2 = 4      #Number of filters in second conv layer
+#num_filt_3 = 8      #Number of filters in thirs conv layer
 num_fc_1 = 40       #Number of neurons in hully connected layer
 batch_size = 64
 dropout = 1.0       #Dropout rate in the fully connected layer
