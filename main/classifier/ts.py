@@ -135,7 +135,6 @@ class Ts(BaseClassifier):
         N = X_train.shape[1]
         step = 0      # Step is a counter for filling the numpy array perf_collect
         for i in range(self.max_iterations):
-            print("iter #### %d" % i)
             batch_ind = np.random.choice(N,batch_size,replace=False)
             if i==0:
                 # Use this line to check before-and-after test accuracy
@@ -145,14 +144,12 @@ class Ts(BaseClassifier):
                 acc_test_before = result
             if i%200 == 0:
                 #Check training performance
-                print("Check training performance")
                 result = self.sess.run([self.cost,self.accuracy],
                                        feed_dict = { self.x: X_train[0:10000], self.y_: y_train[0:10000],
                                                      self.keep_prob: 1.0, self.bn_train : False})
                 self.perf_collect[1,step] = acc_train = result[1]
                 cost_train = result[0]
                 #Check validation performance
-                print("Check validation performance")
                 result = self.sess.run([self.accuracy, self.cost, self.merged],
                                        feed_dict={ self.x: X_val[0:10000], self.y_: y_val[0:10000],
                                                    self.keep_prob: 1.0, self.bn_train : False})
