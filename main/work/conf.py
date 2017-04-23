@@ -17,6 +17,7 @@ from main.model.spliter import YearSpliter
 from main.classifier.tree import RFCv1n2000md6msl100
 from main.classifier.tree import ccl
 from main.classifier.tree import cnn
+from main.classifier.ts import Ts
 from main.selector.selector import MiSelector
 
 class MltradeConf:
@@ -109,5 +110,6 @@ class MyConfStableLTa(MltradeConf):
 class MyConfForTest(MltradeConf):
     def __init__(self):
         classifier = cnn(batch_size=10000, nb_epoch=1, verbose=0)
+        classifier = Ts(max_iterations=2000)
         model_split=YearSpliter('2010', "2017", "1990", "2010")
         MltradeConf.__init__(self, model_split=model_split, classifier=classifier, n_pool=1, syms=yeod.SymsForTest())

@@ -42,9 +42,9 @@ learning_rate = 2e-5
 input_norm = False   # Do you want z-score input normalization?
 num_classes = 3
 class Ts(BaseClassifier):
-    def __init__(self, N, D, max_iterations=2000):
+    def __init__(self, max_iterations=2000):
         self.max_iterations = max_iterations
-        self.N = N
+    def init_cnn(self, D):
         self.D = D
         self.x = tf.placeholder('float', shape=[None, D], name="Input_data")
         self.y_ = tf.placeholder(tf.int64, shape=[None], name = "Ground_truth")
@@ -119,7 +119,7 @@ class Ts(BaseClassifier):
         # For now, we collect performances in a Numpy array.
         # In future releases, I hope TensorBoard allows for more
         # flexibility in plotting
-        self.perf_collect = np.zeros((3,int(np.floor(max_iterations /100))))
+        self.perf_collect = np.zeros((3,int(np.floor(self.max_iterations /100))))
         cost_ma = 0.0
         acc_ma = 0.0
 
@@ -130,20 +130,27 @@ class Ts(BaseClassifier):
     def get_name(self):
         return "ts"
     def fit(self, X_train, y_train, X_test, y_test, X_val, y_val):
+        N = X_train.shape[1]
         step = 0      # Step is a counter for filling the numpy array perf_collect
         for i in range(self.max_iterations):
-            batch_ind = np.random.choice(self.N,batch_size,replace=False)
+            batch_ind = np.random.choice(N,batch_size,replace=False)
             if i==0:
                 # Use this line to check before-and-after test accuracy
-                result = self.sess.run(self.accuracy, feed_dict={ self.x: X_test, self.y_: y_test, self.keep_prob: 1.0, self.bn_train : False})
+                result = self.sess.run(self.accuracy,
+                                       feed_dict={ self.x: X_test, self.y_: y_test,
+                                                   self.keep_prob: 1.0, self.bn_train : False})
                 acc_test_before = result
             if i%200 == 0:
                 #Check training performance
-                result = self.sess.run([self.cost,self.accuracy],feed_dict = { self.x: X_train, self.y_: y_train, self.keep_prob: 1.0, self.bn_train : False})
+                result = self.sess.run([self.cost,self.accuracy],
+                                       feed_dict = { self.x: X_train, self.y_: y_train,
+                                                     self.keep_prob: 1.0, self.bn_train : False})
                 self.perf_collect[1,step] = acc_train = result[1]
                 cost_train = result[0]
                 #Check validation performance
-                result = self.sess.run([self.accuracy, self.cost, self.merged], feed_dict={ self.x: X_val, self.y_: y_val, self.keep_prob: 1.0, self.bn_train : False})
+                result = self.sess.run([self.accuracy, self.cost, self.merged],
+                                       feed_dict={ self.x: X_val, self.y_: y_val,
+                                                   self.keep_prob: 1.0, self.bn_train : False})
                 self.perf_collect[0,step] = acc_val = result[0]
                 cost_val = result[1]
                 if i == 0: cost_ma = cost_train
@@ -152,13 +159,18 @@ class Ts(BaseClassifier):
                 acc_ma = 0.8*acc_ma + 0.2*acc_train
                 #Write information to TensorBoard
                 self.writer.add_summary(result[2], i)
-                self.writer.flush()  #Don't forget this command! It makes sure Python writes the summaries to the log-file
+                self.writer.flush()
                 step +=1
-                print("At %5.0f/%5.0f Cost: train%5.3f val%5.3f(%5.3f) Acc: train%5.3f val%5.3f(%5.3f) " % (i,self.max_iterations, cost_train,cost_val,cost_ma,acc_train,acc_val,acc_ma))
-            self.sess.run(self.train_step,feed_dict={self.x:X_train[batch_ind], self.y_: y_train[batch_ind], self.keep_prob: dropout,self.bn_train : True})
-        result = self.sess.run([self.accuracy,self.numel], feed_dict={ self.x: X_test, self.y_: y_test, self.keep_prob: 1.0, self.bn_train : False})
+                print("At %5.0f/%5.0f Cost: train%5.3f val%5.3f(%5.3f) Acc: train%5.3f val%5.3f(%5.3f) "
+                      % (i,self.max_iterations, cost_train,cost_val,cost_ma,acc_train,acc_val,acc_ma))
+            self.sess.run(self.train_step,feed_dict={self.x:X_train[batch_ind], self.y_: y_train[batch_ind],
+                                                     self.keep_prob: dropout,self.bn_train : True})
+        result = self.sess.run([self.accuracy,self.numel],
+                               feed_dict={ self.x: X_test, self.y_: y_test,
+                                           self.keep_prob: 1.0, self.bn_train : False})
         acc_test = result[0]
         print('The network has %s trainable parameters'%(result[1]))
+        print('The accuracy on the test data is %.3f, before training was %.3f' % (acc_test, acc_test_before))
     def predict_proba(self, X):
         return self.sess.run(self.y, feed_dict={self.x: X, self.keep_prob:1.0, self.bn_train:False})
     def eval(self, y, y_):
@@ -167,6 +179,8 @@ class Ts(BaseClassifier):
         self.saver.save(self.sess, save_path)
     def load(self, save_path):
         self.saver.restore(self.sess, save_path)
+    def close(self):
+        self.sess.close()
 
 if __name__ == "__main__":
     dataset = "ChlorineConcentration"

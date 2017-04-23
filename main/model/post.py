@@ -33,20 +33,26 @@ class Poster:
         class_dump_file = self.confer.get_classifier_file()
         tmp = token.train.sort_values(["date"])
         is_to_fit = True
+
+        if self.confer.classifier.get_name().startswith("ts"):
+            self.confer.classifier.init_cnn(D=self._extract_feat_label(df_all)[0].shape[1])
         if os.path.exists(class_dump_file) and not self.confer.force:
-            if not self.confer.classifier.get_name().startswith("ccl"):
+            if self.confer.classifier.get_name().startswith('ts'):
+                self.confer.classifier.load(class_dump_file)
+            else:
                 with open(class_dump_file, 'rb') as fin:
                     print("load %s" % class_dump_file)
                     self.confer.classifier = pickle.load(fin)
-            else:
-                self.confer.classifier.classifier = keras.models.load_model(class_dump_file)
+
+                #self.confer.classifier.classifier = keras.models.load_model(class_dump_file)
         else:
             self._train(token.train, token.test, self.confer.scores[0])
-            if not self.confer.classifier.get_name().startswith("ccl"):
+            if self.confer.classifier.get_name().startswith("ts"):
+                self.confer.classifier.save(class_dump_file)
+            else:
                 with open(class_dump_file, 'wb') as fout:
                     pickle.dump(self.confer.classifier, fout, protocol=-1)
-            else:
-                self.confer.classifier.classifier.save(class_dump_file)
+                #self.confer.classifier.classifier.save(class_dump_file)
 
 
     def _train(self, df_train, df_test, score):
@@ -56,7 +62,7 @@ class Poster:
         npTrainFeat, npTrainLabel = self._extract_feat_label(df_train, score.get_name())
         df_test = df_test.sort_values(["sym", "date"])
         npTestFeat, npTestLabel = self._extract_feat_label(df_test, score.get_name())
-        self.confer.classifier.fit(npTrainFeat, npTrainLabel, npTestFeat, npTestLabel)
+        self.confer.classifier.fit(npTrainFeat, npTrainLabel, npTestFeat, npTestLabel, npTestFeat, npTestLabel)
     def _extract_feat_label(self, df, scorename, drop = True):
         if drop:
             df = df.replace([np.inf,-np.inf],np.nan).dropna()
