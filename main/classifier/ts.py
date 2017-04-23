@@ -51,7 +51,7 @@ class Ts(BaseClassifier):
         N = X_train.shape[0]
         D = X_train.shape[1]
         x = tf.placeholder('float', shape=[None, D], name="Input_data")
-        y_ = tf.placeholder(tf.int64, shape=[None], name = "Ground_truth")
+        y_ = tf.placeholder(tf.int64, shape=[None,2], name = "Ground_truth")
         keep_prob = tf.placeholder("float")
         bn_train = tf.placeholder(tf.bool)          #Boolean value to guide batchnorm
         with tf.name_scope("Reshaping_data") as scope:
