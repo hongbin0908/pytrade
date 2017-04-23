@@ -146,9 +146,6 @@ class Ts(BaseClassifier):
             if i%200 == 0:
                 #Check training performance
                 print("Check training performance")
-                result = self.sess.run([self.cost,self.accuracy],
-                                       feed_dict = { self.x: X_train, self.y_: y_train,
-                                                     self.keep_prob: 1.0, self.bn_train : False})
                 self.perf_collect[1,step] = acc_train =  self.sess.run(self.accuracy,
                                        feed_dict = { self.x: X_train, self.y_: y_train,
                                                      self.keep_prob: 1.0, self.bn_train : False})
