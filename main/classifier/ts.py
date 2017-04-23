@@ -93,10 +93,12 @@ class Ts(BaseClassifier):
             self.y = tf.nn.softmax(self.h_fc2)
         with tf.name_scope("SoftMax") as scope:
             #loss = tf.nn.sparse_softmax_cross_entropy_with_logits(logits=self.h_fc2, labels=self.y_)
-            loss = tf.nn.sparse_softmax_cross_entropy_with_logits(logits=self.h_fc2, labels=self.y_)
+            #loss = tf.nn.sparse_softmax_cross_entropy_with_logits(logits=self.h_fc2, labels=self.y_)
             #self.cost = tf.reduce_sum(loss) / batch_size
-            self.cost = tf.reduce_mean(loss)
+            #self.cost = tf.reduce_mean(loss)
+            self.cost= tf.reduce_mean(tf.reduce_sum(-self.y_*tf.log(self.y), reduction_indices=[1]))
             loss_summ = tf.summary.scalar("cross entropy_loss", self.cost)
+
         with tf.name_scope("train") as scope:
             tvars = tf.trainable_variables()
             #We clip the gradients to prevent explosion
@@ -122,7 +124,7 @@ class Ts(BaseClassifier):
             #    h2 = tf.histogram_summary(variable.name + "/gradients", grad_values)
             #    h3 = tf.histogram_summary(variable.name + "/gradient_norm", clip_ops.global_norm([grad_values]))
         with tf.name_scope("Evaluating_accuracy") as scope:
-            correct_prediction = tf.equal(tf.argmax(self.h_fc2,1), self.y_)
+            correct_prediction = tf.equal(tf.argmax(self.y,1), self.y_)
             self.accuracy = tf.reduce_mean(tf.cast(correct_prediction, "float"))
             accuracy_summary = tf.summary.scalar("accuracy", self.accuracy)
         #Define one op to call all summaries

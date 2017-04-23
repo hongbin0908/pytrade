@@ -36,23 +36,24 @@ class Poster:
 
         if self.confer.classifier.get_name().startswith("ts"):
             self.confer.classifier.init_cnn(D=self._extract_feat_label(df_all, self.confer.scores[0].get_name())[0].shape[1], num_class=2)
-        if os.path.exists(class_dump_file+".index") and not self.confer.force:
+        if os.path.exists(class_dump_file) and not self.confer.force:
             if self.confer.classifier.get_name().startswith('ts'):
                 self.confer.classifier.load(class_dump_file)
+            elif self.confer.classifier.get_name().startswith('ccl'):
+                self.confer.classifier.classifier = keras.models.load_model(class_dump_file)
             else:
                 with open(class_dump_file, 'rb') as fin:
                     print("load %s" % class_dump_file)
                     self.confer.classifier = pickle.load(fin)
-
-                #self.confer.classifier.classifier = keras.models.load_model(class_dump_file)
         else:
             self._train(token.train, token.test, self.confer.scores[0])
             if self.confer.classifier.get_name().startswith("ts"):
                 self.confer.classifier.save(class_dump_file)
+            elif self.confer.classifier.get_name().startswith('ccl'):
+                self.confer.classifier.save(class_dump_file)
             else:
                 with open(class_dump_file, 'wb') as fout:
                     pickle.dump(self.confer.classifier, fout, protocol=-1)
-                #self.confer.classifier.classifier.save(class_dump_file)
 
 
     def _train(self, df_train, df_test, score):
