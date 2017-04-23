@@ -5,7 +5,7 @@ x = tf.placeholder(tf.float32, shape=[None, 784])
 y_ = tf.placeholder(tf.float32, shape=[None, 10])
 W = tf.Variable(tf.zeros([784, 10]))
 b = tf.Variable(tf.zeros([10]))
-y = tf.nn.softmax( tf.matmul(x,W) + b)
+y = tf.matmul(x,W) + b
 loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=y, labels=y_))
 train = tf.train.GradientDescentOptimizer(0.5).minimize(loss)
 sess = tf.InteractiveSession()
