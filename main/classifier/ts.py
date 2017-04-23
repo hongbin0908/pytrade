@@ -127,7 +127,7 @@ class Ts(BaseClassifier):
         acc_ma = 0.0
 
         self.saver = tf.train.Saver()
-        self.sess = tf.Session(config=tf.ConfigProto( intra_op_parallelism_threads=30))
+        self.sess = tf.Session(config=tf.ConfigProto( intra_op_parallelism_threads=10))
         #self.sess = tf.Session()
         self.writer = tf.summary.FileWriter(os.path.join(local_path, "log_tb"), self.sess.graph_def)
         self.sess.run(tf.initialize_all_variables())
@@ -148,6 +148,7 @@ class Ts(BaseClassifier):
         N = X_train.shape[1]
         step = 0      # Step is a counter for filling the numpy array perf_collect
         for i in range(self.max_iterations):
+            print("# %d" % i)
             batch_ind = np.random.choice(N,batch_size,replace=False)
             if i==0:
                 # Use this line to check before-and-after test accuracy
