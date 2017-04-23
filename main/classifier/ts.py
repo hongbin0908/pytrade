@@ -32,16 +32,16 @@ def print_tvars():
     return
 initializer = tf.contrib.layers.xavier_initializer()
 """Hyperparameters"""
-num_filt_1 = 16     #Number of filters in first conv layer
-num_filt_2 = 14      #Number of filters in second conv layer
-#num_filt_1 = 6     #Number of filters in first conv layer
-#num_filt_2 = 4      #Number of filters in second conv layer
+#num_filt_1 = 16     #Number of filters in first conv layer
+#num_filt_2 = 14      #Number of filters in second conv layer
+num_filt_1 = 6     #Number of filters in first conv layer
+num_filt_2 = 4      #Number of filters in second conv layer
 #num_filt_3 = 8      #Number of filters in thirs conv layer
 num_fc_1 = 40       #Number of neurons in hully connected layer
 batch_size = 64
 dropout = 1.0       #Dropout rate in the fully connected layer
 plot_row = 5        #How many rows do you want to plot in the visualization
-learning_rate = 2e-5
+learning_rate =  2e-5
 input_norm = False   # Do you want z-score input normalization?
 num_classes = 2
 class Ts(BaseClassifier):
@@ -87,7 +87,8 @@ class Ts(BaseClassifier):
             self.y = tf.nn.softmax(self.h_fc2)
         with tf.name_scope("SoftMax") as scope:
             loss = tf.nn.sparse_softmax_cross_entropy_with_logits(logits=self.h_fc2, labels=self.y_)
-            self.cost = tf.reduce_sum(loss) / batch_size
+            #self.cost = tf.reduce_sum(loss) / batch_size
+            self.cost = tf.reduce_mean(loss)
             loss_summ = tf.summary.scalar("cross entropy_loss", self.cost)
         with tf.name_scope("train") as scope:
             tvars = tf.trainable_variables()
