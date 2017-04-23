@@ -209,7 +209,7 @@ class ccl(BaseClassifier):
         self.classifier.add(Activation('relu'))
         self.classifier.add(Dropout(0.3, seed=7))
         self.classifier.add(Dense(output_dim=4))
-        self.classifier.add(Activation('tanh'))
+        self.classifier.add(Activation('relu'))
         self.classifier.add(Dense(output_dim=1))
         self.classifier.add(Activation('sigmoid'))
         sgd = SGD(lr=0.01)
