@@ -205,7 +205,7 @@ class ccl(BaseClassifier):
         #self.classifier.add(Activation('linear'))
         self.classifier.add(Activation('relu'))
         self.classifier.add(Dense( output_dim=4))
-        self.classifier.add(Activation('linear'))
+        #self.classifier.add(Activation('linear'))
         self.classifier.add(Activation('relu'))
         self.classifier.add(Dropout(0.3, seed=7))
         self.classifier.add(Dense(output_dim=4))
