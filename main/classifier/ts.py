@@ -140,22 +140,21 @@ class Ts(BaseClassifier):
             if i==0:
                 # Use this line to check before-and-after test accuracy
                 result = self.sess.run(self.accuracy,
-                                       feed_dict={ self.x: X_test, self.y_: y_test,
+                                       feed_dict={ self.x: X_test[0:10000], self.y_: y_test[0:10000],
                                                    self.keep_prob: 1.0, self.bn_train : False})
                 acc_test_before = result
             if i%200 == 0:
                 #Check training performance
                 print("Check training performance")
-                self.perf_collect[1,step] = acc_train =  self.sess.run(self.accuracy,
-                                       feed_dict = { self.x: X_train, self.y_: y_train,
+                result = self.sess.run([self.cost,self.accuracy],
+                                       feed_dict = { self.x: X_train[0:10000], self.y_: y_train[0:10000],
                                                      self.keep_prob: 1.0, self.bn_train : False})
-                cost_train =  self.sess.run(self.cost,
-                                       feed_dict = { self.x: X_train, self.y_: y_train,
-                                                     self.keep_prob: 1.0, self.bn_train : False})
+                self.perf_collect[1,step] = acc_train = result[1]
+                cost_train = result[0]
                 #Check validation performance
                 print("Check validation performance")
                 result = self.sess.run([self.accuracy, self.cost, self.merged],
-                                       feed_dict={ self.x: X_val, self.y_: y_val,
+                                       feed_dict={ self.x: X_val[0:10000], self.y_: y_val[0:10000],
                                                    self.keep_prob: 1.0, self.bn_train : False})
                 self.perf_collect[0,step] = acc_val = result[0]
                 cost_val = result[1]
