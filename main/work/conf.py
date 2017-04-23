@@ -95,7 +95,7 @@ class MyConfStableLTa(MltradeConf):
             classifier=RFCv1n2000md6msl100(),
             train_start="1990",
             train_end = "2010",
-            syms=yeod.sp500_snapshot("sp500_snapshot_20091231"),
+            syms=yeod.sp500_snapshot("20091231"),
             score=5
             ):
 
