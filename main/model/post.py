@@ -78,7 +78,8 @@ class Poster:
         df_test = pd.concat([df_test_1, df_test_2], axis=0)
         assert(len(df_test) == 2*len(df_test_1))
         npTestFeat, npTestLabel = self._extract_feat_label(df_test, score.get_name())
-        self.confer.classifier.fit(npTrainFeat, npTrainLabel, npTestFeat, npTestLabel, npTestFeat, npTestLabel)
+        #self.confer.classifier.fit(npTrainFeat, npTrainLabel, npTestFeat, npTestLabel, npTestFeat, npTestLabel)
+        self.confer.classifier.fit(npTrainFeat, npTrainLabel, npTestFeat, npTestLabel)
     def _extract_feat_label(self, df, scorename, drop = True):
         if drop:
             df = df.replace([np.inf,-np.inf],np.nan).dropna()
