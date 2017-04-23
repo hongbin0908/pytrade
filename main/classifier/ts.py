@@ -155,7 +155,8 @@ class Ts(BaseClassifier):
                                        )
 
                 acc_test_before = result
-            if i%200 == 0:
+            #if i%200 == 0:
+            if i%1 == 0:
                 #Check training performance
                 selected = np.random.choice(X_train.shape[0], int(X_train.shape[0]/10), replace=False)
                 result = self.sess.run([self.cost,self.accuracy],
