@@ -149,8 +149,12 @@ class Ts(BaseClassifier):
                 result = self.sess.run([self.cost,self.accuracy],
                                        feed_dict = { self.x: X_train, self.y_: y_train,
                                                      self.keep_prob: 1.0, self.bn_train : False})
-                self.perf_collect[1,step] = acc_train = result[1]
-                cost_train = result[0]
+                self.perf_collect[1,step] = acc_train =  self.sess.run(self.accuracy,
+                                       feed_dict = { self.x: X_train, self.y_: y_train,
+                                                     self.keep_prob: 1.0, self.bn_train : False})
+                cost_train =  self.sess.run(self.cost,
+                                       feed_dict = { self.x: X_train, self.y_: y_train,
+                                                     self.keep_prob: 1.0, self.bn_train : False})
                 #Check validation performance
                 print("Check validation performance")
                 result = self.sess.run([self.accuracy, self.cost, self.merged],
