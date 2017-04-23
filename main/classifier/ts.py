@@ -127,8 +127,8 @@ class Ts(BaseClassifier):
         acc_ma = 0.0
 
         self.saver = tf.train.Saver()
-        self.sess = tf.Session(config=tf.ConfigProto( intra_op_parallelism_threads=10))
-        #self.sess = tf.Session()
+        #self.sess = tf.Session(config=tf.ConfigProto( intra_op_parallelism_threads=10))
+        self.sess = tf.Session()
         self.writer = tf.summary.FileWriter(os.path.join(local_path, "log_tb"), self.sess.graph_def)
         self.sess.run(tf.initialize_all_variables())
     def get_name(self):
@@ -153,8 +153,9 @@ class Ts(BaseClassifier):
             if i==0:
                 # Use this line to check before-and-after test accuracy
                 print("Check before")
+                selected = np.random.choice(X_test.shape[0], int(X_test.shape[0]/10), replace=False)
                 result = self.sess.run(self.accuracy,
-                                       feed_dict={ self.x: X_test, self.y_: y_test,
+                                       feed_dict={ self.x: X_test[selected], self.y_: y_test[selected],
                                                    self.keep_prob: 1.0, self.bn_train : False},
                                        )
 
@@ -162,15 +163,18 @@ class Ts(BaseClassifier):
             if i%200 == 0:
                 #Check training performance
                 print("Check training performance")
+                selected = np.random.choice(X_train.shape[0], int(X_train.shape[0]/10), replace=False)
                 result = self.sess.run([self.cost,self.accuracy],
-                                       feed_dict = { self.x: X_train[100000:], self.y_: y_train[100000:],
+                                       feed_dict = { self.x: X_train[selected], self.y_: y_train[selected],
                                                      self.keep_prob: 1.0, self.bn_train : False},)
                 self.perf_collect[1,step] = acc_train = result[1]
                 cost_train = result[0]
                 #Check validation performance
                 print("Check validation performance")
+
+                selected = np.random.choice(X_val.shape[0], int(X_val.shape[0]/10), replace=False)
                 result = self.sess.run([self.accuracy, self.cost, self.merged],
-                                       feed_dict={ self.x: X_val, self.y_: y_val,
+                                       feed_dict={ self.x: X_val[selected], self.y_: y_val[selected],
                                                    self.keep_prob: 1.0, self.bn_train : False})
                 self.perf_collect[0,step] = acc_val = result[0]
                 cost_val = result[1]
@@ -187,8 +191,9 @@ class Ts(BaseClassifier):
             self.sess.run(self.train_step,feed_dict={self.x:X_train[batch_ind], self.y_: y_train[batch_ind],
                                                      self.keep_prob: dropout,self.bn_train : True})
 
+        selected = np.random.choice(X_test.shape[0], int(X_test.shape[0]/10), replace=False)
         result = self.sess.run([self.accuracy,self.numel],
-                               feed_dict={ self.x: X_test, self.y_: y_test,
+                               feed_dict={ self.x: X_test[selected], self.y_: y_test[selected],
                                            self.keep_prob: 1.0, self.bn_train : False})
         acc_test = result[0]
         print('The network has %s trainable parameters'%(result[1]))
