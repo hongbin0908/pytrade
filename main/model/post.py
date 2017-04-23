@@ -36,7 +36,7 @@ class Poster:
 
         if self.confer.classifier.get_name().startswith("ts"):
             self.confer.classifier.init_cnn(D=self._extract_feat_label(df_all, self.confer.scores[0].get_name())[0].shape[1])
-        if os.path.exists(class_dump_file) and not self.confer.force:
+        if os.path.exists(class_dump_file+".index") and not self.confer.force:
             if self.confer.classifier.get_name().startswith('ts'):
                 self.confer.classifier.load(class_dump_file)
             else:
