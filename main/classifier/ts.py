@@ -131,6 +131,18 @@ class Ts(BaseClassifier):
         self.sess.run(tf.initialize_all_variables())
     def get_name(self):
         return "ts"
+    def batch_run(self, name, X, y, keep_prob, bn_train):
+        cursor = 0
+        result =
+        while cursor < X.shape[0]:
+            end = cursor + 100000
+            if cursor + 100000 >= X.shape[0]:
+                end = X.shape[0]
+            X_batch = X[cursor:cursor + 100000]
+            y_batch = y[cursor:cursor + 100000]
+            self.sess.run(name, feed_dict={self.X:X_batch, self.y:y_batch, self.keep_prob:keep_prob, self.bn_train:bn_train})
+            cursor = end
+
     def fit(self, X_train, y_train, X_test, y_test, X_val, y_val):
         N = X_train.shape[1]
         step = 0      # Step is a counter for filling the numpy array perf_collect
@@ -139,19 +151,20 @@ class Ts(BaseClassifier):
             if i==0:
                 # Use this line to check before-and-after test accuracy
                 result = self.sess.run(self.accuracy,
-                                       feed_dict={ self.x: X_test[0:10000], self.y_: y_test[0:10000],
+                                       feed_dict={ self.x: X_test, self.y_: y_test,
                                                    self.keep_prob: 1.0, self.bn_train : False})
+
                 acc_test_before = result
             if i%200 == 0:
                 #Check training performance
                 result = self.sess.run([self.cost,self.accuracy],
-                                       feed_dict = { self.x: X_train[0:10000], self.y_: y_train[0:10000],
+                                       feed_dict = { self.x: X_train[100000:], self.y_: y_train[100000:],
                                                      self.keep_prob: 1.0, self.bn_train : False})
                 self.perf_collect[1,step] = acc_train = result[1]
                 cost_train = result[0]
                 #Check validation performance
                 result = self.sess.run([self.accuracy, self.cost, self.merged],
-                                       feed_dict={ self.x: X_val[0:10000], self.y_: y_val[0:10000],
+                                       feed_dict={ self.x: X_val, self.y_: y_val,
                                                    self.keep_prob: 1.0, self.bn_train : False})
                 self.perf_collect[0,step] = acc_val = result[0]
                 cost_val = result[1]
