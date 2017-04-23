@@ -41,8 +41,8 @@ num_fc_1 = 40       #Number of neurons in hully connected layer
 batch_size = 64
 dropout = 1.0       #Dropout rate in the fully connected layer
 plot_row = 5        #How many rows do you want to plot in the visualization
-#learning_rate =  2e-5
-learning_rate =  0.5
+learning_rate =  2e-5
+#learning_rate =  0.5
 input_norm = False   # Do you want z-score input normalization?
 num_classes = 2
 class Ts(BaseClassifier):

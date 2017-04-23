@@ -81,6 +81,7 @@ class Poster:
         #df_all = df_all.iloc[2-1:]
         df_all["pred"] = np_pred[:, 1]
         df_all = df_all.sample(frac=1.0)
+        df_all = df_all[df_all.date >= "2010-01-01"]
         return df_all.sort_values("pred", ascending=False)
 
     #def _mean(self, posts):
