@@ -69,6 +69,13 @@ class Poster:
                                                   df_train.sort_values('date').tail(1)['date'].values[0]))
         npTrainFeat, npTrainLabel = self._extract_feat_label(df_train, score.get_name())
         df_test = df_test.sort_values(["sym", "date"])
+        df_test_1 = df_test[df_test[score.get_name()] == 0]
+        df_test_2 = df_test[df_test[score.get_name()] == 1]
+        assert len(df_test_1) + len(df_test_2) == len(df_test)
+        df_test_2 = df_test_2.sample(n = len(df_test_1))
+        assert(len(df_test_2) == len(df_test_1))
+        df_test = pd.concat([df_test_1, df_test_2], axis=0)
+        assert(len(df_test) == 2*len(df_test_1))
         npTestFeat, npTestLabel = self._extract_feat_label(df_test, score.get_name())
         self.confer.classifier.fit(npTrainFeat, npTrainLabel, npTestFeat, npTestLabel, npTestFeat, npTestLabel)
     def _extract_feat_label(self, df, scorename, drop = True):
