@@ -126,14 +126,13 @@ class Ts(BaseClassifier):
         acc_ma = 0.0
 
         self.saver = tf.train.Saver()
-        self.sess = tf.Session()
+        self.sess = tf.Session(config=tf.ConfigProto( intra_op_parallelism_threads=1))
         self.writer = tf.summary.FileWriter(os.path.join(local_path, "log_tb"), self.sess.graph_def)
         self.sess.run(tf.initialize_all_variables())
     def get_name(self):
         return "ts"
     def batch_run(self, name, X, y, keep_prob, bn_train):
         cursor = 0
-        result =
         while cursor < X.shape[0]:
             end = cursor + 100000
             if cursor + 100000 >= X.shape[0]:
