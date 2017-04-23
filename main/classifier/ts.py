@@ -145,12 +145,14 @@ class Ts(BaseClassifier):
                 acc_test_before = result
             if i%200 == 0:
                 #Check training performance
+                print("Check training performance")
                 result = self.sess.run([self.cost,self.accuracy],
                                        feed_dict = { self.x: X_train, self.y_: y_train,
                                                      self.keep_prob: 1.0, self.bn_train : False})
                 self.perf_collect[1,step] = acc_train = result[1]
                 cost_train = result[0]
                 #Check validation performance
+                print("Check validation performance")
                 result = self.sess.run([self.accuracy, self.cost, self.merged],
                                        feed_dict={ self.x: X_val, self.y_: y_val,
                                                    self.keep_prob: 1.0, self.bn_train : False})
@@ -168,6 +170,7 @@ class Ts(BaseClassifier):
                       % (i,self.max_iterations, cost_train,cost_val,cost_ma,acc_train,acc_val,acc_ma))
             self.sess.run(self.train_step,feed_dict={self.x:X_train[batch_ind], self.y_: y_train[batch_ind],
                                                      self.keep_prob: dropout,self.bn_train : True})
+
         result = self.sess.run([self.accuracy,self.numel],
                                feed_dict={ self.x: X_test, self.y_: y_test,
                                            self.keep_prob: 1.0, self.bn_train : False})
