@@ -126,7 +126,8 @@ class Ts(BaseClassifier):
         acc_ma = 0.0
 
         self.saver = tf.train.Saver()
-        self.sess = tf.Session(config=tf.ConfigProto( intra_op_parallelism_threads=1))
+        #self.sess = tf.Session(config=tf.ConfigProto( intra_op_parallelism_threads=1))
+        self.sess = tf.Session()
         self.writer = tf.summary.FileWriter(os.path.join(local_path, "log_tb"), self.sess.graph_def)
         self.sess.run(tf.initialize_all_variables())
     def get_name(self):
@@ -149,19 +150,24 @@ class Ts(BaseClassifier):
             batch_ind = np.random.choice(N,batch_size,replace=False)
             if i==0:
                 # Use this line to check before-and-after test accuracy
+                print("Check before")
                 result = self.sess.run(self.accuracy,
                                        feed_dict={ self.x: X_test, self.y_: y_test,
-                                                   self.keep_prob: 1.0, self.bn_train : False})
+                                                   self.keep_prob: 1.0, self.bn_train : False},
+                                       )
 
                 acc_test_before = result
             if i%200 == 0:
                 #Check training performance
+                print("Check training performance")
                 result = self.sess.run([self.cost,self.accuracy],
                                        feed_dict = { self.x: X_train, self.y_: y_train,
-                                                     self.keep_prob: 1.0, self.bn_train : False})
+                                                     self.keep_prob: 1.0, self.bn_train : False},
+                                       options=tf.RunOptions(inter_op_thread_pool=1))
                 self.perf_collect[1,step] = acc_train = result[1]
                 cost_train = result[0]
                 #Check validation performance
+                print("Check validation performance")
                 result = self.sess.run([self.accuracy, self.cost, self.merged],
                                        feed_dict={ self.x: X_val, self.y_: y_val,
                                                    self.keep_prob: 1.0, self.bn_train : False})
