@@ -43,7 +43,7 @@ dropout = 1.0       #Dropout rate in the fully connected layer
 plot_row = 5        #How many rows do you want to plot in the visualization
 learning_rate = 2e-5
 input_norm = False   # Do you want z-score input normalization?
-num_classes = 3
+num_classes = 2
 class Ts(BaseClassifier):
     def __init__(self, max_iterations=2000):
         self.max_iterations = max_iterations
