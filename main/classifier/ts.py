@@ -44,12 +44,12 @@ plot_row = 5        #How many rows do you want to plot in the visualization
 learning_rate =  2e-5
 #learning_rate =  0.5
 input_norm = False   # Do you want z-score input normalization?
-num_classes = 2
 class Ts(BaseClassifier):
     def __init__(self, max_iterations=2000):
         self.max_iterations = max_iterations
-    def init_cnn(self, D):
+    def init_cnn(self, D, num_class):
         self.D = D
+        self.num_class = num_class
         self.x = tf.placeholder('float', shape=[None, D], name="Input_data")
         self.y_ = tf.placeholder(tf.int64, shape=[None], name = "Ground_truth")
         self.keep_prob = tf.placeholder("float")
@@ -82,8 +82,8 @@ class Ts(BaseClassifier):
             h_fc1 = tf.nn.relu(tf.matmul(h_conv3_flat, W_fc1) + b_fc1)
         with tf.name_scope("Fully_Connected2") as scope:
             h_fc1_drop = tf.nn.dropout(h_fc1, self.keep_prob)
-            W_fc2 = tf.get_variable("W_fc2", shape=[num_fc_1, num_classes],initializer=initializer)
-            b_fc2 = tf.Variable(tf.constant(0.1, shape=[num_classes]),name = 'b_fc2')
+            W_fc2 = tf.get_variable("W_fc2", shape=[num_fc_1, self.num_class],initializer=initializer)
+            b_fc2 = tf.Variable(tf.constant(0.1, shape=[self.num_class]),name = 'b_fc2')
             self.h_fc2 = tf.matmul(h_fc1_drop, W_fc2) + b_fc2
             self.y = tf.nn.softmax(self.h_fc2)
         with tf.name_scope("SoftMax") as scope:
@@ -226,7 +226,7 @@ if __name__ == "__main__":
         y_test -= base
 
     model = Ts( max_iterations=20000)
-    model.init_cnn(X_train.shape[1])
+    model.init_cnn(X_train.shape[1],3)
     model.fit(X_train, y_train, X_test, y_test, X_val, y_val)
     model.save(os.path.join(local_path, 'model.ckpt'))
 
