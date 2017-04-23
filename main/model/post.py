@@ -94,6 +94,15 @@ class Poster:
         df_all = pd.read_pickle(self.confer.get_sel_file())
         if start != None:
             df_all = df_all[df_all.date >= start]
+        score = self.conf.scores[0]
+        df_all_1 = df_all[df_all[score.get_name()] == 0]
+        df_all_2 = df_all[df_all[score.get_name()] == 1]
+        assert len(df_all_1) + len(df_all_2) == len(df_all)
+        df_all_2 = df_all_2.sample(n = len(df_all_1))
+        assert(len(df_all_2) == len(df_all_1))
+        df_all = pd.concat([df_all_1, df_all_2], axis=0)
+        assert(len(df_all) == 2*len(df_all_1))
+        df_all = df_all.sample(frac=1.0, random_state = 1253)
         feat_names = base.get_feat_names(df_all)
         np_feat = df_all.loc[:, feat_names].values
         np_pred = self.confer.classifier.predict_proba(np_feat)
