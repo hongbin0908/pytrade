@@ -58,9 +58,13 @@ class Poster:
 
     def _train(self, df_train, df_test, score):
         df_train = df_train.sort_values(["sym", "date"])
+
         df_train_1 = df_train[df_train[score.get_name()] == 0]
+        df_train_1 = df_train_1.sort_values([self.confer.scores[1].get_name()], ascending=True).head(int(len(df_train_1)/3))
+        print(df_train_1.head()[[self.confer.scores[1].get_name()]])
         df_train_2 = df_train[df_train[score.get_name()] == 1]
-        assert len(df_train_1) + len(df_train_2) == len(df_train)
+        df_train_2 = df_train_2.sort_values([self.confer.scores[1].get_name()], ascending=False).head(int(len(df_train_2)/3))
+        print(df_train_2.head()[[self.confer.scores[1].get_name()]])
         df_train_2 = df_train_2.sample(n = len(df_train_1))
         assert(len(df_train_2) == len(df_train_1))
         df_train = pd.concat([df_train_1, df_train_2], axis=0)
