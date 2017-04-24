@@ -46,10 +46,14 @@ def get_confs1():
         MyConfStableLTa(classifier=cnn(batch_size=1000), score=score),
     ]
 
-def get_confs():
+def get_confs2():
     score = 5
     return [
         MyConfStableLTa(classifier=ccl2(batch_size=32, nb_epoch=10), score=score),
+    ]
+def get_confs():
+    score = 5
+    return [
         MyConfStableLTa(classifier=ccl2(batch_size=32, nb_epoch=20), score=score),
     ]
 def get_test_confs():

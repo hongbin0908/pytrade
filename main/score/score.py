@@ -25,19 +25,16 @@ class ScoreRelative(BaseScore):
             df.loc[:,"close2"] = df.loc[:,"close"]
         df.loc[:, "close_shift"] = df["close2"].shift(-1 * self.interval)
         df.loc[:, self.get_name()] = df["close_shift"]/df["close2"]
-        df["close_shift"]
+        del df["close_shift"]
         return df
 
-local_path = os.path.dirname(__file__)
-root = os.path.join(local_path, '..')
-sys.path.append(root)
-import pandas as pd
-
-df = pd.read_csv(os.path.join(local_path, "..", "..", 'data', 'yeod', 'sp500_snapshot_20091231', 'IVZ.csv'))
-
-
-df = ScoreRelative(5).agn_score(df)
-print(df[df.date == '1996-07-11'])
+#local_path = os.path.dirname(__file__)
+#root = os.path.join(local_path, '..')
+#sys.path.append(root)
+#import pandas as pd
+#
+#df = pd.read_csv(os.path.join(local_path, "..", "..", 'data', 'yeod', 'sp500_snapshot_20091231', 'IVZ.csv'))
+#df = ScoreRelative(5).agn_score(df)
 
 class ScoreRelativeOpen(BaseScore):
     def __init__(self, interval):
