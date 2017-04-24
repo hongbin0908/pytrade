@@ -60,10 +60,10 @@ class Poster:
         df_train = df_train.sort_values(["sym", "date"])
 
         df_train_1 = df_train[df_train[score.get_name()] == 0]
-        df_train_1 = df_train_1.sort_values([self.confer.scores[1].get_name()], ascending=True).head(int(len(df_train_1)/3*2)).tail(len(df_train_1)/3)
+        df_train_1 = df_train_1.sort_values([self.confer.scores[1].get_name()], ascending=True).head(int(len(df_train_1)/3*2)).tail(int(len(df_train_1))/3)
         print(df_train_1.head()[[self.confer.scores[1].get_name()]])
         df_train_2 = df_train[df_train[score.get_name()] == 1]
-        df_train_2 = df_train_2.sort_values([self.confer.scores[1].get_name()], ascending=False).head(int(len(df_train_2)/3*2)).tail(len(df_train_2)/3)
+        df_train_2 = df_train_2.sort_values([self.confer.scores[1].get_name()], ascending=False).head(int(len(df_train_2)/3*2)).tail(int(len(df_train_2))/3)
         print(df_train_2.head()[[self.confer.scores[1].get_name()]])
         df_train_2 = df_train_2.sample(n = len(df_train_1))
         assert(len(df_train_2) == len(df_train_1))
