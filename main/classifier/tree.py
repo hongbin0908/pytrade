@@ -182,6 +182,12 @@ class ccl2(BaseClassifier):
         re = np.hstack([1-re, re])
         return re
 
+    def save(self, save_path):
+        self.classifier.save(save_path)
+
+    def load(self, save_path):
+        self.classifier = keras.models.load_model(save_path)
+
 class MyLogisticRegressClassifier(BaseClassifier):
     """
     http://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html
