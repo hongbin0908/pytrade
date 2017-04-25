@@ -66,7 +66,7 @@ if __name__ == '__main__':
 
     from optparse import OptionParser
     parser = OptionParser()
-    parser.add_option('-f', '--force', action='store_false', dest='force', help = 'do not use any tmp file')
+    parser.add_option('-f', '--force', action='store_true',default = False, dest='force', help = 'do not use any tmp file')
     (options, args)  = parser.parse_args()
 
     for confer in get_confs() if not base.is_test_flag() else get_test_confs():
