@@ -93,7 +93,8 @@ class MltradeConf:
 class MyConfStableLTa(MltradeConf):
     def __init__(self, ta = ta_set.TaSetBase1Ext4(),
             classifier=RFCv1n2000md6msl100(),
-            train_start="1990",
+            #train_start="1990",
+            train_start="2000",
             train_end = "2010",
             syms=yeod.sp500_snapshot("sp500_snapshot_20091231"),
             score=5
