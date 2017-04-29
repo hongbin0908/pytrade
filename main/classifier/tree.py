@@ -173,9 +173,9 @@ class ccl2(BaseClassifier):
         self.classifier.add(Dense(output_dim=1, kernel_initializer=initializers.glorot_normal(123)))
         self.classifier.add(Activation('sigmoid'))
         sgd = SGD(lr=0.01)
-        opt = Adam(lr=2e-5)
-        opt = RMSprop(lr=4e-3)
-        opt = Adadelta()
+        opt = Adam(lr=4e-5)
+        #opt = RMSprop(lr=4e-3)
+        #opt = Adadelta()
 
         self.classifier.compile(loss='binary_crossentropy', optimizer=opt, metrics=['accuracy'])
         self.classifier.fit(X, y, validation_data=(X_t, y_t), batch_size=self.batch_size, nb_epoch=self.nb_epoch)
