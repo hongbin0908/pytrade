@@ -8,7 +8,7 @@ from keras.layers import Flatten, Activation, Dense, Dropout
 from keras.layers import LSTM
 from keras.layers import Conv2D, MaxPooling2D, BatchNormalization, Reshape
 from keras.models import Sequential
-from keras.optimizers import SGD, Adam
+from keras.optimizers import SGD, Adam, RMSprop
 from keras import initializers
 from main.classifier.base_classifier import BaseClassifier
 from sklearn.ensemble.forest import RandomForestClassifier
@@ -173,7 +173,7 @@ class ccl2(BaseClassifier):
         self.classifier.add(Activation('sigmoid'))
         sgd = SGD(lr=0.01)
         opt = Adam(lr=2e-5)
-        opt = Adam(lr=1e-5)
+        opt = RMSprop()
 
         self.classifier.compile(loss='binary_crossentropy', optimizer=opt, metrics=['accuracy'])
         self.classifier.fit(X, y, validation_data=(X_t, y_t), batch_size=self.batch_size, nb_epoch=self.nb_epoch)
