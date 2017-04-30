@@ -76,11 +76,11 @@ class Logit(BaseClassifier):
     def get_name(self):
         return "ccl-logit-%d-%d" % (self.nb_epoch, self.batch_size)
     def fit(self, X, y, X_t, y_t):
-        self.classifier.add(Dense(input_dim=X.shape[1], output_dim=32))
+        self.classifier.add(Dense(input_dim=X.shape[1], output_dim=8))
         self.classifier.add(Activation('relu'))
         self.classifier.add(Dropout(0.5))
-        for i in range(2):
-            self.classifier.add(Dense(output_dim=32))
+        for i in range(1):
+            self.classifier.add(Dense(output_dim=8))
             self.classifier.add(Activation('relu'))
             self.classifier.add(Dropout(0.5))
 
