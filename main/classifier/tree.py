@@ -189,6 +189,7 @@ class ccl2(BaseClassifier):
         self.classifier.add(Activation('sigmoid'))
         sgd = SGD(lr=0.01)
         opt = Adam(lr=4e-5)
+        opt = Adam()
         #opt = RMSprop(lr=4e-3)
         #opt = Adadelta()
 
