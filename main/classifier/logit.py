@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 #@author  Bin Hong
 import numpy as np
+import pandas as pd
 
 import keras
 from keras.layers import Flatten, Activation, Dense, Dropout, K
@@ -58,12 +59,38 @@ def top_accuracy(y_true, y_pred):
     K.in_top_k(y_pred, y_true)
     return K.mean(K.equal(y_true, K.round(y_pred)), axis=-1)
 
-def threshold_binary_accuracy(y_true, y_pred):
-    threshold = 0.54
-    if K.backend() == 'tensorflow':
-        return K.mean(K.equal(y_true, K.tf.cast(K.lesser(y_pred,threshold), y_true.dtype)))
-    else:
-        return K.mean(K.equal(y_true, K.lesser(y_pred,threshold)))
+from sklearn.metrics import roc_auc_score
+from keras.callbacks import Callback
+
+class IntervalAcc(Callback):
+    def __init__(self, cls, validation_data=(), interval=10):
+        super(Callback, self).__init__()
+        self.interval = interval
+        self.cls = cls
+        self.X_val, self.y_val = validation_data
+
+    def on_epoch_end(self, epoch, logs={}):
+        if epoch % self.interval == 0:
+            y_pred = self.cls.predict_proba(self.X_val)
+            print(y_pred.shape)
+            print(len(y_pred[:,1]), len(self.X_val), len(self.y_val))
+            df = pd.DataFrame({"pred": y_pred[:,1], "val": self.y_val})
+            df.sort_values(["pred"], ascending=False, inplace=True)
+            df = df.head(1000)
+            score = len(df[df.val == 1])/len(df)
+            print("interval evaluation - epoch: {:d} - threshold: {:.6f} - score: {:.6f}".format(epoch, float(df.tail(1)["pred"].values), score))
+class IntervalAuc(Callback):
+    def __init__(self, validation_data=(), interval=10):
+        super(Callback, self).__init__()
+
+        self.interval = interval
+        self.X_val, self.y_val = validation_data
+
+    def on_epoch_end(self, epoch, logs={}):
+        if epoch % self.interval == 0:
+            y_pred = self.model.predict_proba(self.X_val, verbose=0)
+            score = roc_auc_score(self.y_val, y_pred)
+            print("interval evaluation - epoch: {:d} - score: {:.6f}".format(epoch, score))
 
 class Logit(BaseClassifier):
     def __init__(self, batch_size = 100, nb_epoch=30, verbose = 1):
@@ -92,9 +119,10 @@ class Logit(BaseClassifier):
         #opt = RMSprop(lr=4e-3)
         #opt = Adadelta()
         from keras.metrics import top_k_categorical_accuracy
-        self.classifier.compile(loss='binary_crossentropy', optimizer=opt, metrics=['accuracy', threshold_binary_accuracy])
+        self.classifier.compile(loss='binary_crossentropy', optimizer=opt, metrics=['accuracy'])
         #self.classifier.compile(loss='mean_squared_error', optimizer=opt, metrics=['accuracy'])
-        self.classifier.fit(X, y, validation_data=(X_t, y_t), batch_size=self.batch_size, nb_epoch=self.nb_epoch)
+        ival = IntervalAcc(cls = self, validation_data=(X_t, y_t), interval=1)
+        self.classifier.fit(X, y, validation_data=(X_t, y_t), batch_size=self.batch_size, nb_epoch=self.nb_epoch, callbacks=[ival])
     def predict_proba(self, X):
         re = self.classifier.predict_proba(X)
         re = np.hstack([1-re, re])
