@@ -103,7 +103,7 @@ class IntervalAuc(Callback):
         if epoch % self.interval == 0:
             y_pred = self.model.predict_proba(self.X_val, verbose=0)
             score = roc_auc_score(self.y_val, y_pred)
-            print("interval evaluation - epoch: {:d} - score: {:.6f}".format(epoch, score))
+            print("\ninterval evaluation - epoch: {:d} - score: {:.6f}".format(epoch, score))
 
 class Logit(BaseClassifier):
     def __init__(self, batch_size = 100, nb_epoch=20, verbose = 1):
@@ -128,7 +128,7 @@ class Logit(BaseClassifier):
         self.classifier.add(Activation('sigmoid'))
         sgd = SGD(lr=0.01)
         opt = Adam(lr=4e-5)
-        opt = keras.optimizers.Adadelta()
+        #opt = keras.optimizers.Adadelta()
         #opt = RMSprop(lr=4e-3)
         #opt = Adadelta()
         from keras.metrics import top_k_categorical_accuracy
