@@ -54,10 +54,10 @@ sys.path.append(root)
 from keras import backend as K
 import tensorflow as tf
 
-config = tf.ConfigProto(intra_op_parallelism_threads=1, \
-                        inter_op_parallelism_threads=1, \
+config = tf.ConfigProto(intra_op_parallelism_threads=30, \
+                        inter_op_parallelism_threads=30, \
                         allow_soft_placement=True, \
-                        device_count = {'CPU': 1})
+                        device_count = {'CPU': 30})
 session = tf.Session(config=config)
 K.set_session(session)
 
