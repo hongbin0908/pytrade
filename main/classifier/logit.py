@@ -58,6 +58,13 @@ def top_accuracy(y_true, y_pred):
     K.in_top_k(y_pred, y_true)
     return K.mean(K.equal(y_true, K.round(y_pred)), axis=-1)
 
+def threshold_binary_accuracy(y_true, y_pred):
+    threshold = 0.54
+    if K.backend() == 'tensorflow':
+        return K.mean(K.equal(y_true, K.tf.cast(K.lesser(y_pred,threshold), y_true.dtype)))
+    else:
+        return K.mean(K.equal(y_true, K.lesser(y_pred,threshold)))
+
 class Logit(BaseClassifier):
     def __init__(self, batch_size = 100, nb_epoch=30, verbose = 1):
         model = Sequential()
@@ -85,7 +92,7 @@ class Logit(BaseClassifier):
         #opt = RMSprop(lr=4e-3)
         #opt = Adadelta()
         from keras.metrics import top_k_categorical_accuracy
-        self.classifier.compile(loss='binary_crossentropy', optimizer=opt, metrics=['accuracy'])
+        self.classifier.compile(loss='binary_crossentropy', optimizer=opt, metrics=['accuracy', threshold_binary_accuracy])
         #self.classifier.compile(loss='mean_squared_error', optimizer=opt, metrics=['accuracy'])
         self.classifier.fit(X, y, validation_data=(X_t, y_t), batch_size=self.batch_size, nb_epoch=self.nb_epoch)
     def predict_proba(self, X):
