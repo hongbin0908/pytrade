@@ -72,6 +72,11 @@ class Logit(BaseClassifier):
         self.classifier.add(Dense(input_dim=X.shape[1], output_dim=32))
         self.classifier.add(Activation('relu'))
         self.classifier.add(Dropout(0.5))
+        for i in range(2):
+            self.classifier.add(Dense(output_dim=32))
+            self.classifier.add(Activation('relu'))
+            self.classifier.add(Dropout(0.5))
+
         self.classifier.add(Dense(output_dim=1))
         self.classifier.add(Activation('sigmoid'))
         sgd = SGD(lr=0.01)
@@ -79,6 +84,7 @@ class Logit(BaseClassifier):
         opt = Adam()
         #opt = RMSprop(lr=4e-3)
         #opt = Adadelta()
+        from keras.metrics import top_k_categorical_accuracy
         self.classifier.compile(loss='binary_crossentropy', optimizer=opt, metrics=['accuracy'])
         #self.classifier.compile(loss='mean_squared_error', optimizer=opt, metrics=['accuracy'])
         self.classifier.fit(X, y, validation_data=(X_t, y_t), batch_size=self.batch_size, nb_epoch=self.nb_epoch)

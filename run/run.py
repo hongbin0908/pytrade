@@ -30,6 +30,7 @@ from main.classifier.logit import Logit
 from main.work.conf import MyConfStableLTa
 from main.work.conf import MyConfForTest
 from main.ta import ta_set
+from keras.metrics import top_k_categorical_accuracy
 
 
 def get_confs2():
