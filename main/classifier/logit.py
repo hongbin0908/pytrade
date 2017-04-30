@@ -69,7 +69,8 @@ class Logit(BaseClassifier):
         opt = Adam()
         #opt = RMSprop(lr=4e-3)
         #opt = Adadelta()
-        self.classifier.compile(loss='binary_crossentropy', optimizer=opt, metrics=['accuracy'])
+        #self.classifier.compile(loss='binary_crossentropy', optimizer=opt, metrics=['accuracy'])
+        self.classifier.compile(loss='mean_squared_error', optimizer=opt, metrics=['accuracy'])
         self.classifier.fit(X, y, validation_data=(X_t, y_t), batch_size=self.batch_size, nb_epoch=self.nb_epoch)
     def predict_proba(self, X):
         re = self.classifier.predict_proba(X)
