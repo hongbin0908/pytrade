@@ -83,8 +83,12 @@ class IntervalAcc(Callback):
             score2 = len(df2[df2.val == 1])/len(df2)
             threshold2 = df2.tail(1)["pred"].values
             dfn = df[df.pred >= 0.5]
-            scoren = len(dfn[dfn.val == 1])/len(dfn)
-            thresholdn = dfn.tail(1)["pred"].values
+            if len(dfn) == 0:
+                thresholdn = 0.5
+                scoren = 0.0
+            else:
+                scoren = len(dfn[dfn.val == 1])/len(dfn)
+                thresholdn = dfn.tail(1)["pred"].values
             print("interval evaluation - epoch: {:d} - threshold: {:.6f} {:.6f} {.6f} - score: {:.6f} {:.6f} {:.6f}"
                   .format(epoch, threshold1, threshold2,thresholdn,score1,score2,scoren))
 class IntervalAuc(Callback):
