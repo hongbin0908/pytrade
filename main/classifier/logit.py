@@ -128,7 +128,7 @@ class Logit(BaseClassifier):
         self.classifier.add(Activation('sigmoid'))
         sgd = SGD(lr=0.01)
         opt = Adam(lr=4e-5)
-        opt = Adamax()
+        opt = keras.optimizers.Adadelta()
         #opt = RMSprop(lr=4e-3)
         #opt = Adadelta()
         from keras.metrics import top_k_categorical_accuracy
@@ -137,7 +137,7 @@ class Logit(BaseClassifier):
         ival = IntervalAcc(cls = self, validation_data=(X_t, y_t), interval=1)
         self.classifier.fit(X, y, validation_data=(X_t, y_t), batch_size=self.batch_size, nb_epoch=self.nb_epoch, callbacks=[ival])
     def predict_proba(self, X):
-        re = self.classifier.predict_proba(X)
+        re = self.classifier.predict_proba(X, verbose=0)
         re = np.hstack([1-re, re])
         return re
 
