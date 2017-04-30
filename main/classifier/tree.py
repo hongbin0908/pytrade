@@ -140,7 +140,7 @@ def binary_accuracy(y_true, y_pred):
     return K.mean(K.equal(y_true, K.round(y_pred)), axis=-1)
 
 class ccl2(BaseClassifier):
-    def __init__(self, batch_size = 32, nb_epoch=10):
+    def __init__(self, batch_size = 256, nb_epoch=10):
         model = Sequential()
         self.classifier = model
         self.batch_size = batch_size
