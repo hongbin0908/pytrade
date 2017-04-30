@@ -27,7 +27,6 @@ class IntervalAcc(Callback):
         self.cls = cls
         self.df_test_valid, self.score = validation_data
         #self.df_test = self.df_test_valid.sample(frac=0.5, random_state=200)
-        #self.df_valid = self.df_test_valid.drop(self.df_test.index)
         self.df_test_valid = self.df_test_valid.sort_values("date", ascending=True)
         self.df_test = self.df_test_valid.head(int(len(self.df_test_valid)/2))
         self.df_valid = self.df_test_valid.drop(self.df_test.index)
@@ -121,7 +120,7 @@ class Logit2(BaseClassifier):
         self.classifier.add(Dense(output_dim=1))
         self.classifier.add(Activation('sigmoid'))
         sgd = SGD(lr=0.01)
-        opt = Adam(lr=4e-5)
+        opt = Adam(lr=4e-5, decay=0.1)
         self.classifier.compile(loss='binary_crossentropy', optimizer=opt, metrics=['accuracy'])
         ival = IntervalAcc(cls = self, validation_data=(df_test, score), interval=1)
         self.classifier.fit(X, y, batch_size=self.batch_size, nb_epoch=self.nb_epoch, callbacks=[ival])
