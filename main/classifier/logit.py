@@ -72,8 +72,6 @@ class IntervalAcc(Callback):
     def on_epoch_end(self, epoch, logs={}):
         if epoch % self.interval == 0:
             y_pred = self.cls.predict_proba(self.X_val)
-            print(y_pred.shape)
-            print(len(y_pred[:,1]), len(self.X_val), len(self.y_val))
             df = pd.DataFrame({"pred": y_pred[:,1], "val": self.y_val})
             df.sort_values(["pred"], ascending=False, inplace=True)
             df1 = df.head(1000)
@@ -105,7 +103,7 @@ class IntervalAuc(Callback):
             print("interval evaluation - epoch: {:d} - score: {:.6f}".format(epoch, score))
 
 class Logit(BaseClassifier):
-    def __init__(self, batch_size = 100, nb_epoch=20, verbose = 1):
+    def __init__(self, batch_size = 100, nb_epoch=100, verbose = 1):
         model = Sequential()
         self.classifier = model
         self.batch_size = batch_size
