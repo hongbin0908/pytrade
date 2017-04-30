@@ -122,109 +122,20 @@ def get_merged(taname, lsym,start = "", end =""):
     df = df.replace([np.inf,-np.inf],np.nan).dropna()
     return df
 
-def dir_eod():
-    p = os.path.join(root, 'data', 'yeod')
-    if not os.path.exists(p):
-        os.makedirs(p)
-    return p
-def dir_vol():
-    p = os.path.join(root, 'data', 'vol')
-    if not os.path.exists(p):
-        os.makedirs(p)
-    return p
-def dir_ta(taname):
-    p = os.path.join(root, 'data', 'ta', taname)
-    if not os.path.exists(p):
-        os.makedirs(p)
-    return p
-def dir_model():
-    p = os.path.join(root, 'data', 'model')
-    if not os.path.exists(p):
-        os.makedirs(p)
-    return p
 
-
-def file_model(args):
-    fname = "%s-%s-%s-%s-%s-%s" % (args.setname, args.taname, \
-            args.clsname, args.scorename, args.start, args.end)
-
-    return (os.path.join(dir_model(), fname + ".pkl"), os.path.join(dir_model(), fname + ".ipt"))
-
-def dir_paper():
-    p = os.path.join(root, 'data', 'paper')
-    if not os.path.exists(p):
-        os.makedirs(p)
-    return p
-def file_paper(args):
-    fname="%s%s-%s-%s" % (args.model,
-            args.setname,
-            args.start,
-            args.end)
-    return os.path.join(dir_paper(), fname + ".pre.csv")
-
-def dir_pred():
-    p = os.path.join(root, 'data', 'pred')
-    if not os.path.exists(p):
-        os.makedirs(p)
-    return p
-
-def file_pred(args):
-    fname = "%s-%s-%s-%s-%s-%s-%d" % (
-            args.model,
-            args.setname,
-            args.taname,
-            args.label,
-            args.start,
-            args.end,
-            args.stage
-            )
-    return (os.path.join(dir_pred(), fname + ".report"),\
-            os.path.join(dir_pred(), fname + ".csv")\
-            )
-
-
-
-
-def dir_preds():
-    p = os.path.join(root, 'data','preds')
-    if not os.path.exists(p):
-        os.makedirs(p)
-    return p
-
-def dir_models():
-    p = os.path.join(root, 'data', 'models')
-    if not os.path.exists(p):
-        os.makedirs(p)
-    return p
-
-def dir_yeod_dow():
-    p = os.path.join(root, 'data', 'yeod', 'dow')
-    if not os.path.exists(p):
-        os.makedirs(p)
-    return p
-
-def yeod_dow_sym(sym):
-    p = os.path.join(dir_yeod_dow(), sym + ".csv")
-    return pd.read_csv(p)
-
-def yeod(field, sym):
-    p = os.path.join(root, 'data', 'yeod', field, sym + ".csv")
-    return pd.read_csv(p)
-
-def ta(field, sym):
-    p = os.path.join(root, 'data', 'ta', field, sym + ".pkl")
-    return pd.read_pickle(p)
-
-def fname_pred(cls, ta, start, end):
-    return cls + "_" + ta + "_" + start + "_"+end + ".csv"
-def fname_pred_s(cls, ta, start, end):
-    return cls + "_" + ta + "_" + start + "_"+end + ".s.csv"
+def extract_feat_label(df, scorename, drop = True):
+    if drop:
+        df = df.replace([np.inf,-np.inf],np.nan).dropna()
+    feat_names = get_feat_names(df)
+    npFeat = df.loc[:,feat_names].values.copy()
+    npLabel = df.loc[:,scorename].values.copy()
+    return npFeat, npLabel
 
 def get_last_trade_date():
     """
     get the last trade date
     """
-    df = pd.read_csv(os.path.join(dir_eod(), 'index', '^GSPC.csv'))
+    df = pd.read_csv(os.path.join(local_path, '..','..','data' , 'yeod', 'index', '^GSPC.csv'))
     return df.date.max()
 
 
