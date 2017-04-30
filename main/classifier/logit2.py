@@ -120,7 +120,7 @@ class Logit2(BaseClassifier):
         self.classifier.add(Dense(output_dim=1))
         self.classifier.add(Activation('sigmoid'))
         sgd = SGD(lr=0.01)
-        opt = Adam(lr=4e-5)
+        opt = Adam(lr=4e-4)
         self.classifier.compile(loss='binary_crossentropy', optimizer=opt, metrics=['accuracy'])
         ival = IntervalAcc(cls = self, validation_data=(df_test, score), interval=1)
         self.classifier.fit(X, y, batch_size=self.batch_size, nb_epoch=self.nb_epoch, callbacks=[ival])
