@@ -51,8 +51,11 @@ local_path = os.path.dirname(__file__)
 root = os.path.join(local_path, '..', "..")
 sys.path.append(root)
 
+def binary_accuracy(y_true, y_pred):
+    return K.mean(K.equal(y_true, K.round(y_pred)), axis=-1)
+
 class Logit(BaseClassifier):
-    def __init__(self, batch_size = 100, nb_epoch=10, verbose = 1):
+    def __init__(self, batch_size = 100, nb_epoch=30, verbose = 1):
         model = Sequential()
         self.classifier = model
         self.batch_size = batch_size
@@ -69,8 +72,8 @@ class Logit(BaseClassifier):
         opt = Adam()
         #opt = RMSprop(lr=4e-3)
         #opt = Adadelta()
-        #self.classifier.compile(loss='binary_crossentropy', optimizer=opt, metrics=['accuracy'])
-        self.classifier.compile(loss='mean_squared_error', optimizer=opt, metrics=['accuracy'])
+        self.classifier.compile(loss='binary_crossentropy', optimizer=opt, metrics=['accuracy'])
+        #self.classifier.compile(loss='mean_squared_error', optimizer=opt, metrics=['accuracy'])
         self.classifier.fit(X, y, validation_data=(X_t, y_t), batch_size=self.batch_size, nb_epoch=self.nb_epoch)
     def predict_proba(self, X):
         re = self.classifier.predict_proba(X)
