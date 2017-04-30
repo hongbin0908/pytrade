@@ -27,6 +27,7 @@ from main.classifier.tree import cnn
 from main.classifier.tree import ccl2
 from main.classifier.ts import Ts
 from main.classifier.logit import Logit
+from main.classifier.logit2 import Logit2
 from main.work.conf import MyConfStableLTa
 from main.work.conf import MyConfForTest
 from main.ta import ta_set
@@ -58,7 +59,7 @@ def get_confs():
     return [
         #MyConfStableLTa(classifier=ccl2(batch_size=32, nb_epoch=20), score=score),
         #MyConfStableLTa(classifier=cnn(batch_size=32, nb_epoch=20), score=score),
-        MyConfStableLTa(classifier=Logit(), score=score),
+        MyConfStableLTa(classifier=Logit2(), score=score),
     ]
 def get_test_confs():
     score = 5
