@@ -87,8 +87,11 @@ class IntervalAcc(Callback):
             else:
                 scoren = len(dfn[dfn.val == 1])/len(dfn)
                 thresholdn = float(dfn.tail(1)["pred"].values)
-            print("interval evaluation - epoch: {:d} - threshold: {:.6f} {:.6f} {:.6f} - score: {:.6f} {:.6f} {:.6f}"
-                  .format(epoch, threshold1, threshold2,thresholdn,score1,score2,scoren))
+
+            score = len(df[df.val == 1])/len(df)
+            threshold = float(df.tail(1)["pred"].values)
+            print("interval evaluation - epoch: {:d} - threshold: {:.3f} {:.3f} {:.3f} {:.3f} - score: {:.3f} {:.3f} {:.3f} {:.3f}"
+                  .format(epoch, threshold1, threshold2,thresholdn, threshold, score1,score2,scoren, score))
 class IntervalAuc(Callback):
     def __init__(self, validation_data=(), interval=10):
         super(Callback, self).__init__()
@@ -103,7 +106,7 @@ class IntervalAuc(Callback):
             print("interval evaluation - epoch: {:d} - score: {:.6f}".format(epoch, score))
 
 class Logit(BaseClassifier):
-    def __init__(self, batch_size = 100, nb_epoch=100, verbose = 1):
+    def __init__(self, batch_size = 100, nb_epoch=20, verbose = 1):
         model = Sequential()
         self.classifier = model
         self.batch_size = batch_size
@@ -125,7 +128,7 @@ class Logit(BaseClassifier):
         self.classifier.add(Activation('sigmoid'))
         sgd = SGD(lr=0.01)
         opt = Adam(lr=4e-5)
-        opt = Adam()
+        opt = Adamax()
         #opt = RMSprop(lr=4e-3)
         #opt = Adadelta()
         from keras.metrics import top_k_categorical_accuracy
