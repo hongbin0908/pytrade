@@ -4,11 +4,11 @@
 import numpy as np
 
 import keras
-from keras.layers import Flatten, Activation, Dense, Dropout
+from keras.layers import Flatten, Activation, Dense, Dropout, K
 from keras.layers import LSTM
 from keras.layers import Conv2D, MaxPooling2D, BatchNormalization, Reshape
 from keras.models import Sequential
-from keras.optimizers import SGD, Adam, RMSprop, Adadelta
+from keras.optimizers import SGD, Adam, Adamax, RMSprop, Adadelta
 from keras import initializers
 from main.classifier.base_classifier import BaseClassifier
 from sklearn.ensemble.forest import RandomForestClassifier
@@ -135,6 +135,10 @@ def d2tod3(fro, window):
     for i in range(len(fro)-window + 1):
         to[i] = fro[i:i+window]
     return to
+
+def binary_accuracy(y_true, y_pred):
+    return K.mean(K.equal(y_true, K.round(y_pred)), axis=-1)
+
 class ccl2(BaseClassifier):
     def __init__(self, batch_size = 32, nb_epoch=10):
         model = Sequential()
