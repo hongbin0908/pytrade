@@ -5,62 +5,20 @@ import numpy as np
 import pandas as pd
 
 import keras
-from keras.layers import Flatten, Activation, Dense, Dropout, K
-from keras.layers import LSTM
-from keras.layers import Conv2D, MaxPooling2D, BatchNormalization, Reshape
+from keras.layers import Activation, Dense, Dropout
 from keras.models import Sequential
-from keras.optimizers import SGD, Adam, Adamax, RMSprop, Adadelta
-from keras import initializers
-from main.classifier.base_classifier import BaseClassifier
-from sklearn.ensemble.forest import RandomForestClassifier
-from sklearn.ensemble.gradient_boosting import GradientBoostingClassifier
-from sklearn.naive_bayes import GaussianNB
-
-from sklearn import linear_model
-import main.base as base
-
-import tensorflow as tf
-from tensorflow.python.framework import ops
-from tensorflow.python.ops import clip_ops
-
-
-#from lasagne import layers  
-#from lasagne.updates import nesterov_momentum  
-#from nolearn.lasagne import NeuralNet 
-#from nolearn.lasagne import visualize  
-#import lasagne
-#import pickle
-from sklearn.metrics import confusion_matrix
-import matplotlib  
-import matplotlib.pyplot as plt  
-import matplotlib.cm as cm  
-from sklearn import metrics
-import numpy as np
-#from keras.models import Sequential
-#from keras.layers.core import Dense, Dropout, Activation
-#from keras.layers.embeddings import Embedding
-#from keras.layers.recurrent import LSTM
-#from keras.optimizers import SGD
-#from keras.layers.core import Flatten
-
-# Define functions for initializing variables and standard layers
-#For now, this seems superfluous, but in extending the code
-#to many more layers, this will keep our code
-#read-able
+from keras.optimizers import SGD, Adam
+from sklearn.metrics import roc_auc_score
+from keras.callbacks import Callback
 import os, sys
+
 local_path = os.path.dirname(__file__)
 root = os.path.join(local_path, '..', "..")
 sys.path.append(root)
 
-def binary_accuracy(y_true, y_pred):
-    return K.mean(K.equal(y_true, K.round(y_pred)), axis=-1)
+from main.classifier.base_classifier import BaseClassifier
+import main.base as base
 
-def top_accuracy(y_true, y_pred):
-    K.in_top_k(y_pred, y_true)
-    return K.mean(K.equal(y_true, K.round(y_pred)), axis=-1)
-
-from sklearn.metrics import roc_auc_score
-from keras.callbacks import Callback
 
 class IntervalAcc(Callback):
     def __init__(self, cls, validation_data=(), interval=10):
@@ -68,7 +26,10 @@ class IntervalAcc(Callback):
         self.interval = interval
         self.cls = cls
         self.df_test_valid, self.score = validation_data
-        self.df_test = self.df_test_valid.sample(frac=0.5, random_state=200)
+        #self.df_test = self.df_test_valid.sample(frac=0.5, random_state=200)
+        #self.df_valid = self.df_test_valid.drop(self.df_test.index)
+        self.df_test_valid = self.df_test_valid.sort_values("date", ascending=True)
+        self.df_test = self.df_test_valid.head(int(len(self.df_test_valid)/2))
         self.df_valid = self.df_test_valid.drop(self.df_test.index)
         assert(len(self.df_valid) + len(self.df_test) == len(self.df_test_valid))
 
