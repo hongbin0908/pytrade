@@ -76,9 +76,17 @@ class IntervalAcc(Callback):
             print(len(y_pred[:,1]), len(self.X_val), len(self.y_val))
             df = pd.DataFrame({"pred": y_pred[:,1], "val": self.y_val})
             df.sort_values(["pred"], ascending=False, inplace=True)
-            df = df.head(1000)
-            score = len(df[df.val == 1])/len(df)
-            print("interval evaluation - epoch: {:d} - threshold: {:.6f} - score: {:.6f}".format(epoch, float(df.tail(1)["pred"].values), score))
+            df1 = df.head(1000)
+            score1 = len(df1[df1.val == 1])/len(df1)
+            threshold1 = df1.tail(1)["pred"].values
+            df2 = df.head(10000)
+            score2 = len(df2[df2.val == 1])/len(df2)
+            threshold2 = df2.tail(1)["pred"].values
+            dfn = df[df.pred >= 0.5]
+            scoren = len(dfn[dfn.val == 1])/len(dfn)
+            thresholdn = dfn.tail(1)["pred"].values
+            print("interval evaluation - epoch: {:d} - threshold: {:.6f} {:.6f} {.6f} - score: {:.6f} {:.6f} {:.6f}"
+                  .format(epoch, threshold1, threshold2,thresholdn,score1,score2,scoren))
 class IntervalAuc(Callback):
     def __init__(self, validation_data=(), interval=10):
         super(Callback, self).__init__()
