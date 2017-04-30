@@ -89,7 +89,7 @@ class IntervalAcc(Callback):
             else:
                 scoren = len(dfn[dfn.val == 1])/len(dfn)
                 thresholdn = float(dfn.tail(1)["pred"].values)
-            print("interval evaluation - epoch: {:d} - threshold: {:.6f} {:.6f} {.6f} - score: {:.6f} {:.6f} {:.6f}"
+            print("interval evaluation - epoch: {:d} - threshold: {:.6f} {:.6f} {:.6f} - score: {:.6f} {:.6f} {:.6f}"
                   .format(epoch, threshold1, threshold2,thresholdn,score1,score2,scoren))
 class IntervalAuc(Callback):
     def __init__(self, validation_data=(), interval=10):
