@@ -139,7 +139,7 @@ class IntervalAuc(Callback):
             print("epoch: {:d} - score: {:.6f}".format(epoch, score))
 
 class Logit2(BaseClassifier):
-    def __init__(self, batch_size = 100, nb_epoch=30, verbose = 1):
+    def __init__(self, batch_size = 100, nb_epoch=20, verbose = 1):
         model = Sequential()
         self.classifier = model
         self.batch_size = batch_size
