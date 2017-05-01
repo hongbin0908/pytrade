@@ -63,6 +63,9 @@ pytrade/run/run.py
 ## 联系作者
 
 如果你有兴趣， 欢迎提交merge request给我。 当然也可以和我交流。 我的微信如下：
+
 <img src="./meta/weixin.png" width="25%" height="25%">
+
 也可以发邮件给我， 但是我不一定收：
+
 hongin0908@126.com
