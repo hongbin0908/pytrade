@@ -18,7 +18,6 @@ from main.classifier.tree import RFCv1n2000md6msl100
 from main.classifier.tree import ccl2
 from main.classifier.tree import cnn
 from main.classifier.ts import Ts
-from main.classifier.logit import Logit
 from main.classifier.logit2 import Logit2
 from main.selector.selector import MiSelector
 
