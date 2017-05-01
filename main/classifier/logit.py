@@ -112,7 +112,7 @@ class Logit(BaseClassifier):
         self.classifier.add(Dense(input_dim=X.shape[1], output_dim=64))
         self.classifier.add(Activation('relu'))
         self.classifier.add(Dropout(0.4))
-        for i in range(4):
+        for i in range(9):
             self.classifier.add(Dense(output_dim=64))
             self.classifier.add(Activation('relu'))
             self.classifier.add(Dropout(0.4))
