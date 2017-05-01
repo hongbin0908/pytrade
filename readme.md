@@ -15,7 +15,7 @@ pytrade基于python, 依赖以下开源库:
 建议python3以上版本.
 
 ## pytrade效果如何？
-[pytrade实时报告](./report/)
+[pytrade实时报告](./data/report/)
 
 ## 如何运行
 正式运行至少10G内存, 4核CPU. 但是可以通过环境变量来控制是否在测试环境中运行还是正式环境中运行. 普通的
