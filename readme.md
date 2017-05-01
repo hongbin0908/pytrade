@@ -2,7 +2,7 @@
 pytrade主要完成以下工作:
 1. 获取股票数据
 2. 使用talib库获取七天均值等特征
-3. 使用sklearn/keras等机器学习库预估价格变动
+3. 使用深度神经网络预估价格变动
 4. 生成最终结果并验证
 
 ## pytrade依赖什么?
@@ -15,6 +15,9 @@ pytrade基于python, 依赖以下开源库:
 建议python3以上版本.
 
 ## pytrade效果如何？
+
+模型是用标普500进行测试，收益率为千分之五。
+
 [pytrade实时报告](./data/report/)
 
 ## 如何运行
@@ -58,4 +61,8 @@ pytrade/run/run.py
 提供不同效果评估方式进行模型效果预估, 包括在真实场景下的roi预估.
 
 ## 联系作者
+
+如果你有兴趣， 欢迎提交merge request给我。 当然也可以和我交流。 我的微信如下：
 <img src="./meta/weixin.png" width="25%" height="25%">
+也可以发邮件给我， 但是我不一定收：
+hongin0908@126.com
