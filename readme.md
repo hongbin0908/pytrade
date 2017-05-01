@@ -58,4 +58,4 @@ pytrade/run/run.py
 提供不同效果评估方式进行模型效果预估, 包括在真实场景下的roi预估.
 
 ## 联系作者
-<img src="./meta/weixin.png" width="50%" height="50%">
+<img src="./meta/weixin.png" width="25%" height="25%">
