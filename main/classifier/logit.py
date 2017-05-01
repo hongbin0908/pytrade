@@ -115,7 +115,7 @@ class Logit(BaseClassifier):
         for i in range(3):
             self.classifier.add(Dense(output_dim=64))
             self.classifier.add(Activation('relu'))
-            self.classifier.add(Dropout(0.2))
+            self.classifier.add(Dropout(0.4))
 
         self.classifier.add(Dense(output_dim=1))
         self.classifier.add(Activation('sigmoid'))
