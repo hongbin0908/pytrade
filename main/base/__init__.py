@@ -145,6 +145,9 @@ def strDate2num(str):
     #time_sec_float = time.mktime(df.timetuple())
     #return time_sec_float
 
+def dir_eod():
+    return os.path.join(local_path, '..','..', 'data', 'yeod')
+
 
 def zip_folder(folder_path, output_path):
     """Zip the contents of an entire folder (with that folder included
