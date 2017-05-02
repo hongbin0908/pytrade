@@ -28,6 +28,13 @@ class ScoreRelative(BaseScore):
         del df["close_shift"]
         return df
 
+#local_path = os.path.dirname(__file__)
+#root = os.path.join(local_path, '..')
+#sys.path.append(root)
+#import pandas as pd
+#
+#df = pd.read_csv(os.path.join(local_path, "..", "..", 'data', 'yeod', 'sp500_snapshot_20091231', 'IVZ.csv'))
+#df = ScoreRelative(5).agn_score(df)
 
 class ScoreRelativeOpen(BaseScore):
     def __init__(self, interval):

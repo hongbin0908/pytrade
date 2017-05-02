@@ -4,11 +4,11 @@
 import numpy as np
 
 import keras
-from keras.layers import Flatten, Activation, Dense, Dropout
+from keras.layers import Flatten, Activation, Dense, Dropout, K
 from keras.layers import LSTM
 from keras.layers import Conv2D, MaxPooling2D, BatchNormalization, Reshape
 from keras.models import Sequential
-from keras.optimizers import SGD, Adam
+from keras.optimizers import SGD, Adam, Adamax, RMSprop, Adadelta
 from keras import initializers
 from main.classifier.base_classifier import BaseClassifier
 from sklearn.ensemble.forest import RandomForestClassifier
@@ -16,6 +16,7 @@ from sklearn.ensemble.gradient_boosting import GradientBoostingClassifier
 from sklearn.naive_bayes import GaussianNB
 
 from sklearn import linear_model
+from keras.metrics import top_k_categorical_accuracy
 import main.base as base
 
 import tensorflow as tf
@@ -50,6 +51,17 @@ import os, sys
 local_path = os.path.dirname(__file__)
 root = os.path.join(local_path, '..', "..")
 sys.path.append(root)
+
+from keras import backend as K
+import tensorflow as tf
+
+config = tf.ConfigProto(intra_op_parallelism_threads=30, \
+                        inter_op_parallelism_threads=30, \
+                        allow_soft_placement=True, \
+                        device_count = {'CPU': 30})
+session = tf.Session(config=config)
+K.set_session(session)
+
 def bias_variable(shape, name):
     initial = tf.constant(0.1, shape=shape)
     return tf.Variable(initial, name = name)
@@ -60,7 +72,7 @@ def max_pool_2x2(x):
                           strides=[1, 2, 2, 1], padding='SAME')
 
 class cnn(BaseClassifier):
-    def __init__(self, batch_size = 100, nb_epoch=10, num_filt_1 = 16, num_filt_2 = 14, num_fc_1 = 40):
+    def __init__(self, batch_size = 100, nb_epoch=256, num_filt_1 = 16, num_filt_2 = 14, num_fc_1 = 40, verbose = 1):
         model = Sequential()
         self.classifier = model
         self.batch_size = batch_size
@@ -68,11 +80,12 @@ class cnn(BaseClassifier):
         self.num_filt_1 = num_filt_1
         self.num_filt_2 = num_filt_2
         self.num_fc_1 = num_fc_1
+        self.verbose = verbose
         pass
     def transfer_shape(self,X):
         return np.reshape(X, (X.shape[0], X.shape[1],1,1))
     def get_name(self):
-        return "ccl-cnn"
+        return "ccl-cnn-%d-%d-%d-%d" % (self.nb_epoch, self.num_filt_1, self.num_filt_2, self.batch_size)
     def fit(self, X, y, X_t, y_t):
         X = self.transfer_shape(X)
         X_t = self.transfer_shape(X_t)
@@ -90,17 +103,13 @@ class cnn(BaseClassifier):
         """Hyperparameters"""
         num_filt_1 = self.num_filt_1     #Number of filters in first conv layer
         num_filt_2 = self.num_filt_2      #Number of filters in second conv layer
-        num_filt_3 = 3      #Number of filters in thirs conv layer
         num_fc_1 = self.num_fc_1      #Number of neurons in hully connected layer
-        max_iterations = 20000
-        learning_rate = 2e-5
-        #initializer = tf.contrib.layers.xavier_initializer(),
+
         initializer = initializers.glorot_uniform(seed=123)
         self.classifier.add(Conv2D(filters=num_filt_1, kernel_size=[5,1], padding='same',
                                    kernel_initializer=initializer,
                                    bias_initializer=initializers.zeros(),
                                    input_shape=X.shape[1:]))
-        #self.classifier.add(BatchNormalization())
         self.classifier.add(Activation('relu'))
 
         self.classifier.add(Conv2D(filters=num_filt_2, kernel_size=[4,1],
@@ -119,11 +128,12 @@ class cnn(BaseClassifier):
 
         self.classifier.add(Activation('softmax'))
         #self.classifier.compile(loss='binary_crossentropy', optimizer=Adam(lr=learning_rate),metrics=['accuracy'])
-        self.classifier.compile(loss='binary_crossentropy', optimizer='sgd',metrics=['accuracy'])
-        self.classifier.fit(X, y, validation_data=(X_t, y_t), batch_size=self.batch_size, nb_epoch=self.nb_epoch, shuffle=False)
+        opt = Adam()
+        self.classifier.compile(loss='binary_crossentropy', optimizer=opt,metrics=['accuracy'])
+        self.classifier.fit(X, y, verbose=self.verbose,validation_data=(X_t, y_t), batch_size=self.batch_size, nb_epoch=self.nb_epoch, shuffle=False)
     def predict_proba(self, X):
         X = self.transfer_shape(X)
-        re = self.classifier.predict_proba(X)
+        re = self.classifier.predict_proba(X, verbose=0)
         return re
 def d2tod3(fro, window):
     row = fro.shape[0]
@@ -138,8 +148,12 @@ def d2tod3(fro, window):
     for i in range(len(fro)-window + 1):
         to[i] = fro[i:i+window]
     return to
+
+def binary_accuracy(y_true, y_pred):
+    return K.mean(K.equal(y_true, K.round(y_pred)), axis=-1)
+
 class ccl2(BaseClassifier):
-    def __init__(self, batch_size = 32, nb_epoch=10):
+    def __init__(self, batch_size = 256, nb_epoch=10):
         model = Sequential()
         self.classifier = model
         self.batch_size = batch_size
@@ -153,6 +167,7 @@ class ccl2(BaseClassifier):
         return np.reshape(X, (X.shape[0], 1, X.shape[1]))
 
     def fit(self, X, y, X_t, y_t):
+
         X = self.transfer_shape(X)
         X_t = self.transfer_shape(X_t)
         y = y[2-1:]
@@ -161,65 +176,38 @@ class ccl2(BaseClassifier):
         self.classifier.add(LSTM(input_shape=(2, X.shape[2]),  output_dim =8,
                                  return_sequences = True, kernel_initializer=initializers.glorot_normal(123) ))
         self.classifier.add(Flatten())
-        #self.classifier.add(Activation('linear'))
         self.classifier.add(Activation('relu'))
-        self.classifier.add(Dense( output_dim=8, kernel_initializer=initializers.glorot_normal(123)))
-        #self.classifier.add(Activation('linear'))
+        self.classifier.add(Dropout(0.3, seed=1234))
+        self.classifier.add(Dense( output_dim=4, kernel_initializer=initializers.glorot_normal(123)))
         self.classifier.add(Activation('relu'))
         self.classifier.add(Dropout(0.3, seed=123))
-        self.classifier.add(Dense(output_dim=8))
+        self.classifier.add(Dense( output_dim=4, kernel_initializer=initializers.glorot_normal(123)))
+        self.classifier.add(Activation('relu'))
+        self.classifier.add(Dropout(0.3, seed=123))
+        self.classifier.add(Dense(output_dim=4))
         self.classifier.add(Activation('tanh'))
+        #self.classifier.add(Activation('relu'))
         self.classifier.add(Dense(output_dim=1, kernel_initializer=initializers.glorot_normal(123)))
         self.classifier.add(Activation('sigmoid'))
         sgd = SGD(lr=0.01)
-        self.classifier.compile(loss='binary_crossentropy', optimizer=sgd, metrics=['accuracy'])
+        opt = Adam(lr=4e-5)
+        opt = Adam()
+        #opt = RMSprop(lr=4e-3)
+        #opt = Adadelta()
+
+        self.classifier.compile(loss='binary_crossentropy', optimizer=opt, metrics=['accuracy'])
         self.classifier.fit(X, y, validation_data=(X_t, y_t), batch_size=self.batch_size, nb_epoch=self.nb_epoch)
     def predict_proba(self, X):
         X = self.transfer_shape(X)
         re = self.classifier.predict_proba(X)
         re = np.hstack([1-re, re])
         return re
-class ccl(BaseClassifier):
-    def __init__(self, batch_size = 32, nb_epoch=10):
-        model = Sequential()
-        self.classifier = model
-        self.batch_size = batch_size
-        self.nb_epoch = nb_epoch
-        pass
-    def get_name(self):
-        return "ccl-%d" % (self.nb_epoch)
 
-    def transfer_shape(self,X):
-        return d2tod3(X, window=2)
-        return np.reshape(X, (X.shape[0], 1, X.shape[1]))
+    def save(self, save_path):
+        self.classifier.save(save_path)
 
-    def fit(self, X, y, X_t, y_t):
-        X = self.transfer_shape(X)
-        X_t = self.transfer_shape(X_t)
-        y = y[2-1:]
-        y_t = y_t[2-1:]
-        #self.classifier.add(Dense(500, input_shape=( X.shape[1],)))
-        self.classifier.add(LSTM(input_shape=(2, X.shape[2]),  output_dim =8,
-                                 return_sequences = True ))
-        self.classifier.add(Flatten())
-        #self.classifier.add(Activation('linear'))
-        self.classifier.add(Activation('relu'))
-        self.classifier.add(Dense( output_dim=8))
-        self.classifier.add(Activation('linear'))
-        self.classifier.add(Activation('relu'))
-        self.classifier.add(Dropout(0.3, seed=7))
-        self.classifier.add(Dense(output_dim=8))
-        self.classifier.add(Activation('tanh'))
-        self.classifier.add(Dense(output_dim=1))
-        self.classifier.add(Activation('sigmoid'))
-        sgd = SGD(lr=0.01)
-        self.classifier.compile(loss='binary_crossentropy', optimizer=sgd, metrics=['accuracy'])
-        self.classifier.fit(X, y, validation_data=(X_t, y_t), batch_size=self.batch_size, nb_epoch=self.nb_epoch)
-    def predict_proba(self, X):
-        X = self.transfer_shape(X)
-        re = self.classifier.predict_proba(X)
-        re = np.hstack([1-re, re])
-        return re
+    def load(self, save_path):
+        self.classifier = keras.models.load_model(save_path)
 
 class MyLogisticRegressClassifier(BaseClassifier):
     """
@@ -231,7 +219,6 @@ class MyLogisticRegressClassifier(BaseClassifier):
         self.classifier = linear_model.LogisticRegression(C=C, max_iter=2000, verbose=1, n_jobs = 30,  penalty='l2', tol = 1e-5)
         self.name = "lr-%f-%d" % (C,max_iter)
     def get_name(self):
-
         return self.name
 
     def fit(self, X, y):

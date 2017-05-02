@@ -101,7 +101,7 @@ def work(confer):
         return
     post = Poster(confer)
     post.work()
-    df_pred = post.pred()
+    df_pred = post.pred(start='2010-01-01')
     df_pred.to_pickle(confer.get_pred_file())
     #if not os.path.exists(cross_dump_file):
     #    print("%s Not exists, need to build!" %  cross_dump_file )
