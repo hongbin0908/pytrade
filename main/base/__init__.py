@@ -146,7 +146,7 @@ def strDate2num(str):
     #return time_sec_float
 
 def dir_eod():
-    return os.path.join(local_path, '..', 'data', 'yeod')
+    return os.path.join(local_path, '..','..', 'data', 'yeod')
 
 
 def zip_folder(folder_path, output_path):
