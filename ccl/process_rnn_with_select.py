@@ -31,8 +31,8 @@ def weighted_crossentropy(predictions, targets):
 def get_sample(data_info, sort_list, day_interval, day_interval1):
     global interval
     date_list = []
-    if len(sort_list) > 1:
-        length = 1
+    if len(sort_list) > 50:
+        length = 50
     else:
         length = len(sort_list)
     for i in range(0,length):
@@ -74,10 +74,10 @@ def load_data(filename, sort_list, test_bdate):
         print(test_bdate)
         e_date = datetime.datetime.strptime(test_bdate[0], "%Y-%m-%d") + datetime.timedelta(days=-1)
         e_date_str = e_date.strftime("%Y-%m-%d") 
-        sort_list.append((e_date_str, 100, 0))
+        sort_list.append((e_date_str, 10, 0))
         data_info = pandas.read_csv(filename, sep = ' ', header=0, names=['sym', 'date', 'price15', 'price14', \
                 'price13', 'price12', 'price11', 'price10', 'price9', 'price8', 'price7', 'price6', 'price5', 'price4', 'price3','price2', 'price1', 'label'])
-        x_data, x_dev, y_data = get_sample(data_info, sort_list, 10, 0)
+        x_data, x_dev, y_data = get_sample(data_info, sort_list, 2, 2)
         test_list = [(test_bdate[0], 0, 0)]
         x_test, x_test_dev, y_test = get_sample(data_info, test_list,0, 0)
         return x_data, x_dev, y_data, x_test, x_test_dev, y_test
@@ -132,11 +132,11 @@ def get_vector_sp(model, x_data, x_test):
 
 def build_model(x_data, y_data, x_test, y_test):
     model = Sequential()
-    model.add(Dense(input_shape=[x_data.shape[1]],output_dim=100, kernel_initializer= initializers.RandomNormal()))
+    model.add(Dense(input_shape=[x_data.shape[1]],output_dim=1000, kernel_initializer= initializers.RandomNormal()))
     model.add(Activation('tanh'))
 #    model.add(Dropout(0.4))
 #    model.add(Activation('linear'))
-    model.add(Dense(output_dim=100, kernel_initializer= initializers.RandomNormal()))
+    model.add(Dense(output_dim=1000, kernel_initializer= initializers.RandomNormal()))
     model.add(Activation('tanh'))
 #    model.add(Dense(output_dim=100))
 #    model.add(Activation('relu'))
@@ -144,13 +144,14 @@ def build_model(x_data, y_data, x_test, y_test):
     model.add(Activation('sigmoid'))
     sgd = SGD(lr=0.005, decay=0.0001, momentum=0.2, nesterov=True)
     model.compile(loss='binary_crossentropy', metrics=['accuracy'], optimizer=sgd)
-    model.fit(x_data, y_data, batch_size=100, nb_epoch=20, shuffle=True, validation_split=0.2)
+#    model.fit(x_data, y_data, batch_size=4, nb_epoch=20, shuffle=True, validation_split=0.2)
+    model.fit(x_data, y_data)
     preds = model.predict_proba(x_data)
     result = metrics.roc_auc_score(y_data, preds)
     print(result)
     print("test")
     preds = model.predict_proba(x_test)
-    for i in range(0, 50):
+    for i in range(0, 10):
         print("result=%.4f, %.4f" %(preds[i], y_test[i])) 
     result = metrics.roc_auc_score(y_test, preds)
     print(result)
@@ -209,8 +210,8 @@ if __name__ == "__main__":
     trend_model = load_trend_model()
     sp_data, sp_test = load_sp("spc_data", test_bdate, test_edate)
     sort_list, test_bdate = get_vector_sp(trend_model, sp_data, sp_test)
-    sort_list = []
-    x_data, x_dev, y_data, x_test, x_test_dev, y_test = load_data("stock_sample_with_label_category", sort_list, test_bdate)
+#    sort_list = []
+    x_data, x_dev, y_data, x_test, x_test_dev, y_test = load_data("stock_sample_with_label_part", sort_list, test_bdate)
     x_data1 = predict_trends(trend_model, x_data, x_dev)
     x_test1 = predict_trends(trend_model, x_test, x_test_dev)
 #    x_data1 = preprocessing.normalize(x_data1, norm='l2')

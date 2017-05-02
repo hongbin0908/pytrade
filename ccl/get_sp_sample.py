@@ -13,9 +13,9 @@ def load_data(filename):
 
 def build_sample(info, stock_name = "A", interval = 15):
 	for i in range(interval, info.shape[0]-1):
-		x_date = info.iloc[i-interval, 0]
+		x_date = info.iloc[i-interval+1, 0]
 		x_date1 = info.iloc[i, 0]
-		x = info.iloc[i-interval:i, 5].tolist()
+		x = info.iloc[i-interval+1:i+1, 5].tolist()
 		x_str = ' '.join(map(str, x))
 		label = info.iloc[i+1, 8] / info.iloc[i, 8]
 		if label >1:
