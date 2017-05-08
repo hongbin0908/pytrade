@@ -32,6 +32,8 @@ class IntervalAcc(Callback):
         self.df_valid = self.df_test_valid.drop(self.df_test.index)
         assert(len(self.df_valid) + len(self.df_test) == len(self.df_test_valid))
 
+        self.df_years = [each for each in base.split_by_year(self.df_test_valid)]
+
         self.npFeatTest, self.npLabelTest = base.extract_feat_label(self.df_test, self.score, drop=True)
         self.npFeatVal, self.npLabelVal = base.extract_feat_label(self.df_valid, self.score, drop=True)
 
@@ -82,6 +84,7 @@ class IntervalAcc(Callback):
             scores = self.cal_accuracy2(self.npFeatVal, self.npLabelVal, thresholds)
             for i in range(len(thresholds)):
                 print("score: %.3f(%.3f)" % (scores[i], thresholds[i]), end=" ")
+            print()
             print()
 
 class IntervalAuc(Callback):
