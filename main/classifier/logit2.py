@@ -72,19 +72,35 @@ class IntervalAcc(Callback):
         return (score1,score2,scoren)
 
     def on_epoch_end(self, epoch, logs={}):
-        if epoch % self.interval == 0:
-            print("interval evaluation - epoch: %d" % epoch)
-            (thresholds, scores) = self.cal_accuracy(self.npFeatTest, self.npLabelTest)
-            print()
-            print("TEST: ", end='')
-            for i in range(len(thresholds)):
-                print("score: %.3f(%.3f)" % (scores[i], thresholds[i]), end=" ")
-            print()
-            print("VALD: ", end='')
-            scores = self.cal_accuracy2(self.npFeatVal, self.npLabelVal, thresholds)
-            for i in range(len(thresholds)):
-                print("score: %.3f(%.3f)" % (scores[i], thresholds[i]), end=" ")
-            print()
+        if epoch % self.interval != 0:
+            return
+        print("interval evaluation - epoch: %d" % epoch)
+        (thresholds, scores) = self.cal_accuracy(self.npFeatTest, self.npLabelTest)
+        print()
+        print("TEST: ", end='')
+        for i in range(len(thresholds)):
+            print("score: %.3f(%.3f)" % (scores[i], thresholds[i]), end=" ")
+        print()
+        print("VALD: ", end='')
+        scores = self.cal_accuracy2(self.npFeatVal, self.npLabelVal, thresholds)
+        for i in range(len(thresholds)):
+            print("score: %.3f(%.3f)" % (scores[i], thresholds[i]), end=" ")
+        print()
+        print()
+
+        is_first = True
+        for df_year in self.df_years:
+            npFeat, npLabel = base.extract_feat_label(df_year, self.score,drop=True)
+            year = df_year['yyyy'].unique()[0]
+            print("%s: " % year, end='')
+            if is_first:
+                (thresholds, scores) = self.cal_accuracy(npFeat, npLabel)
+                for i in range(len(thresholds)):
+                    print("score: %.3f(%.3f)" % (scores[i], thresholds[i]), end=" ")
+            else:
+                scores = self.cal_accuracy2(npFeat, npLabel, thresholds)
+                for i in range(len(thresholds)):
+                    print("score: %.3f(%.3f)" % (scores[i], thresholds[i]), end=" ")
             print()
 
 class IntervalAuc(Callback):
