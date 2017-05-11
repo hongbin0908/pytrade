@@ -82,6 +82,7 @@ class MiSelector(Selector):
         n10 = df[label < 0.5].sum()
         n01 = (1-df[label>0.5]).sum()
         n00 = (1-df[label<0.5]).sum()
+
         n = df.count()
         n1_ = n11+n10
         n0_ = n01+n00
@@ -90,8 +91,7 @@ class MiSelector(Selector):
     
         assert 0 == (n11 + n01 - df[label>0.5].count()).sum() 
         assert 0 == (n11 + n01 + n10 + n00 - df.count()).sum() 
-        
-    
+
         mi = n11/n*np.log2(n*n11/(n1_*n_1)) + n01/n*np.log2(n*n01/(n0_*n_1)) \
                 + n10/n*np.log2(n*n10/(n1_*n_0)) + n00/n*np.log2(n*n00/(n0_*n_0))
     

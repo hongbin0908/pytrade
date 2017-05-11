@@ -39,7 +39,7 @@ class IntervalAcc(Callback):
         else:
             scoren = len(dfn[dfn.val == 1])/len(dfn)
             thresholdn = float(dfn.tail(1)["pred"].values)
-        df0 = df[df.pred >= 0.5]
+        df0 = df[df.pred >= 0.0]
         score0 = len(df0[df0.val == 1])/len(df0)
         threshold0 = float(df0.tail(1)["pred"].values)
         return ((threshold1, threshold2, thresholdn, threshold0),(score1,score2,scoren, score0))
@@ -57,7 +57,10 @@ class IntervalAcc(Callback):
             scoren = 0.0
         else:
             scoren = len(dfn[dfn.val == 1])/len(dfn)
-        return (score1,score2,scoren)
+        df0 = df[df.pred >= 0.0]
+        score0 = len(df0[df0.val == 1])/len(df0)
+        threshold0 = float(df0.tail(1)["pred"].values)
+        return (score1,score2,scoren, score0)
 
     def on_epoch_end(self, epoch, logs={}):
         if epoch % self.interval != 0:

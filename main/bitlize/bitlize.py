@@ -11,8 +11,6 @@ root = os.path.join(local_path, '..', '..')
 sys.path.append(root)
 
 import main.base as base
-from main.base.timer import Timer
-
 
 def feat_split(dfo, start, end, split_point, label, depth, min_, n_pool):
     df = dfo[(dfo.date>=start)&(dfo.date <end)]
