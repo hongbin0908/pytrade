@@ -22,9 +22,12 @@ class IntervalAcc(Callback):
         self.npFeatTest, self.npLabelTest = base.extract_feat_label(self.df_test, self.score, drop=True)
         self.npFeatVal, self.npLabelVal = base.extract_feat_label(self.df_valid, self.score, drop=True)
 
-    def cal_accuracy(self, npFeat, npLabel):
+    def cal_accuracy(self, npFeat, npLabel, is_short = False):
         y_pred = self.cls.predict_proba(npFeat)
-        df = pd.DataFrame({"pred": y_pred[:,1], "val": npLabel})
+        if is_short:
+            df = pd.DataFrame({"pred": y_pred[:,0], "val": 1-npLabel})
+        else:
+            df = pd.DataFrame({"pred": y_pred[:,1], "val": npLabel})
         df.sort_values(["pred"], ascending=False, inplace=True)
         df1 = df.head(1000)
         score1 = len(df1[df1.val == 1])/len(df1)
@@ -41,8 +44,12 @@ class IntervalAcc(Callback):
             thresholdn = float(dfn.tail(1)["pred"].values)
         return ((threshold1, threshold2, thresholdn),(score1,score2,scoren))
 
-    def cal_accuracy2(self, npFeat, npLabel, thresholds):
+    def cal_accuracy2(self, npFeat, npLabel, thresholds, is_short=False):
         y_pred = self.cls.predict_proba(npFeat)
+        if is_short:
+            df = pd.DataFrame({"pred": y_pred[:,0], "val": 1-npLabel})
+        else:
+            df = pd.DataFrame({"pred": y_pred[:,1], "val": npLabel})
         df = pd.DataFrame({"pred": y_pred[:,1], "val": npLabel})
         df.sort_values(["pred"], ascending=False, inplace=True)
         df1 = df[df.pred >= thresholds[0]]
@@ -59,9 +66,9 @@ class IntervalAcc(Callback):
     def on_epoch_end(self, epoch, logs={}):
         if epoch % self.interval != 0:
             return
-        print("interval evaluation - epoch: %d" % epoch)
+        print("")
+        print("LONG...")
         (thresholds, scores) = self.cal_accuracy(self.npFeatTest, self.npLabelTest)
-        print()
         print("TEST: ", end='')
         for i in range(len(thresholds)):
             print("score: %.3f(%.3f)" % (scores[i], thresholds[i]), end=" ")
@@ -84,6 +91,33 @@ class IntervalAcc(Callback):
                     print("score: %.3f(%.3f)" % (scores[i], thresholds[i]), end=" ")
             else:
                 scores = self.cal_accuracy2(npFeat, npLabel, thresholds)
+                for i in range(len(thresholds)):
+                    print("score: %.3f(%.3f)" % (scores[i], thresholds[i]), end=" ")
+            print()
+        print("SHORT...")
+        (thresholds, scores) = self.cal_accuracy(self.npFeatTest, self.npLabelTest, is_short=True)
+        print("TEST: ", end='')
+        for i in range(len(thresholds)):
+            print("score: %.3f(%.3f)" % (scores[i], thresholds[i]), end=" ")
+        print()
+        print("VALD: ", end='')
+        scores = self.cal_accuracy2(self.npFeatVal, self.npLabelVal, thresholds, is_short=True)
+        for i in range(len(thresholds)):
+            print("score: %.3f(%.3f)" % (scores[i], thresholds[i]), end=" ")
+        print()
+        print()
+
+        is_first = True
+        for df_year in self.df_years:
+            npFeat, npLabel = base.extract_feat_label(df_year, self.score,drop=True)
+            year = df_year['yyyy'].unique()[0]
+            print("%s: " % year, end='')
+            if is_first:
+                (thresholds, scores) = self.cal_accuracy(npFeat, npLabel, is_short=True)
+                for i in range(len(thresholds)):
+                    print("score: %.3f(%.3f)" % (scores[i], thresholds[i]), end=" ")
+            else:
+                scores = self.cal_accuracy2(npFeat, npLabel, thresholds, is_short=True)
                 for i in range(len(thresholds)):
                     print("score: %.3f(%.3f)" % (scores[i], thresholds[i]), end=" ")
             print()
