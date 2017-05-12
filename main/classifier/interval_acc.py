@@ -44,7 +44,7 @@ class IntervalAcc(Callback):
             thresholdn = float(dfn.tail(1)["pred"].values)
         df0 = df[df.pred >= 0.0]
         score0 = len(df0[df0.val == 1])/len(df0)
-        threshold0 = float(df0.tail(1)["pred"].values)
+        threshold0 = 0.0 # float(df0.tail(1)["pred"].values)
         return ((threshold1, threshold2, thresholdn, threshold0),(score1,score2,scoren, score0))
 
     def cal_accuracy2(self, npFeat, npLabel, thresholds, is_short=False):
