@@ -227,6 +227,7 @@ def roc_auc_per_year(df, confer):
         res.append({"yyyy":year, "roc":roc_auc(df_cur,confer)})
     return pd.DataFrame(data = res).sort_values("yyyy")
 
+
 def plot_roc(df, confer, outfile):
     npFeat, npLabel, npPred = extract_feat_label(df, confer.score1.get_name())
     fpr, tpr, thresholds = roc_curve(npLabel, npPred)

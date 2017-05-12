@@ -42,7 +42,10 @@ class IntervalAcc(Callback):
         else:
             scoren = len(dfn[dfn.val == 1])/len(dfn)
             thresholdn = float(dfn.tail(1)["pred"].values)
-        return ((threshold1, threshold2, thresholdn),(score1,score2,scoren))
+        df0 = df[df.pred >= 0.0]
+        score0 = len(df0[df0.val == 1])/len(df0)
+        threshold0 = float(df0.tail(1)["pred"].values)
+        return ((threshold1, threshold2, thresholdn, threshold0),(score1,score2,scoren, score0))
 
     def cal_accuracy2(self, npFeat, npLabel, thresholds, is_short=False):
         y_pred = self.cls.predict_proba(npFeat)
@@ -61,7 +64,10 @@ class IntervalAcc(Callback):
             scoren = 0.0
         else:
             scoren = len(dfn[dfn.val == 1])/len(dfn)
-        return (score1,score2,scoren)
+        df0 = df[df.pred >= 0.0]
+        score0 = len(df0[df0.val == 1])/len(df0)
+        threshold0 = float(df0.tail(1)["pred"].values)
+        return (score1,score2,scoren, score0)
 
     def on_epoch_end(self, epoch, logs={}):
         if epoch % self.interval != 0:
@@ -89,6 +95,7 @@ class IntervalAcc(Callback):
                 (thresholds, scores) = self.cal_accuracy(npFeat, npLabel)
                 for i in range(len(thresholds)):
                     print("score: %.3f(%.3f)" % (scores[i], thresholds[i]), end=" ")
+                is_first = False
             else:
                 scores = self.cal_accuracy2(npFeat, npLabel, thresholds)
                 for i in range(len(thresholds)):
