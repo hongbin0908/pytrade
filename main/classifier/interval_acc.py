@@ -123,6 +123,7 @@ class IntervalAcc(Callback):
                 (thresholds, scores) = self.cal_accuracy(npFeat, npLabel, is_short=True)
                 for i in range(len(thresholds)):
                     print("score: %.3f(%.3f)" % (scores[i], thresholds[i]), end=" ")
+                is_first = False
             else:
                 scores = self.cal_accuracy2(npFeat, npLabel, thresholds, is_short=True)
                 for i in range(len(thresholds)):
