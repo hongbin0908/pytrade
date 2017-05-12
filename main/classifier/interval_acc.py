@@ -53,7 +53,6 @@ class IntervalAcc(Callback):
             df = pd.DataFrame({"pred": y_pred[:,0], "val": 1-npLabel})
         else:
             df = pd.DataFrame({"pred": y_pred[:,1], "val": npLabel})
-        df = pd.DataFrame({"pred": y_pred[:,1], "val": npLabel})
         df.sort_values(["pred"], ascending=False, inplace=True)
         df1 = df[df.pred >= thresholds[0]]
         score1 = len(df1[df1.val == 1])/len(df1)
