@@ -2,23 +2,20 @@
 # -*- coding: utf-8 -*-
 
 #@author Bin Hong
+
 import os,sys
 import concurrent.futures
-import platform
 import traceback
 
 import pandas as pd
-import multiprocessing
 
 local_path = os.path.dirname(__file__)
 root = os.path.join(local_path, '..', '..')
 sys.path.append(root)
 
 import main.base as base
-from main.base.timer import Timer
 from main.ta import ta_set
 import talib
-from datetime import datetime
 
 def is_trend_long(df):
     ma = talib.MA(df.close.values, timeperiod=10)

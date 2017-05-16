@@ -109,7 +109,6 @@ def get_last_trade_date():
     df = pd.read_csv(os.path.join(local_path, '..','..','data' , 'yeod', 'index', '^GSPC.csv'))
     return df.date.max()
 
-
 def strDate2num(str):
     df =dt.datetime.strptime(str, "%Y-%m-%d")
     return df
