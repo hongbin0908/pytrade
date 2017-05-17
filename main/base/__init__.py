@@ -14,6 +14,8 @@ import platform
 import zipfile
 import traceback
 import random
+import pandas_datareader.yahoo.daily as yahoo
+
 local_path = os.path.dirname(__file__)
 root = os.path.join(local_path, '..', '..')
 sys.path.append(root)
@@ -102,11 +104,18 @@ def extract_feat_label(df, scorename, drop = True):
     npLabel = df.loc[:,scorename].values.copy()
     return npFeat, npLabel
 
-def get_last_trade_date():
+def get_last_trade_date(is_force=False):
     """
     get the last trade date
     """
-    df = pd.read_csv(os.path.join(local_path, '..','..','data' , 'yeod', 'index', '^GSPC.csv'))
+    if is_force:
+        yeod = yahoo.YahooDailyReader('^GSPC.csv', "17000101", "20990101", adjust_price=False)
+        df = yeod.read()
+        names = ['date', 'openo', 'higho', 'lowo', 'closeo', 'volumeo', 'adjclose']
+        df.columns = names
+        df= df.dropna()
+    else:
+        df = pd.read_csv(os.path.join(local_path, '..','..','data' , 'yeod', 'index', '^GSPC.csv'))
     return df.date.max()
 
 def strDate2num(str):
