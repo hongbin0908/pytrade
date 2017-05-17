@@ -109,7 +109,7 @@ def get_last_trade_date(is_force=False):
     get the last trade date
     """
     if is_force:
-        y = yahoo.YahooDailyReader('IBM', "17000101", "20990101", adjust_price=False)
+        y = yahoo.YahooDailyReader("IBM", "17000101", "20990101", adjust_price=False)
         df = y.read()
         names = ['date', 'openo', 'higho', 'lowo', 'closeo', 'volumeo', 'adjclose']
         df.columns = names
