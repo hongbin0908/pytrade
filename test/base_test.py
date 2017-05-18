@@ -6,6 +6,7 @@ root = os.path.join(local_path, '..')
 sys.path.append(root)
 
 from main import base
+from main.base import stock_fetcher as sf
 
 def test_is_test_flag():
     assert base.is_test_flag()
@@ -23,3 +24,8 @@ def test_random_sort():
     df = pd.read_csv(os.path.join(root, 'data', 'yeod', 'sp500_snapshot_20091231', 'IBM.csv'))
     df = base.random_sort(df)
 
+def test_get_stock():
+    df = sf.get_stock('IBM')
+    df2 = sf.get_stock2('IBM')
+    assert len(df) == len(df2)
+    assert len(df) > 1000
