@@ -26,7 +26,7 @@ def test_random_sort():
 
 def test_get_stock():
     df = sf.get_stock('YHOO')
-    df2 = sf.get_stock2('YHOO')
+    #df2 = sf.get_stock2('YHOO')
     assert len(df) == len(df2)
     assert len(df) > 1000
 
