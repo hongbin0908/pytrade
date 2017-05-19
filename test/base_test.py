@@ -32,4 +32,5 @@ def test_get_stock():
 
 if __name__ == '__main__':
     for i in range(1, 1000):
+        print(i)
         test_get_stock()
