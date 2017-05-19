@@ -21,11 +21,9 @@ def get_stock(symbol):
     while count > 0 :
         url = 'https://www.quandl.com/api/v3/datatables/WIKI/PRICES.csv?ticker=%s&api_key=jmNW9q_f2LYzA9fszZ33' % symbol
 
-        print(url)
         response = urllib.request.urlopen(url)
         try:
             df = pd.read_csv(response)
-            print(len(df))
         except Exception as exc:
             print('%r generated an exception: %s' % (symbol, exc))
             count -= 1
@@ -36,7 +34,6 @@ def get_stock(symbol):
             count -= 1
             continue
         break
-    print(df.columns)
     names = ['sym', 'date', 'openo', 'higho', 'lowo', 'closeo', 'volumeo', 'dividend', 'ratio', 'open', 'high', 'low', 'close', 'volume']
     df.columns = names
     df = df.dropna()
