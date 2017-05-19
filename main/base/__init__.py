@@ -15,6 +15,7 @@ import zipfile
 import traceback
 import random
 import pandas_datareader.yahoo.daily as yahoo
+from main.base import stock_fetcher as sf
 
 local_path = os.path.dirname(__file__)
 root = os.path.join(local_path, '..', '..')
@@ -108,14 +109,7 @@ def get_last_trade_date(is_force=False):
     """
     get the last trade date
     """
-    if is_force:
-        y = yahoo.YahooDailyReader("IBM", "17000101", "20990101", adjust_price=False)
-        df = y.read()
-        names = ['date', 'openo', 'higho', 'lowo', 'closeo', 'volumeo', 'adjclose']
-        df.columns = names
-        df= df.dropna()
-    else:
-        df = pd.read_csv(os.path.join(local_path, '..','..','data' , 'yeod', 'index', '^GSPC.csv'))
+    df = sf.get_stock('IBM')
     return df.date.max()
 
 def strDate2num(str):
