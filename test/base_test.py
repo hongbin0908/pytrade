@@ -29,3 +29,7 @@ def test_get_stock():
     df2 = sf.get_stock2('YHOO')
     assert len(df) == len(df2)
     assert len(df) > 1000
+
+
+if __name__ == '__main__':
+    test_get_stock()
