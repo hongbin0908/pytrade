@@ -24,13 +24,16 @@ def test_random_sort():
     df = pd.read_csv(os.path.join(root, 'data', 'yeod', 'sp500_snapshot_20091231', 'IBM.csv'))
     df = base.random_sort(df)
 
+def test_get_last_trade_date():
+    print(base.get_last_trade_date(is_force=True))
+
 def test_get_stock():
     df = sf.get_stock('YHOO')
     #df2 = sf.get_stock2('YHOO')
     assert len(df) > 1000
 
 
-if __name__ == '__main__':
-    for i in range(1, 10000):
-        print(i)
-        test_get_stock()
+#if __name__ == '__main__':
+#    for i in range(1, 10000):
+#        print(i)
+#        test_get_stock()
