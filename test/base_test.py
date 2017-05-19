@@ -27,9 +27,9 @@ def test_random_sort():
 def test_get_stock():
     df = sf.get_stock('YHOO')
     #df2 = sf.get_stock2('YHOO')
-    assert len(df) == len(df2)
     assert len(df) > 1000
 
 
 if __name__ == '__main__':
-    test_get_stock()
+    for i in range(1, 1000):
+        test_get_stock()
