@@ -43,7 +43,7 @@ class sp500_snapshot(YeodBase):
     def get_name(self):
         return self.snap
     def get_syms(self):
-        df = pd.read_csv(os.path.join(root, "sp100_snapshot", "%s.CSV" % self.snap))
+        df = pd.read_csv(os.path.join(root, "sp100_snapshot", "sp500_snapshot_%s.CSV" % self.snap))
         s = [each["Symbol"].strip() for i, each in df.iterrows()]
         return s
 
