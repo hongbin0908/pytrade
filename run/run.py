@@ -83,7 +83,7 @@ if __name__ == '__main__':
         model.work(confer)
         pd.set_option('display.expand_frame_repr', False)
         pd.options.display.max_rows = 999
-        report_file = os.path.join(os.path.join(local_path, '..',"data", 'report', base.get_last_trade_date() + ".txt"))
+        report_file = os.path.join(os.path.join(local_path, '..',"data", 'report', confer.last_trade_date + ".txt"))
         with open(report_file, mode='w') as f:
             report.work(confer,f=f)
             dfo = pd.read_pickle(confer.get_pred_file())

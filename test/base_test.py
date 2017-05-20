@@ -32,6 +32,9 @@ from main.base import stock_fetcher as sf
 #    yahoo = yf.Share('YHOO')
 #    print(yahoo.get_historical('2014-01-01', '2017-01-01'))
 #
+
+def test_get_last_trade_date_local():
+    base.get_last_trade_date_local('sp500_snapshot_20091231')
 def test_dict():
     res = {'datatable': {'data': [
         ['YHOO', '1996-04-12', 25.25, 43.0, 24.5, 33.0, 17030000.0, 0.0, 1.0, 1.0520833333333333, 1.7916666666666665,

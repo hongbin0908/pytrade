@@ -128,4 +128,3 @@ if __name__ == '__main__':
         main2(poolnum=1, 
                 target=os.path.join(root, "main", "yeod", "yeod_demo.zip"),
                 symbols = sp100_snapshot("20091129").get_syms()[0:10])
-

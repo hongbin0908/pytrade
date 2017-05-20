@@ -29,11 +29,8 @@ def work(confer):
 
 def work2(syms, ta, confer, n_pool):
     dir_name = confer.syms.get_name()
-    if os.path.exists(confer.get_ta_file()) and not confer.force :
+    if os.path.exists(confer.get_ta_file()) and not confer.force:
         print("%s exists!" % confer.get_ta_file())
         return
-    #relative.work(n_pool, confer.syms.get_syms(), confer, dirname=dir_name)
     build.work(n_pool, confer.syms.get_syms(), ta,
                     confer, dirname = dir_name)
-    #df.to_pickle(confer.get_ta_file())
-    #df_feat.to_pickle(confer.get_feat_file())
