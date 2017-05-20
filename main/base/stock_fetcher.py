@@ -22,7 +22,6 @@ def get_stock_once(symbol):
     while True:
         if is_first:
             url = 'https://www.quandl.com/api/v3/datatables/WIKI/PRICES.json?ticker=%s&api_key=77sr5UvZ2qs5z38i_Hf5' % symbol
-            is_first = False
         elif not response['datatable']['meta']['next_cursor_id'] is None:
             url = 'https://www.quandl.com/api/v3/datatables/WIKI/PRICES.json?ticker=%s&qopts.cursor_id=%s&api_key=77sr5UvZ2qs5z38i_Hf5' % (symbol, response['datatable']['meta']['next_cursor_id'])
         else:
@@ -34,6 +33,8 @@ def get_stock_once(symbol):
             df = pd.DataFrame(response['datatable']['data'])
         else:
             df = pd.concat([df, pd.DataFrame(response['datatable']['data'])])
+        if is_first:
+            is_first = False
 def get_stock(symbol):
     count = 1
     while count > 0 :
