@@ -96,6 +96,7 @@ def get_stock2(symbol):
 def get_stock3(symbol):
     import urllib.request
     count = 1
+    df = None
     while count > 0 :
         url = 'http://www.hongindex.com/yeod/dead_20170304/%s.csv' % symbol
         print(url)
