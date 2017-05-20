@@ -120,7 +120,7 @@ def main2( poolnum, base, target, symbols):
         for file_name in files:
             zf.write(os.path.join(root, file_name), file_name)
     zf.close()
-    shutil.rmtree(tmpdir)
+    #shutil.rmtree(tmpdir)
 
 
 if __name__ == '__main__':
