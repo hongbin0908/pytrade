@@ -19,7 +19,7 @@ def assert_valid(df):
     assert len(df.replace([np.inf,-np.inf],np.nan).dropna()) == len(df)
 
 def _single(symbol, data_dir):
-    df = sf.get_stock2(symbol)
+    df = sf.get_stock(symbol)
     if df is None:
         df = sf.get_stock3(symbol)
     assert_valid(df)
