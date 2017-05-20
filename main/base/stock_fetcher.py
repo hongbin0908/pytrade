@@ -17,18 +17,28 @@ local_path = os.path.dirname(__file__)
 root = os.path.join(local_path, '..', '..')
 sys.path.append(root)
 
-def get_stock(symbol):
-    count = 1
-    while count > 0 :
-        #url = 'https://www.quandl.com/api/v3/datatables/WIKI/PRICES.csv?ticker=%s&api_key=jmNW9q_f2LYzA9fszZ33' % symbol
-
-        url = 'https://www.quandl.com/api/v3/datatables/WIKI/PRICES.json?ticker=%s&api_key=77sr5UvZ2qs5z38i_Hf5' % symbol
+def get_stock_once(symbol):
+    is_first = True
+    while True:
+        if is_first:
+            url = 'https://www.quandl.com/api/v3/datatables/WIKI/PRICES.json?ticker=%s&api_key=77sr5UvZ2qs5z38i_Hf5' % symbol
+            is_first = False
+        elif not response['datatable']['meta']['next_cursor_id'] is None:
+            url = 'https://www.quandl.com/api/v3/datatables/WIKI/PRICES.json?ticker=%s&qopts.cursor_id=%s&api_key=77sr5UvZ2qs5z38i_Hf5' % (symbol, response['datatable']['meta']['next_cursor_id'])
+        else:
+            return df
         response = urllib.request.urlopen(url)
         response = response.read().decode('utf8')
         response = json.loads(response)
-        try:
+        if is_first:
             df = pd.DataFrame(response['datatable']['data'])
-            #df = pd.read_csv(response)
+        else:
+            df = pd.concat([df, pd.DataFrame(response['datatable']['data'])])
+def get_stock(symbol):
+    count = 1
+    while count > 0 :
+        try:
+            df = get_stock_once(symbol)
         except Exception as exc:
             print('%r generated an exception: %s' % (symbol, exc))
             count -= 1
