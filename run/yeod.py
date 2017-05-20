@@ -17,7 +17,7 @@ from main import base
 #yeod.main2(1, "/home/hongbin/misc/nginx/html/yeod/index.zip", yeod.index().get_syms())
 last_trade_date = base.get_last_trade_date(is_force=True)
 #yeod.main2(1, "/home/hongbin/misc/nginx/html/yeod/index_%s.zip" % last_trade_date , yeod.index().get_syms())
-yeod.main2(2, "/home/hongbin/misc/nginx/html/yeod/sp500_snapshot_20091231_%s.zip" % last_trade_date, yeod.sp500_snapshot("20091231").get_syms())
+yeod.main2(2, '/tmp/sp500_%s' % last_trade_date, "/home/hongbin/misc/nginx/html/yeod/sp500_snapshot_20091231_%s.zip" % last_trade_date, yeod.sp500_snapshot("20091231").get_syms())
 yeod.main2(2, "/home/hongbin/misc/nginx/html/yeod/sp500_snapshot_20101207_%s.zip" % last_trade_date, yeod.sp500_snapshot("20101207").get_syms())
 yeod.main2(10, "/home/hongbin/misc/nginx/html/yeod/sp500_snapshot_20111231_%s.zip" % last_trade_date, yeod.sp500_snapshot("20111231").get_syms())
 yeod.main2(10, "/home/hongbin/misc/nginx/html/yeod/sp500_snapshot_20121229_%s.zip" % last_trade_date, yeod.sp500_snapshot("20121229").get_syms())

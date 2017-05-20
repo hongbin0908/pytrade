@@ -102,14 +102,19 @@ def get_sp500_snapshot_20091231():
     return sp500_snapshot("20091231")
 
 
-def main2( poolnum, target, symbols):
+def main2( poolnum, base, target, symbols):
     import zipfile
     zf = zipfile.ZipFile(target, mode='w')
 
     import tempfile
-    tmpdir = tempfile.TemporaryDirectory().name
-    print(tmpdir)
-    engine.work(list(set(symbols)), tmpdir, poolnum)
+    tmpdir = base
+    if not os.path.exists(tmpdir):
+        os.mkdir(tmpdir)
+    to_fetchs = []
+    for each in list(set(symbols)):
+        if not os.path.exists(os.path.join(tmpdir, '%s.csv'% each)):
+            to_fetchs.append(each)
+    engine.work(each, tmpdir, poolnum)
     contents = os.walk(tmpdir)
     for root, folders, files in contents:
         for file_name in files:
