@@ -18,6 +18,8 @@ from main.classifier.interval_acc import IntervalAcc
 
 class Logit2(BaseClassifier):
     def __init__(self, batch_size = 100, nb_epoch=1, verbose = 1):
+        import numpy as np
+        np.random.seed(608317)
         model = Sequential()
         self.classifier = model
         self.batch_size = batch_size
@@ -40,8 +42,8 @@ class Logit2(BaseClassifier):
         self.classifier.add(Dense(output_dim=1, kernel_initializer=keras.initializers.glorot_uniform(seed=447630),
                                   bias_initializer=keras.initializers.constant(0.0)))
         self.classifier.add(Activation('sigmoid'))
-        opt = SGD(lr=0.01)
-        #opt = Adam(lr=4e-5)
+        #opt = SGD(lr=0.01)
+        opt = Adam(lr=4e-5)
         self.classifier.compile(loss='binary_crossentropy', optimizer=opt, metrics=['accuracy'])
         ival = IntervalAcc(cls = self, validation_data=(df_test, score), interval=1)
         self.classifier.fit(X, y, shuffle=False, batch_size=self.batch_size, nb_epoch=self.nb_epoch, callbacks=[ival])
