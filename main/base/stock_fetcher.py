@@ -29,6 +29,7 @@ def get_stock_once(symbol):
         response = urllib.request.urlopen(url)
         response = response.read().decode('utf8')
         response = json.loads(response)
+        print(response['datatable']['meta'])
         if is_first:
             df = pd.DataFrame(response['datatable']['data'])
         else:
