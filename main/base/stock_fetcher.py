@@ -19,8 +19,9 @@ sys.path.append(root)
 def get_stock(symbol):
     count = 1
     while count > 0 :
-        url = 'https://www.quandl.com/api/v3/datatables/WIKI/PRICES.csv?ticker=%s&api_key=jmNW9q_f2LYzA9fszZ33' % symbol
+        #url = 'https://www.quandl.com/api/v3/datatables/WIKI/PRICES.csv?ticker=%s&api_key=jmNW9q_f2LYzA9fszZ33' % symbol
 
+        url = 'https://www.quandl.com/api/v3/datatables/WIKI/PRICES.json?ticker=%s&api_key=77sr5UvZ2qs5z38i_Hf5' % symbol
         response = urllib.request.urlopen(url)
         try:
             df = pd.read_csv(response)

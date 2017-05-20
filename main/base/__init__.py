@@ -110,7 +110,8 @@ def get_last_trade_date(is_force=False):
     get the last trade date
     """
     df = sf.get_stock('IBM')
-    return df.date.max()
+    print(df.index)
+    return df.index.max()
 
 def strDate2num(str):
     df =dt.datetime.strptime(str, "%Y-%m-%d")

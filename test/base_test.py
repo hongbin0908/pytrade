@@ -25,15 +25,21 @@ def test_random_sort():
     df = base.random_sort(df)
 
 def test_get_last_trade_date():
-    print(base.get_last_trade_date(is_force=True))
+    assert '2017-05-18' == base.get_last_trade_date(is_force=True)
+
+def test_yahoo_finance():
+    import yahoo_finance as yf
+    yahoo = yf.Share('YHOO')
+    print(yahoo.get_historical('2014-01-01', '2017-01-01'))
 
 def test_get_stock():
     df = sf.get_stock('YHOO')
-    #df2 = sf.get_stock2('YHOO')
     assert len(df) > 1000
+    df = sf.get_stock('IBM')
+    assert len(df) > 10000
 
 
-#if __name__ == '__main__':
-#    for i in range(1, 10000):
-#        print(i)
-#        test_get_stock()
+if __name__ == '__main__':
+    for i in range(1, 10000):
+        print(i)
+        test_get_stock()
