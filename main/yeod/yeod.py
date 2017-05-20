@@ -115,10 +115,9 @@ def main2( poolnum, base, target, symbols):
         if not os.path.exists(os.path.join(tmpdir, '%s.csv'% each)):
             to_fetchs.append(each)
     engine.work(to_fetchs, tmpdir, poolnum)
-    contents = os.walk(tmpdir)
-    for root, folders, files in contents:
-        for file_name in files:
-            zf.write(os.path.join(root, file_name), file_name)
+    for each in list(set(symbols)):
+        if os.path.exists(os.path.join(tmpdir, '%s.csv' % each)):
+            zf.write(os.path.join(tmpdir, '%s.csv'%each), "%s.csv" % each)
     zf.close()
     #shutil.rmtree(tmpdir)
 
