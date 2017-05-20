@@ -99,8 +99,8 @@ def get_stock3(symbol):
     while count > 0 :
         url = 'http://www.hongindex.com/yeod/dead_20170304/%s.csv' % symbol
         print(url)
-        response = urllib.request.urlopen(url)
         try:
+            response = urllib.request.urlopen(url)
             df = pd.read_csv(response)
             print(len(df))
         except Exception as exc:
@@ -113,6 +113,8 @@ def get_stock3(symbol):
             count -= 1
             continue
         break
+    if df is None or len(df) < 10:
+        return None
     df = df.dropna()
     df.sort_values("date", ascending=True, inplace=True)
     df.reset_index(drop=True, inplace=True)
