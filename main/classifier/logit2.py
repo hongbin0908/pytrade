@@ -44,7 +44,7 @@ class Logit2(BaseClassifier):
         #opt = Adam(lr=4e-5)
         self.classifier.compile(loss='binary_crossentropy', optimizer=opt, metrics=['accuracy'])
         ival = IntervalAcc(cls = self, validation_data=(df_test, score), interval=1)
-        self.classifier.fit(X, y, batch_size=self.batch_size, nb_epoch=self.nb_epoch, callbacks=[ival])
+        self.classifier.fit(X, y, shuffle=False, batch_size=self.batch_size, nb_epoch=self.nb_epoch, callbacks=[ival])
     def predict_proba(self, X):
         re = self.classifier.predict_proba(X, verbose=0)
         re = np.hstack([1-re, re])
