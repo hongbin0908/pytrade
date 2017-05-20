@@ -11,6 +11,7 @@ import urllib.request
 import time
 import pandas as pd
 import pandas_datareader.yahoo.daily as yahoo
+import json
 
 local_path = os.path.dirname(__file__)
 root = os.path.join(local_path, '..', '..')
@@ -23,8 +24,11 @@ def get_stock(symbol):
 
         url = 'https://www.quandl.com/api/v3/datatables/WIKI/PRICES.json?ticker=%s&api_key=77sr5UvZ2qs5z38i_Hf5' % symbol
         response = urllib.request.urlopen(url)
+        response = json.loads(response.read())
+        print(response)
         try:
-            df = pd.read_csv(response)
+            df = pd.DataFrame(response['datatable']['data'])
+            #df = pd.read_csv(response)
         except Exception as exc:
             print('%r generated an exception: %s' % (symbol, exc))
             count -= 1
