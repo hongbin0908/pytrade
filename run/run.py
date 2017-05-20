@@ -81,7 +81,7 @@ if __name__ == '__main__':
         bitlize.work(confer)
         selected.work(confer)
         confer.force = True
-        #model.work(confer)
+        model.work(confer)
         pd.set_option('display.expand_frame_repr', False)
         pd.options.display.max_rows = 999
         report_file = os.path.join(os.path.join(local_path, '..',"data", 'report', confer.last_trade_date + ".txt"))

@@ -17,7 +17,7 @@ from main.classifier.base_classifier import BaseClassifier
 from main.classifier.interval_acc import IntervalAcc
 
 class Logit2(BaseClassifier):
-    def __init__(self, batch_size = 100, nb_epoch=20, verbose = 1):
+    def __init__(self, batch_size = 100, nb_epoch=1, verbose = 1):
         model = Sequential()
         self.classifier = model
         self.batch_size = batch_size
