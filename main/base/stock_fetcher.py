@@ -22,14 +22,13 @@ def get_stock_once(symbol):
     while True:
         if is_first:
             url = 'https://www.quandl.com/api/v3/datatables/WIKI/PRICES.json?ticker=%s&api_key=77sr5UvZ2qs5z38i_Hf5' % symbol
-        elif not response['datatable']['meta']['next_cursor_id'] is None:
-            url = 'https://www.quandl.com/api/v3/datatables/WIKI/PRICES.json?ticker=%s&qopts.cursor_id=%s&api_key=77sr5UvZ2qs5z38i_Hf5' % (symbol, response['datatable']['meta']['next_cursor_id'])
+        elif not response['meta']['next_cursor_id'] is None:
+            url = 'https://www.quandl.com/api/v3/datatables/WIKI/PRICES.json?ticker=%s&qopts.cursor_id=%s&api_key=77sr5UvZ2qs5z38i_Hf5' % (symbol, response['meta']['next_cursor_id'])
         else:
             return df
         response = urllib.request.urlopen(url)
         response = response.read().decode('utf8')
         response = json.loads(response)
-        print(response['meta'])
         if is_first:
             df = pd.DataFrame(response['datatable']['data'])
         else:
