@@ -22,10 +22,11 @@ def _single(symbol, data_dir):
     df = sf.get_stock(symbol)
     if df is None:
         df = sf.get_stock3(symbol)
+    if df is None:
+        return 0
     assert_valid(df)
     df = df.reset_index()
     df[df.volume > 1].round(6).to_csv(os.path.join(data_dir, symbol + ".csv"), index=False, date_format='%Y-%m-%d')
-
     return len(df)
 def work(syms,data_dir, processes):
     logging.debug("data_dir : %s" % data_dir)
