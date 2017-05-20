@@ -114,7 +114,7 @@ def main2( poolnum, base, target, symbols):
     for each in list(set(symbols)):
         if not os.path.exists(os.path.join(tmpdir, '%s.csv'% each)):
             to_fetchs.append(each)
-    engine.work(each, tmpdir, poolnum)
+    engine.work(to_fetchs, tmpdir, poolnum)
     contents = os.walk(tmpdir)
     for root, folders, files in contents:
         for file_name in files:
