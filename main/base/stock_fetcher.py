@@ -24,8 +24,9 @@ def get_stock(symbol):
 
         url = 'https://www.quandl.com/api/v3/datatables/WIKI/PRICES.json?ticker=%s&api_key=77sr5UvZ2qs5z38i_Hf5' % symbol
         response = urllib.request.urlopen(url)
-        response = json.loads(str(response.read()))
+        response = response.read()
         print(response)
+        response = json.loads(response)
         try:
             df = pd.DataFrame(response['datatable']['data'])
             #df = pd.read_csv(response)
