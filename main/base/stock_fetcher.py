@@ -51,6 +51,8 @@ def get_stock(symbol):
             count -= 1
             continue
         break
+    if df is None or len(df) < 10:
+        return None
     names = ['sym', 'date', 'openo', 'higho', 'lowo', 'closeo', 'volumeo', 'dividend', 'ratio', 'open', 'high', 'low', 'close', 'volume']
     df.columns = names
     df = df.dropna()
