@@ -28,8 +28,7 @@ def work(confer):
     work2(syms, ta, confer, n_pool)
 
 def work2(syms, ta, confer, n_pool):
-    dir_name = confer.syms.get_name()
-    print(confer.get_ta_file())
+    dir_name = confer.syms.get_name() + '_' + confer.last_trade_date
     if os.path.exists(confer.get_ta_file()) and not confer.force:
         print("%s exists!" % confer.get_ta_file())
         return
