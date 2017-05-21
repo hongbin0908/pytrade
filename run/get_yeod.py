@@ -7,6 +7,8 @@ import pandas_datareader.yahoo.daily as yahoo
 import multiprocessing
 import subprocess
 import logging
+import zipfile
+import urllib.request
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -14,20 +16,9 @@ local_path = os.path.dirname(__file__)
 root = os.path.join(local_path, '..')
 sys.path.append(root)
 
+from main import base
 
-#cmdstr = """
-#    cd {target};
-#    rm -rf sp100_current.tar.gz;
-#    wget http://hongindex.com/sp100_current.tar.gz;
-#    mkdir -p yeod
-#    rm -rf yeod/*
-#    tar xvzf sp100_current.tar.gz -C yeod
-#    #rsync  -av /data/users/hongbin/wp/pytrade hongbin@bc-r2hdp2:~/wp/
-#    """.format(**{"target":os.path.join(local_path, "..", "data")})
-#logging.debug(cmdstr)
-#subprocess.check_output(cmdstr, shell=True)
-import zipfile
-import urllib.request
+
 def get(snapname):
     dirname = "sp100_snapshot_%s" % snapname
     url = "http://www.hongindex.com/yeod/%s.zip" % dirname
@@ -37,7 +28,8 @@ def get(snapname):
     zf.extractall(os.path.join(root, 'data', 'yeod', dirname))
 
 def get2(snapname):
-    dirname = "sp500_snapshot_%s" % snapname
+    last_trade_date = base.get_last_trade_date()
+    dirname = "sp500_snapshot_%s_%s" % (snapname, last_trade_date)
     url = "http://www.hongindex.com/yeod/%s.zip" % dirname
     zfdir = os.path.join(root, "data", "yeod")
     if not os.path.exists(zfdir):
@@ -67,4 +59,4 @@ if __name__  == '__main__':
     #get2("20131229")
     #get2("20141229")
     #get2("20151228")
-    get_index()
+    #get_index()

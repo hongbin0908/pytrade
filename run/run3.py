@@ -74,20 +74,20 @@ if __name__ == '__main__':
     (options, args)  = parser.parse_args()
 
     for confer in get_confs() if not base.is_test_flag() else get_test_confs():
-        confer.force = options.force
-        #confer.force = True
+        confer.force = True
         build.work(confer)
         score_build.work(confer)
         bitlize.work(confer)
         selected.work(confer)
-        confer.force = True
+        confer.force = False
         model.work(confer)
+        confer.force = True
         pd.set_option('display.expand_frame_repr', False)
         pd.options.display.max_rows = 999
-        report_file = os.path.join(os.path.join(local_path, '..',"data", 'report', confer.last_trade_date + ".txt"))
+        report_file = os.path.join(os.path.join(local_path, '..',"data", 'report', base.get_last_trade_date() + ".txt"))
         with open(report_file, mode='w') as f:
             report.work(confer,f=f)
             dfo = pd.read_pickle(confer.get_pred_file())
             df = dfo[(dfo.date >=confer.model_split.test_start)]
             df_sort = df.sort_values('pred', ascending=False)[["date", "sym", "open", "high", "low", "close", "pred"]]
-            print(df_sort[df_sort.date == confer.last_trade_date].head(), file=f)
+            print(df_sort[df_sort.date == base.get_last_trade_date()].head(), file=f)

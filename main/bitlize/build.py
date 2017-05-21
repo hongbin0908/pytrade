@@ -27,7 +27,7 @@ def work(confer):
         assert len(df) == len(df_ta)
         df = df.reset_index(drop=True)
         if base.is_test_flag():
-            df, df_feat = bitlize.feat_split(df, confer.model_split.train_start, confer.model_split.train_end, 0.5, confer.scores[0].get_name(), 2, 2, confer.n_pool)
+            df, df_feat = bitlize.feat_split(df, confer.model_split.train_start, confer.model_split.train_end, 0.5, confer.scores[0].get_name(), 1, 200, confer.n_pool)
         else:
             df, df_feat = bitlize.feat_split(df, confer.model_split.train_start, confer.model_split.train_end, 0.5, confer.scores[0].get_name(), 2, 20000, confer.n_pool)
         df.reset_index(drop=True).to_pickle(confer.get_bitlize_file())

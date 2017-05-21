@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.7
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #@author  Bin Hong
 
@@ -7,19 +7,20 @@ the base method use by pytrade
 """
 
 import sys,os
-import json
 import numpy as np
 import pandas as pd
-import math
-import multiprocessing
 import datetime as dt
-import time
 import platform
-import socket
 import zipfile
+import traceback
+import random
+import pandas_datareader.yahoo.daily as yahoo
+from main.base import stock_fetcher as sf
+
 local_path = os.path.dirname(__file__)
 root = os.path.join(local_path, '..', '..')
 sys.path.append(root)
+
 
 def is_test_flag():
     if platform.platform().startswith("Windows"):
@@ -28,8 +29,7 @@ def is_test_flag():
         return True
     elif 'PYTEST' in os.environ and os.environ['PYTEST'] == '1':
         return True
-    else:
-        return False
+    return False
 
 
 def to_pickles(df, picklename):
@@ -78,15 +78,6 @@ def get_tabase_names(df):
     """
     return list(set(df.columns) - set([x for x in df.columns if x.startswith('ta_')]))
 
-def get_all(taname, lsym, start="",end=""):
-    sym2df = {}
-    for sym in lsym:
-        df = pd.read_pickle(os.path.join(dir_ta(taname), sym + ".pkl"))
-        if len(start) > 0:
-            df = df[(df.date >=start)&(df.date<end)]
-        df["sym"] = sym
-        sym2df[sym] = df
-    return sym2df
 
 def get_range(df, start ,end):
     """
@@ -106,23 +97,6 @@ def merge(sym2feats,start="", end=""):
     df_merged.sort_values(["date"], ascending=True, inplace=True)
     return df_merged
 
-def get_merged_with_na(taname, lsym,start="", end=""):
-    sym2ta = get_all(taname, lsym,start,end)
-    df = merge(sym2ta,start,end)
-    if df is None:
-        return None
-    if len(df) > 0 and "ta_NATR_7" in df:
-        df = df[df['ta_NATR_7']>1.0]
-    return df
-
-def get_merged(taname, lsym,start = "", end =""):
-    df = get_merged_with_na(taname, lsym,start,end)
-    if df is None:
-        return df
-    df = df.replace([np.inf,-np.inf],np.nan).dropna()
-    return df
-
-
 def extract_feat_label(df, scorename, drop = True):
     if drop:
         df = df.replace([np.inf,-np.inf],np.nan).dropna()
@@ -135,9 +109,22 @@ def get_last_trade_date():
     """
     get the last trade date
     """
-    df = pd.read_csv(os.path.join(local_path, '..','..','data' , 'yeod', 'index', '^GSPC.csv'))
-    return df.date.max()
+    df = sf.get_stock('IBM')
+    return df.index.max()
 
+def get_last_trade_date_local(sym_name):
+    dates = []
+    for each in os.listdir(os.path.join(root, 'data', 'yeod')):
+        if not os.path.isdir(os.path.join(root, 'data', 'yeod', each)):
+            continue
+        import re
+        pattern = re.compile("%s_(.*)" % sym_name)
+        match = pattern.match(each)
+
+        if match:
+            dates.append(match.group(1))
+    dates.sort(reverse=True)
+    return dates[0]
 
 def strDate2num(str):
     df =dt.datetime.strptime(str, "%Y-%m-%d")
@@ -181,10 +168,25 @@ def zip_folder(folder_path, output_path):
         traceback.print_exc()
         assert(0)
     except zipfile.BadZipfile as exc:
-        taceback.print_exc()
+        traceback.print_exc()
         assert(0)
     finally:
         zip_file.close()
+
+def random_sort(df):
+    random.seed(None)
+    rand_int = random.randint(0,10000)
+    df = df.sample(frac=1.0, random_state=rand_int)
+    return df
+
+def split_by_year(df):
+    df = df.sort_values('date', ascending=True)
+    assert 'date' in df.columns
+    if 'yyyy' not in df.columns:
+        df['yyyy'] = df.date.str.slice(0,4)
+    for year in df['yyyy'].unique():
+        yield df[df['yyyy']==year]
+
 if __name__ == "__main__":
     print(is_test_flag())
 

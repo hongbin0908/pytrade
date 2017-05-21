@@ -20,6 +20,7 @@ from main.classifier.tree import cnn
 from main.classifier.ts import Ts
 from main.classifier.logit2 import Logit2
 from main.selector.selector import MiSelector
+from main import base
 
 class MltradeConf:
     def __init__(self, model_split, 
@@ -36,19 +37,23 @@ class MltradeConf:
         self.week = week
         self.force = False
         self.ta = ta
+        self.last_trade_date = base.get_last_trade_date_local(self.syms.get_name())
         if selector is None:
             self.selector = MiSelector([self])
         else:
             self.selector = selector
         
-        self.name_ta = "%s_%s" % (self.syms.get_name(), self.ta.get_name())
+        self.name_ta = "%s_%s_%s" % (self.syms.get_name(), self.ta.get_name(), self.last_trade_date)
         self.name_score = ""
         for score in self.scores:
             self.name_score += "%s_" % score.get_name()
-        self.name_bitlize = "%s_%s_%s_%s" % (self.name_ta, self.model_split.train_start, self.model_split.train_end, self.scores[0].get_name())
-
-        self.name_sel = "%s" % self.selector.get_name()
-        self.name_clazz = "%s_%s" % (self.name_sel, self.classifier.get_name())
+        self.name_score += self.last_trade_date
+        self.name_bitlize = "%s_%s_%s_%s" % (self.name_ta, self.model_split.train_start,
+                                                self.model_split.train_end, self.scores[0].get_name())
+        self.name_sel = "%s" % (self.selector.get_name())
+        self.name_clazz = "%s_%s_%s_%s_%s" % (self.syms.get_name(), self.ta.get_name(),
+                                        self.model_split.train_start, self.model_split.train_end,
+                                        self.classifier.get_name())
 
     def get_years(self, df):
         if "yyyy" not in df:

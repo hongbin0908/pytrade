@@ -102,20 +102,24 @@ def get_sp500_snapshot_20091231():
     return sp500_snapshot("20091231")
 
 
-def main2( poolnum, target, symbols):
+def main2( poolnum, base, target, symbols):
     import zipfile
     zf = zipfile.ZipFile(target, mode='w')
 
     import tempfile
-    tmpdir = tempfile.TemporaryDirectory().name
-    print(tmpdir)
-    engine.work(list(set(symbols)), tmpdir, poolnum)
-    contents = os.walk(tmpdir)
-    for root, folders, files in contents:
-        for file_name in files:
-            zf.write(os.path.join(root, file_name), file_name)
+    tmpdir = base
+    if not os.path.exists(tmpdir):
+        os.mkdir(tmpdir)
+    to_fetchs = []
+    for each in list(set(symbols)):
+        if not os.path.exists(os.path.join(tmpdir, '%s.csv'% each)):
+            to_fetchs.append(each)
+    engine.work(to_fetchs, tmpdir, poolnum)
+    for each in list(set(symbols)):
+        if os.path.exists(os.path.join(tmpdir, '%s.csv' % each)):
+            zf.write(os.path.join(tmpdir, '%s.csv'%each), "%s.csv" % each)
     zf.close()
-    shutil.rmtree(tmpdir)
+    #shutil.rmtree(tmpdir)
 
 
 if __name__ == '__main__':
@@ -123,4 +127,3 @@ if __name__ == '__main__':
         main2(poolnum=1, 
                 target=os.path.join(root, "main", "yeod", "yeod_demo.zip"),
                 symbols = sp100_snapshot("20091129").get_syms()[0:10])
-

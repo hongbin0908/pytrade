@@ -71,8 +71,8 @@ class Poster:
         df_train = df_train.sample(frac=1.0)
         assert(len(df_train) == 2*len(df_train_1))
 
-        print("train start : %s train end: %s" % (df_train.sort_values('date').head(1)['date'].values[0],
-                                                  df_train.sort_values('date').tail(1)['date'].values[0]))
+        print("train start : %s train end: %s total:%d" % (df_train.sort_values('date').head(1)['date'].values[0],
+                                                  df_train.sort_values('date').tail(1)['date'].values[0], len(df_train)))
         npTrainFeat, npTrainLabel = base.extract_feat_label(df_train, score.get_name())
         df_test = df_test.sort_values(["sym", "date"])
         df_test_1 = df_test[df_test[score.get_name()] == 0]
@@ -103,6 +103,8 @@ class Poster:
         df_all = df_all.sample(frac=1.0, random_state = 1253)
         feat_names = base.get_feat_names(df_all)
         np_feat = df_all.loc[:, feat_names].values
+        print("pred start : %s pred end: %s total:%d" % (df_all.sort_values('date').head(1)['date'].values[0],
+                                                           df_all.sort_values('date').tail(1)['date'].values[0], len(df_all)))
         np_pred = self.confer.classifier.predict_proba(np_feat)
         #df_all = df_all.iloc[2-1:]
         df_all["pred"] = np_pred[:, 1]
