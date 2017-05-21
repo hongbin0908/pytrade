@@ -16,12 +16,12 @@ def build_sample(info, stock_name = "A", interval = 15):
 		x_date = info.iloc[i-interval+1, 0]
 		x = info.iloc[i-interval+1:i+1, 5].tolist()
 		x_str = ' '.join(map(str, x))
-		label = info.iloc[i+1, 8] / info.iloc[i, 8]
+		label = info.iloc[i+1, 8] * 1.0 / info.iloc[i, 8]
 
-		if label > 1:
-			label = "1"
-		else:
-			label = "0" 
+		#if label > 1:
+		#	label = "1"
+		#else:
+		#	label = "0" 
 		#label_str = ["0", "0", "0"]
 		#if label >1.005:
 		#	label_str[0] = "1"
@@ -29,7 +29,7 @@ def build_sample(info, stock_name = "A", interval = 15):
 		#	label_str[2]  = "1"
 		#else:
 		#	label_str[1] = "1"
-		print("%s %s %s %s" %(stock_name, x_date, x_str, label))
+		print("%s %s %s %.4f" %(stock_name, x_date, x_str, label))
 if __name__ == "__main__":
 	fd = open("stocks_part")
 	for i in fd:
