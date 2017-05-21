@@ -37,7 +37,7 @@ class Logit2(BaseClassifier):
         for i in range(1):
         #for i in range(2):
             self.classifier.add(Dense(output_dim=64, kernel_initializer=keras.initializers.glorot_normal(seed=846635)))
-        #    self.classifier.add(Activation('relu'))
+            self.classifier.add(Activation('relu'))
         #    self.classifier.add(Dropout(0.5 ,seed=14306))
 
         self.classifier.add(Dense(output_dim=1, kernel_initializer=keras.initializers.glorot_uniform(seed=447630),
