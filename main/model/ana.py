@@ -114,7 +114,7 @@ def roi_level(df, score):
 
 def roi_level_per_year(df, score, threshold1, threshold2):
     df = df.sort_values(["pred"], ascending=False)
-    index = ["year", "threshold1", "num1", 'roi1', 'threshold2',"num1", "roi1"]
+    index = ["year", "threshold1", "num1", 'roi1', 'threshold2',"num4", "roi4"]
     df['yyyy'] = df.date.str.slice(0,4)
     years = df["yyyy"].unique()
     res = pd.DataFrame(data=None, columns=index)
@@ -126,6 +126,21 @@ def roi_level_per_year(df, score, threshold1, threshold2):
         res = res.append(pd.Series((year, threshold1, len(df_cur1), roi1, threshold2, len(df_cur2), roi2), index=index), ignore_index=True)
     res = res.sort_values("year", ascending=True)
     return res
+
+def roi_last_months(df, score, threshold1, threshold2):
+    df = df.sort_values(["pred"], ascending=False)
+    index = ["month", "threshold1", "num1", 'roi1', 'threshold2',"num4", "roi4"]
+    df['yyyyMM'] = df.date.str.slice(0,7)
+    months = df["yyyyMM"].unique()
+    res = pd.DataFrame(data=None, columns=index)
+    for month in months:
+        df_cur1 = df[(df.yyyyMM == month) & (df.pred >= threshold1)]
+        roi1 = roi(df_cur1, score)[0]
+        df_cur2 = df[(df.yyyyMM == month) & (df.pred >= threshold2)]
+        roi2 = roi(df_cur2, score)[0]
+        res = res.append(pd.Series((month, threshold1, len(df_cur1), roi1, threshold2, len(df_cur2), roi2), index=index), ignore_index=True)
+    res = res.sort_values("month", ascending=True)
+    return res.tail(12)
 
 def accurate_level_per_year(df, score):
     index = ["year", "top", "accurate", "threshold"]
