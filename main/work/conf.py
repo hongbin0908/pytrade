@@ -28,7 +28,7 @@ class MltradeConf:
              scores=[ScoreLabel(5, 1.0), ScoreRelative(5), ScoreRelativeOpen(5)],
                  ta=TaSetBase1(), selector=None, n_pool=10,
                  syms=yeod.sp500_snapshot("sp500_snapshot_20091231"),
-                 week=0):
+                 week=0, postfix="", train_iters = 1):
         self.model_split = model_split
         self.classifier = classifier
         self.n_pool = n_pool
@@ -38,6 +38,8 @@ class MltradeConf:
         self.force = False
         self.ta = ta
         self.last_trade_date = base.get_last_trade_date_local(self.syms.get_name())
+        self.postfix = postfix
+        self.train_iters = train_iters
         if selector is None:
             self.selector = MiSelector([self])
         else:
@@ -64,38 +66,42 @@ class MltradeConf:
     def get_classifier_file(self):
         if not os.path.exists(os.path.join(root, 'data', 'clazz')):
             os.makedirs(os.path.join(root, 'data', 'clazz'))
-        return os.path.join(root, 'data', 'clazz', self.name_clazz)
+        return os.path.join(root, 'data', 'clazz', self.name_clazz + "_" +self.postfix)
 
     
     def get_ta_file(self):
         if not os.path.exists(os.path.join(root, 'data', 'ta')):
             os.makedirs(os.path.join(root,'data','ta'))
-        return os.path.join(root, "data", "ta", "%s.pkl" % self.name_ta)
+        return os.path.join(root, "data", "ta", "%s_%s.pkl" % (self.name_ta, self.postfix))
 
     def get_bitlize_file(self):
         if not os.path.exists(os.path.join(root, 'data', 'bitlize')):
             os.makedirs(os.path.join(root, 'data', 'bitlize'))
-        return os.path.join(root, "data", "bitlize", "%s.pkl" % self.name_bitlize)
+        return os.path.join(root, "data", "bitlize", "%s_%s.pkl" % (self.name_bitlize, self.postfix))
         
     def get_feat_file(self):
         if not os.path.exists(os.path.join(root, 'data', 'feat')):
             os.makedirs(os.path.join(root, 'data', 'feat'))
-        return os.path.join(root, "data", "feat", "%s.pkl" % self.name_bitlize)
+        return os.path.join(root, "data", "feat", "%s_%s.pkl" % (self.name_bitlize, self.postfix))
 
     def get_score_file(self):
         if not os.path.exists(os.path.join(root, 'data', 'score')):
             os.makedirs(os.path.join(root, 'data', 'score'))
-        return os.path.join(root, 'data', 'score', "%s.pkl" % self.name_score)
+        return os.path.join(root, 'data', 'score', "%s_%s.pkl" % (self.name_score, self.postfix))
 
     def get_sel_file(self):
         if not os.path.exists(os.path.join(root, 'data', 'sel')):
             os.makedirs(os.path.join(root, 'data', 'sel'))
-        return os.path.join(root, 'data', 'sel', "%s.pkl" % self.name_sel)
+        return os.path.join(root, 'data', 'sel', "%s_%s.pkl" % (self.name_sel, self.postfix))
 
     def get_pred_file(self):
         if not os.path.exists(os.path.join(root, 'data', 'pred')):
             os.makedirs(os.path.join(root, 'data', 'pred'))
-        return os.path.join(root, "data", "pred", "%s.pkl" % self.name_clazz)
+        return os.path.join(root, "data", "pred", "%s_%s.pkl" % (self.name_clazz, self.postfix))
+
+    def get_report_file(self):
+        return os.path.join(local_path, '..','..',"data", 'report', self.last_trade_date + "_" + self.postfix + ".txt")
+
 class MyConfStableLTa(MltradeConf):
     def __init__(self, ta = ta_set.TaSetBase1Ext4(),
             classifier=RFCv1n2000md6msl100(),

@@ -41,6 +41,7 @@ def test_dict():
          1.0208333333333333, 1.375, 408720000.0],]}}
     df = pd.DataFrame(res['datatable']['data'])
     print(df)
+    assert True
 
 def test_get_stock():
     #df = sf.get_stock('YHOO')

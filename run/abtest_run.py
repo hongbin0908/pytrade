@@ -22,13 +22,17 @@ from main.work import score as score_build
 from main.work import bitlize
 from main.work import selected
 from main.work import report
+from main.work import abtest_report
 from main import base
 from main.classifier.tree import cnn
 from main.classifier.tree import ccl2
+from main.classifier.tree import RFCv1n2000md3msl100
 from main.classifier.ts import Ts
 from main.classifier.logit2 import Logit2
+from main.classifier.logit import Logit
 from main.work.conf import MyConfStableLTa
 from main.work.conf import MyConfForTest
+
 from main.ta import ta_set
 from keras.metrics import top_k_categorical_accuracy
 
@@ -67,6 +71,13 @@ def get_test_confs():
     ]
 
 if __name__ == '__main__':
+    iter_num = 3
+    abtest_models = {
+        "Logit10":Logit2(nb_epoch=1),
+        "Logit20":Logit2(nb_epoch=2)
+    }
+
+    result_dict = {}
 
     from optparse import OptionParser
     parser = OptionParser()
@@ -75,19 +86,42 @@ if __name__ == '__main__':
 
     for confer in get_confs() if not base.is_test_flag() else get_test_confs():
         confer.force = options.force
-        #confer.force = True
+        confer.postfix = "abtest"
         build.work(confer)
         score_build.work(confer)
         bitlize.work(confer)
         selected.work(confer)
-        confer.force = True
-        model.work(confer)
-        pd.set_option('display.expand_frame_repr', False)
-        pd.options.display.max_rows = 999
         report_file = confer.get_report_file()
-        with open(report_file, mode='w') as f:
-            report.work(confer,f=f)
-            dfo = pd.read_pickle(confer.get_pred_file())
-            df = dfo[(dfo.date >=confer.model_split.test_start)]
-            df_sort = df.sort_values('pred', ascending=False)[["date", "sym", "open", "high", "low", "close", "pred"]]
-            print(df_sort[df_sort.date == confer.last_trade_date].head(), file=f)
+        try:
+            fd = open(report_file, "w")
+        except Exception as e:
+            print("open report file error")
+            sys.exit(1)
+        for model_name in abtest_models.keys():
+            result_dict[model_name] = {}
+            result_dict[model_name]["exp_x2"] = 0
+            result_dict[model_name]["sum_x"] = 0
+            run_model = abtest_models[model_name]
+            confer.classifier = run_model
+            print(model_name, file=fd)
+            for i in range(0, iter_num):
+                confer.force = True
+                model.work(confer)
+                pd.set_option('display.expand_frame_repr', False)
+                pd.options.display.max_rows = 999
+                topn_value = 10 if base.is_test_flag() else 10000
+                res = abtest_report.work(confer,f=fd, round = i, topn=topn_value)
+                result_dict[model_name]['sum_x'] += res["accurate"][0]
+                result_dict[model_name]['exp_x2'] += res["accurate"][0] * res["accurate"][0]
+                """
+                dfo = pd.read_pickle(confer.get_pred_file())
+                df = dfo[(dfo.date >=confer.model_split.test_start)]
+                df_sort = df.sort_values('pred', ascending=False)[["date", "sym", "open", "high", "low", "close", "pred"]]
+                #print(df_sort[df_sort.date == confer.last_trade_date].head(), file=fd)
+                """
+        print("summary", file = fd)
+        for i in result_dict:
+            avg_x = result_dict[i]['sum_x'] * 1.0 / iter_num
+            cov_x = (result_dict[i]['exp_x2'] - iter_num * avg_x * avg_x) * 1.0/iter_num
+            print("model %s: avg = %.4f, cov = %.4f" %(i, avg_x, cov_x), file = fd)
+        fd.close()

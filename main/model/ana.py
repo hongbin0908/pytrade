@@ -77,6 +77,12 @@ def accurate_level(df, score):
         res = res.append(pd.Series(("%s"%top, accurate(df.head(top),score), float(df.head(top).tail(1)["pred"].values)),index=index), ignore_index=True)
     return res
 
+def accurate_topN(df, score, topN):
+    df = df.sort_values(["pred"], ascending=False)
+    index = ["top", "accurate", "threshold"]
+    res = pd.DataFrame(data=None, columns=index)
+    res = res.append(pd.Series(("%s"%topN, accurate(df.head(topN),score), float(df.head(topN).tail(1)["pred"].values)),index=index), ignore_index=True)
+    return res
 
 def roi2(df, score, max_hold_num=-1):
     if max_hold_num > 0:
