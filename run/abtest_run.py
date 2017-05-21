@@ -71,10 +71,10 @@ def get_test_confs():
     ]
 
 if __name__ == '__main__':
-    iter_num = 3
+    iter_num = 10
     abtest_models = {
-        "Logit10":Logit2(nb_epoch=1),
-        "Logit20":Logit2(nb_epoch=2)
+        "Logit10":Logit2(nb_epoch=10),
+        "Logit20":Logit2(nb_epoch=20)
     }
 
     result_dict = {}
