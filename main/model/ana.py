@@ -94,6 +94,8 @@ def roi(df, score, max_hold_num=-1, threshold=2):
     nValue = df.loc[:, "close"]*df.loc[:,score.get_name()]*num
     profile = nValue - 1000
     res = float(profile.sum())
+    if len(df) == 0:
+        return 0, 0
     return res/len(df), len(df)
 
 def roi_level(df, score):
