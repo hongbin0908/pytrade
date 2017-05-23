@@ -18,10 +18,6 @@ from main.classifier.interval_acc import IntervalAcc
 
 class Logit2(BaseClassifier):
     def __init__(self, batch_size = 100, nb_epoch=10, verbose = 1):
-        import numpy as np
-        np.random.seed(608317)
-        model = Sequential()
-        self.classifier = model
         self.batch_size = batch_size
         self.nb_epoch = nb_epoch
         self.verbose = verbose
@@ -29,6 +25,10 @@ class Logit2(BaseClassifier):
     def get_name(self):
         return "ccl-logit-%d-%d" % (self.nb_epoch, self.batch_size)
     def fit(self, X, y, df_test, score):
+        import numpy as np
+        np.random.seed(608317)
+        model = Sequential()
+        self.classifier = model
         self.classifier.add(Dense(input_dim=X.shape[1], output_dim=64,
                                   kernel_initializer=keras.initializers.glorot_uniform(seed=570255),
                                   bias_initializer=keras.initializers.constant(0.0)))
