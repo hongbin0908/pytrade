@@ -25,6 +25,6 @@ def work(confer, f=sys.stdout):
     print(res, file=f)
     #print(ana.roi_level(df, confer.scores[2]),file=f)
     thresholds = res['threshold'].tolist()
-    print(ana.roi_level_per_year(df, confer.scores[1], thresholds[0], thresholds[1]),file=f)
-    print(ana.roi_last_months(df, confer.scores[1], thresholds[0], thresholds[1]),file=f)
+    print(ana.roi_level_per_year(df, confer.scores[1], thresholds[0], thresholds[1], type='short'),file=f)
+    print(ana.roi_last_months(df, confer.scores[1], thresholds[0], thresholds[1], type='short'),file=f)
     #print(ana.roi_level_per_year(df, confer.scores[2]))

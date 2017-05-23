@@ -81,6 +81,7 @@ if __name__ == '__main__':
         bitlize.work(confer)
         selected.work(confer)
         confer.force = True
+        #confer.classifier = Logit2(nb_epoch=10)
         model.work(confer)
         pd.set_option('display.expand_frame_repr', False)
         pd.options.display.max_rows = 999

@@ -1,4 +1,6 @@
-import sys,os
+import os
+import sys
+
 import pandas as pd
 
 local_path = os.path.dirname(__file__)
@@ -7,6 +9,8 @@ sys.path.append(root)
 
 from main import base
 from main.base import stock_fetcher as sf
+from main.score import score
+from main.model import ana
 
 #def test_is_test_flag():
 #    assert base.is_test_flag()
@@ -48,6 +52,18 @@ def test_get_stock():
     #assert len(df) > 1000
     df = sf.get_stock('IBM')
     assert len(df) > 10000
+
+
+def test_roi_topN():
+    type = 'short'
+    tscore = score.ScoreLabel(5, 1.0)
+    score_name = tscore.get_name()
+    df = pd.DataFrame(columns = ['pred', 'close', 'date', score_name])
+    df.loc[0] = [0.2, 20, '20160520', 1.1]
+    df.loc[1] = [0.3, 40, '20160520', 0.9]
+    df.loc[2] = [0.2, 20, '20160521', 1.1]
+    res = ana.roi_topN(df, tscore, 1, 'short')
+    assert res['roi4'][0]==-100
 
 
 if __name__ == '__main__':

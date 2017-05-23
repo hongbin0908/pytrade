@@ -23,6 +23,7 @@ from main.work import bitlize
 from main.work import selected
 from main.work import report
 from main.work import abtest_report
+from main.model import ana
 from main import base
 from main.classifier.tree import cnn
 from main.classifier.tree import ccl2
@@ -71,7 +72,7 @@ def get_test_confs():
     ]
 
 if __name__ == '__main__':
-    iter_num = 10
+    iter_num = 2
     abtest_models = {
         "Logit10":Logit2(nb_epoch=10),
         "Logit20":Logit2(nb_epoch=20)
@@ -101,6 +102,7 @@ if __name__ == '__main__':
             result_dict[model_name] = {}
             result_dict[model_name]["exp_x2"] = 0
             result_dict[model_name]["sum_x"] = 0
+            result_dict[model_name]['sum_base'] = 0
             run_model = abtest_models[model_name]
             confer.classifier = run_model
             print(model_name, file=fd)
@@ -111,8 +113,9 @@ if __name__ == '__main__':
                 pd.options.display.max_rows = 999
                 topn_value = 10 if base.is_test_flag() else 10000
                 res = abtest_report.work(confer,f=fd, round = i, topn=topn_value)
-                result_dict[model_name]['sum_x'] += res["accurate"][0]
-                result_dict[model_name]['exp_x2'] += res["accurate"][0] * res["accurate"][0]
+                result_dict[model_name]['sum_x'] += res["roi3"][0]
+                result_dict[model_name]['exp_x2'] += res["roi3"][0] * res["roi3"][0]
+                result_dict[model_name]['sum_base'] += res['roi3'][1]
                 """
                 dfo = pd.read_pickle(confer.get_pred_file())
                 df = dfo[(dfo.date >=confer.model_split.test_start)]
@@ -121,7 +124,9 @@ if __name__ == '__main__':
                 """
         print("summary", file = fd)
         for i in result_dict:
-            avg_x = result_dict[i]['sum_x'] * 1.0 / iter_num
-            cov_x = (result_dict[i]['exp_x2'] - iter_num * avg_x * avg_x) * 1.0/iter_num
-            print("model %s: avg = %.4f, cov = %.4f" %(i, avg_x, cov_x), file = fd)
+            value_x = result_dict[i]['sum_x'] * 1.0 / iter_num
+            cov_x = (result_dict[i]['exp_x2'] - iter_num * value_x * value_x) * 1.0/iter_num
+            value_base = result_dict[i]['sum_base'] * 1.0 / iter_num
+            sharp_value = ana.get_sharp(value_x= value_x, value_base= value_base, value_sigma= cov_x)
+            print("model %s: avg = %.4f, cov = %.4f, sharp_index = %.6f" %(i, value_x, cov_x, sharp_value), file = fd)
         fd.close()

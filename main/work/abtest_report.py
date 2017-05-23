@@ -18,6 +18,7 @@ def work(confer, f=sys.stdout, round = 0 ,topn = 10000):
     dfo = pd.read_pickle(confer.get_pred_file())
     df = dfo[(dfo.date >=confer.model_split.test_start)]
     df_sort = df.sort_values('pred', ascending=False)[["date", "sym", "open", "high", "low", "close", "pred"]]
-    res = ana.accurate_topN(df, confer.scores[0], topn)
-    print("round%d : %.4f" %(round, res['accurate']), file=f)
+    #res = ana.accurate_topN(df, confer.scores[0], topn)
+    res = ana.roi_topN(df, confer.scores[0], topn)
+    print("round%d : %.4f" %(round, res['roi3'][0]), file=f)
     return res
