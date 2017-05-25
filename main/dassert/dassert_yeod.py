@@ -39,16 +39,17 @@ def work(confer):
     syms1 = pd1.sym.unique()
     syms2 = pd2.sym.unique()
 
+
     assert len(syms1) == len(syms2)
     assert len(pd1) == len(pd2)
 
     pd1 = pd1.sort_values(["sym",'date'])
     pd2 = pd2.sort_values(["sym",'date'])
-    for sym in syms1:
-        if sym in set(['EXPE.csv']):
-            continue
-        print(sym)
-        df1 = pd1[pd1.sym == sym]
-        df2 = pd2[pd2.sym == sym]
-        assert_frame_equal(df1[["date",'openo','higho','lowo', 'closeo','volume']], df2[['date', 'openo', 'higho', 'lowo', 'closeo', 'volume']])
+    #for sym in syms1:
+    #    #if sym in set(['EXPE.csv']):
+    #    #    continue
+    #    print(sym)
+    #    df1 = pd1[pd1.sym == sym]
+    #    df2 = pd2[pd2.sym == sym]
+    #    assert_frame_equal(df1[["date",'openo','higho','lowo', 'closeo','volume']], df2[['date', 'openo', 'higho', 'lowo', 'closeo', 'volume']])
     assert_frame_equal(pd1[["date",'openo','higho','lowo', 'closeo']], pd2[['date', 'openo', 'higho', 'lowo', 'closeo']])
