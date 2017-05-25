@@ -44,13 +44,15 @@ class MltradeConf:
             self.selector = MiSelector([self])
         else:
             self.selector = selector
-        
-        self.name_ta = "%s_%s_%s" % (self.syms.get_name(), self.ta.get_name(), self.last_trade_date)
+
+
+        def name_ta(self):
+            return "%s_%s_%s" % (self.syms.get_name(), self.ta.get_name(), self.last_trade_date)
         self.name_score = ""
         for score in self.scores:
             self.name_score += "%s_" % score.get_name()
         self.name_score += self.last_trade_date
-        self.name_bitlize = "%s_%s_%s_%s" % (self.name_ta, self.model_split.train_start,
+        self.name_bitlize = "%s_%s_%s_%s" % (self.name_ta(), self.model_split.train_start,
                                                 self.model_split.train_end, self.scores[0].get_name())
         self.name_sel = "%s" % (self.selector.get_name())
         self.name_clazz = "%s_%s_%s_%s_%s" % (self.syms.get_name(), self.ta.get_name(),
@@ -75,7 +77,7 @@ class MltradeConf:
     def get_ta_file(self):
         if not os.path.exists(os.path.join(root, 'data', 'ta')):
             os.makedirs(os.path.join(root,'data','ta'))
-        return os.path.join(root, "data", "ta", "%s_%s.pkl" % (self.name_ta, self.postfix))
+        return os.path.join(root, "data", "ta", "%s_%s.pkl" % (self.name_ta(), self.postfix))
 
     def get_bitlize_file(self):
         if not os.path.exists(os.path.join(root, 'data', 'bitlize')):
