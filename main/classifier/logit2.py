@@ -17,7 +17,7 @@ from main.classifier.base_classifier import BaseClassifier
 from main.classifier.interval_acc import IntervalAcc
 
 class Logit2(BaseClassifier):
-    def __init__(self, batch_size = 100, nb_epoch=10, verbose = 1):
+    def __init__(self, batch_size = 100, nb_epoch=20, verbose = 1):
         self.batch_size = batch_size
         self.nb_epoch = nb_epoch
         self.verbose = verbose
@@ -33,12 +33,11 @@ class Logit2(BaseClassifier):
                                   kernel_initializer=keras.initializers.glorot_uniform(seed=570255),
                                   bias_initializer=keras.initializers.constant(0.0)))
         self.classifier.add(Activation('relu'))
-        #self.classifier.add(Dropout(0.5, seed=969458))
+        self.classifier.add(Dropout(0.5, seed=969458))
         for i in range(2):
-        #for i in range(2):
             self.classifier.add(Dense(output_dim=64, kernel_initializer=keras.initializers.glorot_normal(seed=846635)))
             self.classifier.add(Activation('relu'))
-        #    self.classifier.add(Dropout(0.5 ,seed=14306))
+            self.classifier.add(Dropout(0.5 ,seed=14306))
 
         self.classifier.add(Dense(output_dim=1, kernel_initializer=keras.initializers.glorot_uniform(seed=447630),
                                   bias_initializer=keras.initializers.constant(0.0)))
