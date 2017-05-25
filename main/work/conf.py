@@ -46,8 +46,6 @@ class MltradeConf:
             self.selector = selector
 
 
-        def name_ta(self):
-            return "%s_%s_%s" % (self.syms.get_name(), self.ta.get_name(), self.last_trade_date)
         self.name_score = ""
         for score in self.scores:
             self.name_score += "%s_" % score.get_name()
@@ -59,6 +57,8 @@ class MltradeConf:
                                         self.model_split.train_start, self.model_split.train_end,
                                         self.classifier.get_name())
 
+    def name_ta(self):
+        return "%s_%s_%s" % (self.syms.get_name(), self.ta.get_name(), self.last_trade_date)
     def get_years(self, df):
         if "yyyy" not in df:
             df['yyyy'] = df.date.str.slice(0,4)
