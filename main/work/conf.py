@@ -63,6 +63,9 @@ class MltradeConf:
         years = df.sort_values(["yyyy"], ascending=True)["yyyy"].unique()
         return years
 
+    def get_yeod_dir(self):
+        return os.path.join(root, 'data', 'yeod', self.syms.get_name() + '_' + self.last_trade_date)
+
     def get_classifier_file(self):
         if not os.path.exists(os.path.join(root, 'data', 'clazz')):
             os.makedirs(os.path.join(root, 'data', 'clazz'))

@@ -126,6 +126,20 @@ def get_last_trade_date_local(sym_name):
     dates.sort(reverse=True)
     return dates[0]
 
+def get_second_trade_date_local(sym_name):
+    dates = []
+    for each in os.listdir(os.path.join(root, 'data', 'yeod')):
+        if not os.path.isdir(os.path.join(root, 'data', 'yeod', each)):
+            continue
+        import re
+        pattern = re.compile("%s_(.*)" % sym_name)
+        match = pattern.match(each)
+
+        if match:
+            dates.append(match.group(1))
+    dates.sort(reverse=True)
+    return dates[1]
+
 def strDate2num(str):
     df =dt.datetime.strptime(str, "%Y-%m-%d")
     return df
