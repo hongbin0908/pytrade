@@ -27,5 +27,11 @@ def work(confer):
     df1 = pd.read_pickle(ta1)
     df2 = pd.read_pickle(ta2)
 
+    syms1 = df1.sym.unique()
+    syms2 = df2.sym.unique()
+
+    print(syms1, syms2)
+    assert len(syms1) == len(syms2)
+
     assert len(df1) == len(df2)
     assert_frame_equal(df1, df2)
