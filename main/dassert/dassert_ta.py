@@ -20,6 +20,8 @@ def work(confer):
     ta2 = confer.get_ta_file()
     confer.last_trade_date = last_trade_date
 
+    print(ta1,ta2)
+
 
     df1 = pd.read_pickle(ta1)
     df2 = pd.read_pickle(ta2)
