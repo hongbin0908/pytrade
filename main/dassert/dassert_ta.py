@@ -17,6 +17,7 @@ def work(confer):
     ta1 = confer.get_ta_file()
     last_trade_date = confer.last_trade_date
     confer.last_trade_date = base.get_second_trade_date_local(confer.syms.get_name())
+    print(confer.last_trade_date)
     ta2 = confer.get_ta_file()
     confer.last_trade_date = last_trade_date
 
