@@ -33,5 +33,11 @@ def work(confer):
     print(syms1, syms2)
     assert len(syms1) == len(syms2)
 
+    for sym in syms1:
+        print(sym)
+        df_s_1 = df1[df1.sym == sym]
+        df_s_2 = df2[df2.sym == sym]
+        assert_frame_equal(df_s_1, df_s_2)
+
+
     assert len(df1) == len(df2)
-    assert_frame_equal(df1, df2)
