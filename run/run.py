@@ -30,6 +30,7 @@ from main.classifier.logit2 import Logit2
 from main.work.conf import MyConfStableLTa
 from main.work.conf import MyConfForTest
 from main.dassert import dassert_yeod
+from main.dassert import dassert_ta
 
 
 def get_confs2():
@@ -75,8 +76,10 @@ if __name__ == '__main__':
     for confer in get_confs() if not base.is_test_flag() else get_test_confs():
         confer.force = options.force
         #confer.force = True
-        dassert_yeod.work(confer)
+        if not base.is_test_flag():
+            dassert_yeod.work(confer)
         build.work(confer)
+        dassert_ta.work(confer)
         score_build.work(confer)
         bitlize.work(confer)
         selected.work(confer)
