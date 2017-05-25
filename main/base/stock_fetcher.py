@@ -60,7 +60,8 @@ def get_stock(symbol):
     df.reset_index(drop=True, inplace=True)
     df = df.set_index("date")
     df = df[['openo', 'higho', 'lowo', 'closeo', 'open', 'high', 'low', 'close', 'volume']]
-    return df.round(6)
+    return df
+    #return df.round(6)
 
 
 def get_stock2(symbol):
@@ -91,7 +92,8 @@ def get_stock2(symbol):
     df = pd.concat([df,df2], axis=1, join_axes=[df.index])
     assert len(df.shape) == len(df2.shape)
     df = df[['openo', 'higho', 'lowo', 'closeo', 'open', 'high', 'low', 'close', 'volume']]
-    return df.round(6)
+    #return df.round(6)
+    return df
 
 def get_stock3(symbol):
     import urllib.request
@@ -121,4 +123,5 @@ def get_stock3(symbol):
     df.reset_index(drop=True, inplace=True)
     df = df.set_index("date")
     df = df[['openo', 'higho', 'lowo', 'closeo', 'open', 'high', 'low', 'close', 'volume']]
-    return df.round(6)
+    #return df.round(6)
+    return df
