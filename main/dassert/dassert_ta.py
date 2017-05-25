@@ -36,6 +36,8 @@ def work(confer):
 
     for sym in syms1:
         print(sym)
+        if sym in set(['CCL']):
+            continue
         df_s_1 = df1[df1.sym == sym]
         df_s_1.reset_index(drop=True, inplace=True)
         df_s_2 = df2[df2.sym == sym]
