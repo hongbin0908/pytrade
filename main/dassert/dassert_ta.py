@@ -18,6 +18,7 @@ def work(confer):
     last_trade_date = confer.last_trade_date
     confer.last_trade_date = base.get_second_trade_date_local(confer.syms.get_name())
     ta2 = confer.get_ta_file()
+    confer.last_trade_date = last_trade_date
 
 
     df1 = pd.read_pickle(ta1)
