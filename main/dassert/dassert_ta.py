@@ -25,6 +25,7 @@ def work(confer):
 
 
     df1 = pd.read_pickle(ta1)
+    df1 = df1[df1.date <= base.get_second_trade_date_local(confer.syms.get_name())]
     df2 = pd.read_pickle(ta2)
 
     syms1 = df1.sym.unique()
