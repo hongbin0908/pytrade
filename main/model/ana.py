@@ -207,7 +207,7 @@ def roi_level_per_year(df, score, threshold1, threshold2, type = 'long'):
         print('in roi_level_per_year function, type argument error. expected is either '
               'long or short, but real value is %s' % (type))
         return None
-    index = ["year", "threshold1", "num1", 'roi1', 'threshold2',"num4", "roi4"]
+    index = ["year", "threshold1", "num1", 'roi1', 'threshold2',"num1", "roi1"]
     df['yyyy'] = df.date.str.slice(0,4)
     years = df["yyyy"].unique()
     res = pd.DataFrame(data=None, columns=index)
