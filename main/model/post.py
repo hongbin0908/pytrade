@@ -46,11 +46,16 @@ class Poster:
                     print("load %s" % class_dump_file)
                     self.confer.classifier = pickle.load(fin)
         else:
-            self._train(token.train, token.test, self.confer.scores[0])
+            if self.confer.classifier.get_name().startswith('mdn'):
+                self._train(token.train, token.test, self.confer.scores[0])
+            else:
+                self._train(token.train, token.test, self.confer.scores[0])
             if self.confer.classifier.get_name().startswith("ts"):
                 self.confer.classifier.save(class_dump_file)
             elif self.confer.classifier.get_name().startswith('ccl'):
                 self.confer.classifier.save(class_dump_file)
+            elif self.confer.classifier.get_name().startswith('mdn'):
+                return
             else:
                 with open(class_dump_file, 'wb') as fout:
                     pickle.dump(self.confer.classifier, fout, protocol=-1)
@@ -59,12 +64,15 @@ class Poster:
     def _train(self, df_train, df_test, score):
         df_train = df_train.sort_values(["sym", "date"])
 
-        df_train_1 = df_train[df_train[score.get_name()] == 0]
+        df_train_1 = df_train[df_train[score.get_name()]  < 1]
+
         #df_train_1 = df_train_1.sort_values([self.confer.scores[1].get_name()], ascending=True).head(int(len(df_train_1)/3*2)).tail(int(len(df_train_1)/3))
         #print(df_train_1.head()[["sym", "date", "close", self.confer.scores[1].get_name()]])
-        df_train_2 = df_train[df_train[score.get_name()] == 1]
+        df_train_2 = df_train[df_train[score.get_name()] >= 1]
         #df_train_2 = df_train_2.sort_values([self.confer.scores[1].get_name()], ascending=False).head(int(len(df_train_2)/3*2)).tail(int(len(df_train_2)/3))
         #print(df_train_2.head()[["sym", "date", "close", self.confer.scores[1].get_name()]])
+
+        # @ccl
         df_train_2 = df_train_2.sample(n = len(df_train_1))
         assert(len(df_train_2) == len(df_train_1))
         df_train = pd.concat([df_train_1, df_train_2], axis=0)
@@ -75,9 +83,9 @@ class Poster:
                                                   df_train.sort_values('date').tail(1)['date'].values[0], len(df_train)))
         npTrainFeat, npTrainLabel = base.extract_feat_label(df_train, score.get_name())
         df_test = df_test.sort_values(["sym", "date"])
-        df_test_1 = df_test[df_test[score.get_name()] == 0]
-        df_test_2 = df_test[df_test[score.get_name()] == 1]
-        assert len(df_test_1) + len(df_test_2) == len(df_test)
+        df_test_1 = df_test[df_test[score.get_name()] < 1]
+        df_test_2 = df_test[df_test[score.get_name()] >= 1]
+#        assert len(df_test_1) + len(df_test_2) == len(df_test)
         df_test_2 = df_test_2.sample(n = len(df_test_1))
         assert(len(df_test_2) == len(df_test_1))
         df_test = pd.concat([df_test_1, df_test_2], axis=0)
@@ -107,7 +115,10 @@ class Poster:
                                                            df_all.sort_values('date').tail(1)['date'].values[0], len(df_all)))
         np_pred = self.confer.classifier.predict_proba(np_feat)
         #df_all = df_all.iloc[2-1:]
-        df_all["pred"] = np_pred[:, 1]
+        if np_pred.ndim > 2:
+            df_all["pred"] = np_pred[:, 1]
+        else:
+            df_all["pred"] = np_pred[:, 0]
         df_all = df_all.sample(frac=1.0)
         return df_all.sort_values("pred", ascending=False)
 

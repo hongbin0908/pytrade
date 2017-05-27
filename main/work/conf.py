@@ -17,6 +17,7 @@ from main.model.spliter import YearSpliter
 from main.classifier.tree import RFCv1n2000md6msl100
 from main.classifier.tree import ccl2
 from main.classifier.tree import cnn
+from main.classifier.tree import MyMdnClassifier
 from main.classifier.ts import Ts
 from main.classifier.logit2 import Logit2
 from main.selector.selector import MiSelector
@@ -104,8 +105,12 @@ class MltradeConf:
             os.makedirs(os.path.join(root, 'data', 'pred'))
         return os.path.join(root, "data", "pred", "%s_%s.pkl" % (self.name_clazz, self.postfix))
 
-    def get_report_file(self):
-        return os.path.join(local_path, '..','..',"data", 'report', self.last_trade_date + "_" + self.postfix + ".txt")
+    def get_long_report_file(self):
+        return os.path.join(local_path, '..','..',"data", 'report', self.last_trade_date + "_long_" + self.postfix + ".txt")
+
+
+    def get_short_report_file(self):
+        return os.path.join(local_path, '..','..',"data", 'report', self.last_trade_date + "_short_" + self.postfix + ".txt")
 
 class MyConfStableLTa(MltradeConf):
     def __init__(self, ta = ta_set.TaSetBase1Ext4(),
@@ -132,4 +137,12 @@ class MyConfForTest(MltradeConf):
         classifier = ccl2()
         classifier = Logit2(nb_epoch=1)
         model_split=YearSpliter('2010', "2017", "1990", "2010")
+        MltradeConf.__init__(self, model_split=model_split, classifier=classifier, n_pool=1, syms=yeod.SymsForTest())
+
+
+class MyMdnConfForTest(MltradeConf):
+    def __init__(self):
+        print("into mymdnconffortest")
+        classifier = MyMdnClassifier(inputsize= 100, hidden_size= 200, model_size= 200, lr= 0.00006)
+        model_split = YearSpliter('2014', "2015", "2012", "2014")
         MltradeConf.__init__(self, model_split=model_split, classifier=classifier, n_pool=1, syms=yeod.SymsForTest())

@@ -14,6 +14,7 @@ from main.classifier.base_classifier import BaseClassifier
 from sklearn.ensemble.forest import RandomForestClassifier
 from sklearn.ensemble.gradient_boosting import GradientBoostingClassifier
 from sklearn.naive_bayes import GaussianNB
+from main.model import mdn
 
 from sklearn import linear_model
 from keras.metrics import top_k_categorical_accuracy
@@ -271,6 +272,27 @@ class MySGDClassifier(BaseClassifier):
             else:
                 s += tmp
         return 1 / (1 + np.exp(-1 * (s + self.classifier.intercept_)))
+
+
+class MyMdnClassifier(BaseClassifier):
+    def __init__(self, inputsize = 1,  hidden_size = 60, model_size = 60, lr = 0.0001):
+        self.classifier = mdn.ModelMdn(inputsize,  hidden_size , model_size, lr )
+        self.name = "mdn_model"
+
+
+    def get_name(self):
+        return self.name
+
+
+    def fit(self, X, y, X_t, y_t):
+        return self.classifier.fit(X, y)
+
+
+    def predict_proba(self, X):
+        is_debug = True
+        prob, debug = self.classifier.predict_value(X, is_debug)
+        return np.reshape(prob, [-1, 1])
+
 
 class MyRandomForestClassifier(BaseClassifier):
     def __init__(self, verbose=1, n_estimators = 2000, max_depth=8, min_samples_leaf=10000,

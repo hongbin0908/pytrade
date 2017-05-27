@@ -22,6 +22,7 @@ from main.work import score as score_build
 from main.work import bitlize
 from main.work import selected
 from main.work import report
+from main.work import short_report
 from main import base
 from main.classifier.tree import cnn
 from main.classifier.tree import ccl2
@@ -29,8 +30,9 @@ from main.classifier.ts import Ts
 from main.classifier.logit2 import Logit2
 from main.work.conf import MyConfStableLTa
 from main.work.conf import MyConfForTest
-from main.dassert import dassert_yeod
-from main.dassert import dassert_ta
+from main.work.conf import MyMdnConfForTest
+from main.ta import ta_set
+from keras.metrics import top_k_categorical_accuracy
 
 
 def get_confs2():
@@ -60,11 +62,20 @@ def get_confs():
         #MyConfStableLTa(classifier=cnn(batch_size=32, nb_epoch=20), score=score),
         MyConfStableLTa(classifier=Logit2(), score=score),
     ]
+
+def get_mdnconfs():
+    score = 5
+    return [
+        MyMdnConfForTest(),
+    ]
+
 def get_test_confs():
     score = 5
     return [
         MyConfForTest()
     ]
+
+
 
 if __name__ == '__main__':
 
@@ -73,25 +84,29 @@ if __name__ == '__main__':
     parser.add_option('-f', '--force', action='store_true',default = False, dest='force', help = 'do not use any tmp file')
     (options, args)  = parser.parse_args()
 
-    for confer in get_confs() if not base.is_test_flag() else get_test_confs():
+    for confer in get_mdnconfs() if not base.is_test_flag() else get_mdnconfs():
         confer.force = options.force
         #confer.force = True
-        if not base.is_test_flag():
-            dassert_yeod.work(confer)
         build.work(confer)
-        #dassert_ta.work(confer)
         score_build.work(confer)
         bitlize.work(confer)
         selected.work(confer)
         confer.force = True
-        #confer.classifier = Logit2(nb_epoch=10)
         model.work(confer)
         pd.set_option('display.expand_frame_repr', False)
         pd.options.display.max_rows = 999
-        report_file = confer.get_report_file()
-        with open(report_file, mode='w') as f:
+        long_report_file = confer.get_long_report_file()
+        short_report_file = confer.get_short_report_file()
+        with open(long_report_file, mode='w') as f:
             report.work(confer,f=f)
             dfo = pd.read_pickle(confer.get_pred_file())
             df = dfo[(dfo.date >=confer.model_split.test_start)]
             df_sort = df.sort_values('pred', ascending=False)[["date", "sym", "open", "high", "low", "close", "pred"]]
+            print(df_sort[df_sort.date == confer.last_trade_date].head(), file=f)
+
+        with open(short_report_file, mode = 'w') as f:
+            short_report.work(confer, f=f)
+            dfo = pd.read_pickle(confer.get_pred_file())
+            df = dfo[(dfo.date >= confer.model_split.test_start)]
+            df_sort = df.sort_values('pred', ascending=True)[["date", "sym", "open", "high", "low", "close", "pred"]]
             print(df_sort[df_sort.date == confer.last_trade_date].head(), file=f)
