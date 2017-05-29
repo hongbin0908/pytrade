@@ -29,7 +29,7 @@ class ModelMdn(Model):
         bo = tf.Variable(tf.zeros([1, NOUT], dtype=tf.float64))
         hidden_layer = tf.nn.relu(tf.matmul(self.x, Wh) + bh)
         hidden_layer1 = tf.nn.relu(tf.matmul(hidden_layer, Wh1) + bh1)
-        self.output = tf.matmul(hidden_layer, Wo) + bo
+        self.output = tf.matmul(hidden_layer1, Wo) + bo
         out_pi, out_sigma, out_mu = self._get_mixture_coef(self.output)
         self.lossfunc = self._get_lossfunc(out_pi, out_sigma, out_mu, self.y)
         self.train_op = tf.train.AdamOptimizer(learning_rate= lr, beta1=0.0001).minimize(self.lossfunc)
@@ -38,7 +38,7 @@ class ModelMdn(Model):
 
     def fit(self, x_, y_):
         y_ = np.reshape(y_, (-1, 1))
-        self.NEPOCH = 300
+        self.NEPOCH = 50
         self.loss = np.zeros(self.NEPOCH)  # store the training progress here.
 
         for i in range(self.NEPOCH):

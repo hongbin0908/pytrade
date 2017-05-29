@@ -29,7 +29,7 @@ class MltradeConf:
              scores=[ScoreLabel(5, 1.0), ScoreRelative(5), ScoreRelativeOpen(5)],
                  ta=TaSetBase1(), selector=None, n_pool=10,
                  syms=yeod.sp500_snapshot("sp500_snapshot_20091231"),
-                 week=0, postfix="", train_iters = 1):
+                 week=0, model_postfix="", train_iters = 1):
         self.model_split = model_split
         self.classifier = classifier
         self.n_pool = n_pool
@@ -39,7 +39,7 @@ class MltradeConf:
         self.force = False
         self.ta = ta
         self.last_trade_date = base.get_last_trade_date_local(self.syms.get_name())
-        self.postfix = postfix
+        self.model_postfix = model_postfix
         self.train_iters = train_iters
         if selector is None:
             self.selector = MiSelector([self])
@@ -78,39 +78,39 @@ class MltradeConf:
     def get_ta_file(self):
         if not os.path.exists(os.path.join(root, 'data', 'ta')):
             os.makedirs(os.path.join(root,'data','ta'))
-        return os.path.join(root, "data", "ta", "%s_%s.pkl" % (self.name_ta(), self.postfix))
+        return os.path.join(root, "data", "ta", "%s.pkl" % (self.name_ta()))
 
     def get_bitlize_file(self):
         if not os.path.exists(os.path.join(root, 'data', 'bitlize')):
             os.makedirs(os.path.join(root, 'data', 'bitlize'))
-        return os.path.join(root, "data", "bitlize", "%s_%s.pkl" % (self.name_bitlize, self.postfix))
+        return os.path.join(root, "data", "bitlize", "%s.pkl" % (self.name_bitlize))
         
     def get_feat_file(self):
         if not os.path.exists(os.path.join(root, 'data', 'feat')):
             os.makedirs(os.path.join(root, 'data', 'feat'))
-        return os.path.join(root, "data", "feat", "%s_%s.pkl" % (self.name_bitlize, self.postfix))
+        return os.path.join(root, "data", "feat", "%s.pkl" % (self.name_bitlize))
 
     def get_score_file(self):
         if not os.path.exists(os.path.join(root, 'data', 'score')):
             os.makedirs(os.path.join(root, 'data', 'score'))
-        return os.path.join(root, 'data', 'score', "%s_%s.pkl" % (self.name_score, self.postfix))
+        return os.path.join(root, 'data', 'score', "%s.pkl" % (self.name_score))
 
     def get_sel_file(self):
         if not os.path.exists(os.path.join(root, 'data', 'sel')):
             os.makedirs(os.path.join(root, 'data', 'sel'))
-        return os.path.join(root, 'data', 'sel', "%s_%s.pkl" % (self.name_sel, self.postfix))
+        return os.path.join(root, 'data', 'sel', "%s.pkl" % (self.name_sel))
 
     def get_pred_file(self):
         if not os.path.exists(os.path.join(root, 'data', 'pred')):
             os.makedirs(os.path.join(root, 'data', 'pred'))
-        return os.path.join(root, "data", "pred", "%s_%s.pkl" % (self.name_clazz, self.postfix))
+        return os.path.join(root, "data", "pred", "%s.pkl" % (self.name_clazz))
 
     def get_long_report_file(self):
-        return os.path.join(local_path, '..','..',"data", 'report', self.last_trade_date + "_long_" + self.postfix + ".txt")
+        return os.path.join(local_path, '..','..',"data", 'report', self.last_trade_date + "_long_" + self.model_postfix + ".txt")
 
 
     def get_short_report_file(self):
-        return os.path.join(local_path, '..','..',"data", 'report', self.last_trade_date + "_short_" + self.postfix + ".txt")
+        return os.path.join(local_path, '..','..',"data", 'report', self.last_trade_date + "_short_" + self.model_postfix + ".txt")
 
 class MyConfStableLTa(MltradeConf):
     def __init__(self, ta = ta_set.TaSetBase1Ext4(),
@@ -142,7 +142,6 @@ class MyConfForTest(MltradeConf):
 
 class MyMdnConfForTest(MltradeConf):
     def __init__(self):
-        print("into mymdnconffortest")
         classifier = MyMdnClassifier(inputsize= 146, hidden_size= 200, model_size= 200, lr= 0.00006)
-        model_split = YearSpliter('2010', "2017", "1990", "2010")
+        model_split = YearSpliter('2010', "2011", "1990", "2010")
         MltradeConf.__init__(self, model_split=model_split, classifier=classifier, n_pool=3, syms=yeod.SymsForTest())

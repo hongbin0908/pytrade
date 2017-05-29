@@ -115,7 +115,7 @@ class Poster:
                                                            df_all.sort_values('date').tail(1)['date'].values[0], len(df_all)))
         np_pred = self.confer.classifier.predict_proba(np_feat)
         #df_all = df_all.iloc[2-1:]
-        if np_pred.ndim == 2:
+        if np_pred.shape[1] == 2:
             df_all["pred"] = np_pred[:, 1]
         else:
             df_all["pred"] = np_pred[:, 0]
