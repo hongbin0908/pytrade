@@ -38,5 +38,5 @@ def test_apply():
     columns=["fname1", "fname2", "label5"]
     )
 
-    print feat_select.apply(dfmetas, p2, "label5", "_p2")
+    print(feat_select.apply(dfmetas, p2, "label5", "_p2"))
 

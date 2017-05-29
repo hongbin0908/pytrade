@@ -55,9 +55,7 @@ def _one_work(sym, ta, confer, dirname = ""):
         if len(df[df["high"] < df['close']])>0 or len(df[df["low"] > df["close"]])>0:
             print(sym, "high < close or low > close ")
             return None
-
         df = ta.get_ta(df, confer)
-
         #df.to_pickle(os.path.join(base.dir_ta(ta.get_name()), sym+".pkl"))
         return df
     except:
