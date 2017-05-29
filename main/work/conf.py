@@ -72,7 +72,7 @@ class MltradeConf:
     def get_classifier_file(self):
         if not os.path.exists(os.path.join(root, 'data', 'clazz')):
             os.makedirs(os.path.join(root, 'data', 'clazz'))
-        return os.path.join(root, 'data', 'clazz', self.name_clazz + "_" +self.postfix)
+        return os.path.join(root, 'data', 'clazz', self.name_clazz + "_" +self.model_postfix)
 
     
     def get_ta_file(self):
