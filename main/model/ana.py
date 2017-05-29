@@ -77,7 +77,7 @@ def count_level(df, score):
     res = res[["top", "date", "count", "roi", "cumcount", "cumroi"]]
     res["roip"] = res["roi"]/res["count"]
     return res
-def accurate_level(df, score, type = 'long'):
+def accurate_level(df, score, type = 'long', levels = [1000,2000,3000, 5000, 10000, 100000]):
     if type == 'long':
         df = df.sort_values(["pred"], ascending=False)
     elif type == 'short':
@@ -88,13 +88,20 @@ def accurate_level(df, score, type = 'long'):
         return None
     index = ["top", "accurate", "threshold"]
     res = pd.DataFrame(data=None, columns=index)
-    for top in [1000,2000,3000, 5000, 10000, 100000]:
+    for top in levels:
             res = res.append(pd.Series(("%s"%top, accurate(df.head(top),score, type), \
                                         float(df.head(top).tail(1)["pred"].values)),index=index), ignore_index=True)
     return res
 
 def accurate_topN(df, score, topN, type = 'long'):
-    df = df.sort_values(["pred"], ascending=False)
+    if type == 'long':
+        df = df.sort_values(["pred"], ascending=False)
+    elif type == 'short':
+        df = df.sort_values(["pred"], ascending=True)
+    else:
+        print('in accurate_topN function, type argument error. expected value is \
+                                  either long or short, but real value is %s' % (type))
+        return None
     index = ["top", "accurate", "threshold"]
     res = pd.DataFrame(data=None, columns=index)
     for s in [topN, 100000]:
@@ -103,7 +110,7 @@ def accurate_topN(df, score, topN, type = 'long'):
                                     float(df.head(s).tail(1)["pred"].values)),index=index), ignore_index=True)
         elif type == 'short':
             res = res.append(pd.Series(("%s" % s, accurate(df.head(s), score, type), \
-                                        float(df.head(s).head(1)["pred"].values)), index=index), ignore_index=True)
+                                        float(df.head(s).tail(1)["pred"].values)), index=index), ignore_index=True)
         else:
             print('in accurate_topN function, type argument error. expected value is '
                   'either long or short, but real value is %s' % (type))
@@ -147,12 +154,13 @@ def roi(df, score, max_hold_num=-1, threshold=0, type = 'long'):
         profile = nValue - 1000
     else:
         profile = 1000 - nValue
+
     res = float(profile.sum())
     if len(df) == 0:
         return 0, 0
     return res/len(df), len(df)
 
-def roi_level(df, score, type = 'long'):
+def roi_level(df, score, type = 'long', levels = [1000, 2000, 3000, 5000, -1]):
     if type == 'long':
         df = df.sort_values(["pred"], ascending=False)
     elif type == 'short':
@@ -163,15 +171,15 @@ def roi_level(df, score, type = 'long'):
         return None
     index = ["top", "threshold", "num1", "roi1", "num2", "roi2", "num3", "roi3", "num4", "roi4"]
     res = pd.DataFrame(data=None, columns=index)
-    for top in [1000,2000,3000,5000, -1]:
+    for top in levels:
         if top < 0:
             df_cur = df.copy()
         else:
             df_cur = df.head(top)
-        r1, num1 = roi(df_cur, score, 1)
-        r2, num2 = roi(df_cur, score, 5)
-        r3, num3 = roi(df_cur, score, 10)
-        r4, num4 = roi(df_cur, score, -1)
+        r1, num1 = roi(df_cur, score, 1, type= type)
+        r2, num2 = roi(df_cur, score, 5, type= type)
+        r3, num3 = roi(df_cur, score, 10, type= type)
+        r4, num4 = roi(df_cur, score, -1, type= type)
         res = res.append(pd.Series((top, float(df_cur.tail(1)["pred"].values), num1, r1, num2, r2, num3, r3, num4, r4), index=index), ignore_index=True)
     return res
 
@@ -216,12 +224,12 @@ def roi_level_per_year(df, score, threshold1, threshold2, type = 'long'):
             df_cur1 = df[(df.yyyy == year) & (df.pred >= threshold1)]
         else:
             df_cur1 = df[(df.yyyy == year) & (df.pred <= threshold1)]
-        roi1 = roi(df_cur1, score)[0]
+        roi1 = roi(df_cur1, score, type = type)[0]
         if type == 'long':
             df_cur2 = df[(df.yyyy == year) & (df.pred >= threshold2)]
         else:
             df_cur2 = df[(df.yyyy == year) & (df.pred <= threshold2)]
-        roi2 = roi(df_cur2, score)[0]
+        roi2 = roi(df_cur2, score, type=type)[0]
         res = res.append(pd.Series((year, threshold1, len(df_cur1), roi1, threshold2, len(df_cur2), roi2), index=index), ignore_index=True)
     res = res.sort_values("year", ascending=True)
     return res
@@ -244,12 +252,12 @@ def roi_last_months(df, score, threshold1, threshold2, type = 'long'):
             df_cur1 = df[(df.yyyyMM == month) & (df.pred >= threshold1)]
         else:
             df_cur1 = df[(df.yyyyMM == month) & (df.pred <= threshold1)]
-        roi1 = roi(df_cur1, score)[0]
+        roi1 = roi(df_cur1, score, type= type)[0]
         if type == 'long':
             df_cur2 = df[(df.yyyyMM == month) & (df.pred >= threshold2)]
         else:
             df_cur2 = df[(df.yyyyMM == month) & (df.pred <= threshold2)]
-        roi2 = roi(df_cur2, score)[0]
+        roi2 = roi(df_cur2, score, type= type)[0]
         res = res.append(pd.Series((month, threshold1, len(df_cur1), roi1, threshold2, len(df_cur2), roi2), index=index), ignore_index=True)
     res = res.sort_values("month", ascending=True)
     return res.tail(12)
