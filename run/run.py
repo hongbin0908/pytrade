@@ -60,7 +60,8 @@ def get_confs():
     return [
         #MyConfStableLTa(classifier=ccl2(batch_size=32, nb_epoch=20), score=score),
         #MyConfStableLTa(classifier=cnn(batch_size=32, nb_epoch=20), score=score),
-        MyConfStableLTa(classifier=Logit2(), score=score),
+        #MyConfStableLTa(classifier=Logit2(), score=score),
+        MyConfStableLTa(classifier=Logit2(nb_epoch=10), score=score),
     ]
 
 def get_mdnconfs():
@@ -84,7 +85,8 @@ if __name__ == '__main__':
     parser.add_option('-f', '--force', action='store_true',default = False, dest='force', help = 'do not use any tmp file')
     (options, args)  = parser.parse_args()
 
-    for confer in get_mdnconfs() if not base.is_test_flag() else get_mdnconfs():
+    #for confer in get_mdnconfs() if not base.is_test_flag() else get_mdnconfs():
+    for confer in get_confs() if not base.is_test_flag() else get_test_confs():
         confer.force = options.force
         #confer.force = True
         build.work(confer)

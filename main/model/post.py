@@ -64,11 +64,11 @@ class Poster:
     def _train(self, df_train, df_test, score):
         df_train = df_train.sort_values(["sym", "date"])
 
-        df_train_1 = df_train[df_train[score.get_name()]  < 1]
+        df_train_1 = df_train[df_train[score.get_name()] < 0.5]
 
         #df_train_1 = df_train_1.sort_values([self.confer.scores[1].get_name()], ascending=True).head(int(len(df_train_1)/3*2)).tail(int(len(df_train_1)/3))
         #print(df_train_1.head()[["sym", "date", "close", self.confer.scores[1].get_name()]])
-        df_train_2 = df_train[df_train[score.get_name()] >= 1]
+        df_train_2 = df_train[df_train[score.get_name()] > 0.5]
         #df_train_2 = df_train_2.sort_values([self.confer.scores[1].get_name()], ascending=False).head(int(len(df_train_2)/3*2)).tail(int(len(df_train_2)/3))
         #print(df_train_2.head()[["sym", "date", "close", self.confer.scores[1].get_name()]])
 
@@ -83,8 +83,8 @@ class Poster:
                                                   df_train.sort_values('date').tail(1)['date'].values[0], len(df_train)))
         npTrainFeat, npTrainLabel = base.extract_feat_label(df_train, score.get_name())
         df_test = df_test.sort_values(["sym", "date"])
-        df_test_1 = df_test[df_test[score.get_name()] < 1]
-        df_test_2 = df_test[df_test[score.get_name()] >= 1]
+        df_test_1 = df_test[df_test[score.get_name()] < 0.5]
+        df_test_2 = df_test[df_test[score.get_name()] > 0.5]
 #        assert len(df_test_1) + len(df_test_2) == len(df_test)
         df_test_2 = df_test_2.sample(n = len(df_test_1))
         assert(len(df_test_2) == len(df_test_1))
@@ -101,8 +101,8 @@ class Poster:
         if start != None:
             df_all = df_all[df_all.date >= start]
         score = self.confer.scores[0]
-        df_all_1 = df_all[df_all[score.get_name()] == 0]
-        df_all_2 = df_all[df_all[score.get_name()] == 1]
+        df_all_1 = df_all[df_all[score.get_name()] < 0.5]
+        df_all_2 = df_all[df_all[score.get_name()] > 0.5]
         assert len(df_all_1) + len(df_all_2) == len(df_all)
         df_all_2 = df_all_2.sample(n = len(df_all_1))
         assert(len(df_all_2) == len(df_all_1))
