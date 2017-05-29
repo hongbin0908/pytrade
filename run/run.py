@@ -61,7 +61,7 @@ def get_confs():
         #MyConfStableLTa(classifier=ccl2(batch_size=32, nb_epoch=20), score=score),
         #MyConfStableLTa(classifier=cnn(batch_size=32, nb_epoch=20), score=score),
         #MyConfStableLTa(classifier=Logit2(), score=score),
-        MyConfStableLTa(classifier=Logit2(nb_epoch=10), score=score),
+        MyConfStableLTa(classifier=Logit2(nb_epoch=30), score=score),
     ]
 
 def get_mdnconfs():
