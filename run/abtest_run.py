@@ -89,6 +89,7 @@ if __name__ == '__main__':
         report_file = confer.get_long_report_file()
         fd = open(report_file, "w")
         for model_name in abtest_models.keys():
+            print(model_name, file = fd)
             result_dict[model_name] = {}
             result_dict[model_name]["exp_x2"] = 0
             result_dict[model_name]["sum_x"] = 0

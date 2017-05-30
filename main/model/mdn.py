@@ -23,13 +23,16 @@ class ModelMdn(Model):
         bh = tf.Variable(tf.zeros ([1, NHIDDEN], dtype=tf.float64))
         Wh1 = tf.Variable(tf.random_normal([NHIDDEN, NHIDDEN], stddev=STDEV, dtype=tf.float64))
         bh1 = tf.Variable(tf.zeros ([1, NHIDDEN], dtype=tf.float64))
+        Wh2 = tf.Variable(tf.random_normal([NHIDDEN, NHIDDEN], stddev=STDEV, dtype=tf.float64))
+        bh2 = tf.Variable(tf.zeros([1, NHIDDEN], dtype=tf.float64))
         Wo = tf.Variable(tf.random_normal([NHIDDEN, NOUT], stddev=STDEV, dtype=tf.float64))
        # bo = tf.Variable(tf.random_normal([1, NOUT], stddev=STDEV, dtype=tf.float32))
         #Wo = tf.Variable(tf.zeros([NHIDDEN, NOUT],dtype=tf.float32))
         bo = tf.Variable(tf.zeros([1, NOUT], dtype=tf.float64))
         hidden_layer = tf.nn.relu(tf.matmul(self.x, Wh) + bh)
         hidden_layer1 = tf.nn.relu(tf.matmul(hidden_layer, Wh1) + bh1)
-        self.output = tf.matmul(hidden_layer1, Wo) + bo
+        hidden_layer2 = tf.nn.relu(tf.matmul(hidden_layer1, Wh2) + bh2)
+        self.output = tf.matmul(hidden_layer2, Wo) + bo
         out_pi, out_sigma, out_mu = self._get_mixture_coef(self.output)
         self.lossfunc = self._get_lossfunc(out_pi, out_sigma, out_mu, self.y)
         self.train_op = tf.train.AdamOptimizer(learning_rate= lr, beta1=0.0001).minimize(self.lossfunc)
