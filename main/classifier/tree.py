@@ -275,7 +275,7 @@ class MySGDClassifier(BaseClassifier):
 
 
 class MyMdnClassifier(BaseClassifier):
-    def __init__(self, inputsize = 1,  hidden_size = 60, model_size = 60, lr = 0.0001):
+    def __init__(self, inputsize = 394,  hidden_size = 60, model_size = 60, lr = 0.0001):
         self.classifier = mdn.ModelMdn(inputsize,  hidden_size , model_size, lr )
         self.name = "mdn_model"
 
