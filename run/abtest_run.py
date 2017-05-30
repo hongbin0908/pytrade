@@ -80,7 +80,7 @@ if __name__ == '__main__':
         "Logit30":Logit2(nb_epoch=30),
         "Logit30-10":Logit2(nb_epoch=30, hs=10),
         "Logit40":Logit2(nb_epoch=40),
-        "MDN" : MyMdnClassifier(),
+        #"MDN" : MyMdnClassifier(),
     }
 
     result_dict = {}
