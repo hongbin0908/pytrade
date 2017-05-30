@@ -19,8 +19,6 @@ def work(confer, f=sys.stdout, round = 0 ,topn = 10000):
     df = dfo[(dfo.date >=confer.model_split.test_start)]
     df_sort = df.sort_values('pred', ascending=False)[["date", "sym", "open", "high", "low", "close", "pred"]]
     res = ana.accurate_topN(df, confer.scores[0], topn)
-    print(res)
-    print(res[res.top == topn])
     #res = ana.roi_topN(df, confer.scores[0], topn)
     print("round%d : %.4f" %(round, res[res.top==str(topn)].iloc[0, 1]), file=f)
     return res

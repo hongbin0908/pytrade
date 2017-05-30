@@ -141,7 +141,7 @@ class MyConfForTest(MltradeConf):
 
 
 class MyMdnConfForTest(MltradeConf):
-    def __init__(self):
-        classifier = MyMdnClassifier(inputsize= 146, hidden_size= 200, model_size= 200, lr= 0.00006)
-        model_split = YearSpliter('2010', "2011", "1990", "2010")
+    def __init__(self, inputsiz, hidden_size, model_size, lr, train_Begin, train_end, test_begin, test_end):
+        classifier = MyMdnClassifier(inputsiz, hidden_size, model_size, lr)
+        model_split = YearSpliter(test_begin, test_end, train_Begin, train_end)
         MltradeConf.__init__(self, model_split=model_split, classifier=classifier, n_pool=3, syms=yeod.SymsForTest())
