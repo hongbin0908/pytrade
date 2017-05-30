@@ -86,7 +86,7 @@ if __name__ == '__main__':
     (options, args)  = parser.parse_args()
 
     for confer in get_confs() if not base.is_test_flag() else get_test_confs():
-
+        report_file = confer.get_long_report_file()
         for model_name in abtest_models.keys():
             result_dict[model_name] = {}
             result_dict[model_name]["exp_x2"] = 0
@@ -101,15 +101,6 @@ if __name__ == '__main__':
                 score_build.work(confer)
                 bitlize.work(confer)
                 selected.work(confer)
-                report_file = confer.get_long_report_file()
-                try:
-                    fd = open(report_file, "w")
-                except Exception as e:
-                    print("open report file error")
-                    sys.exit(1)
-                print(model_name, file=fd)
-
-
                 model.work(confer)
                 pd.set_option('display.expand_frame_repr', False)
                 pd.options.display.max_rows = 999

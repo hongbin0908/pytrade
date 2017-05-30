@@ -106,11 +106,12 @@ class MltradeConf:
         return os.path.join(root, "data", "pred", "%s.pkl" % (self.name_clazz))
 
     def get_long_report_file(self):
-        return os.path.join(local_path, '..','..',"data", 'report', self.last_trade_date + "_long_" + self.model_postfix + ".txt")
+        return os.path.join(local_path, '..','..',"data", 'report', self.last_trade_date + "_long.txt")
+
 
 
     def get_short_report_file(self):
-        return os.path.join(local_path, '..','..',"data", 'report', self.last_trade_date + "_short_" + self.model_postfix + ".txt")
+        return os.path.join(local_path, '..','..',"data", 'report', self.last_trade_date + "_short.txt")
 
 class MyConfStableLTa(MltradeConf):
     def __init__(self, ta = ta_set.TaSetBase1Ext4(),
