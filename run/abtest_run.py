@@ -87,6 +87,7 @@ if __name__ == '__main__':
 
     for confer in get_confs() if not base.is_test_flag() else get_test_confs():
         report_file = confer.get_long_report_file()
+        fd = open(report_file, "w")
         for model_name in abtest_models.keys():
             result_dict[model_name] = {}
             result_dict[model_name]["exp_x2"] = 0
@@ -101,6 +102,7 @@ if __name__ == '__main__':
                 score_build.work(confer)
                 bitlize.work(confer)
                 selected.work(confer)
+
                 model.work(confer)
                 pd.set_option('display.expand_frame_repr', False)
                 pd.options.display.max_rows = 999
