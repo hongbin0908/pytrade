@@ -54,10 +54,11 @@ class MltradeConf:
         self.name_bitlize = "%s_%s_%s_%s" % (self.name_ta(), self.model_split.train_start,
                                                 self.model_split.train_end, self.scores[0].get_name())
         self.name_sel = "%s" % (self.selector.get_name())
-        self.name_clazz = "%s_%s_%s_%s_%s" % (self.syms.get_name(), self.ta.get_name(),
-                                        self.model_split.train_start, self.model_split.train_end,
-                                        self.classifier.get_name())
 
+    def get_name_clazz(self):
+        return "%s_%s_%s_%s_%s" % (self.syms.get_name(), self.ta.get_name(),
+                                                  self.model_split.train_start, self.model_split.train_end,
+                                                  self.classifier.get_name())
     def name_ta(self):
         return "%s_%s_%s" % (self.syms.get_name(), self.ta.get_name(), self.last_trade_date)
     def get_years(self, df):
@@ -72,7 +73,7 @@ class MltradeConf:
     def get_classifier_file(self):
         if not os.path.exists(os.path.join(root, 'data', 'clazz')):
             os.makedirs(os.path.join(root, 'data', 'clazz'))
-        return os.path.join(root, 'data', 'clazz', self.name_clazz + "_" +self.model_postfix)
+        return os.path.join(root, 'data', 'clazz', self.get_name_clazz() + "_" +self.model_postfix)
 
     
     def get_ta_file(self):
