@@ -108,9 +108,9 @@ if __name__ == '__main__':
                 pd.options.display.max_rows = 999
                 topn_value = 10 if base.is_test_flag() else 10000
                 res = abtest_report.work(confer,f=fd, round = i, topn=topn_value)
-                result_dict[model_name]['sum_x'] += res["roi3"][0]
-                result_dict[model_name]['exp_x2'] += res["roi3"][0] * res["roi3"][0]
-                result_dict[model_name]['sum_base'] += res['roi3'][1]
+                result_dict[model_name]['sum_x'] += res["accurate"][0]
+                result_dict[model_name]['exp_x2'] += res["accurate"][0] * res["accurate"][0]
+                result_dict[model_name]['sum_base'] += res['accurate'][1]
                 """
                 dfo = pd.read_pickle(confer.get_pred_file())
                 df = dfo[(dfo.date >=confer.model_split.test_start)]
