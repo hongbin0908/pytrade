@@ -28,6 +28,7 @@ from main import base
 from main.classifier.tree import cnn
 from main.classifier.tree import ccl2
 from main.classifier.tree import RFCv1n2000md3msl100
+from main.classifier.tree import MyMdnClassifier
 from main.classifier.ts import Ts
 from main.classifier.logit2 import Logit2
 from main.classifier.logit import Logit
@@ -72,11 +73,12 @@ def get_test_confs():
     ]
 
 if __name__ == '__main__':
-    iter_num = 10
+    iter_num = 2
     abtest_models = {
         "Logit10":Logit2(nb_epoch=10),
         #"Logit20":Logit2(nb_epoch=20),
-        "Logit30":Logit2(nb_epoch=30)
+        "Logit30":Logit2(nb_epoch=30),
+        "MDN" : MyMdnClassifier(),
     }
 
     result_dict = {}
