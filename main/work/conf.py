@@ -108,8 +108,6 @@ class MltradeConf:
     def get_long_report_file(self):
         return os.path.join(local_path, '..','..',"data", 'report', self.last_trade_date + "_long.txt")
 
-
-
     def get_short_report_file(self):
         return os.path.join(local_path, '..','..',"data", 'report', self.last_trade_date + "_short.txt")
 

@@ -98,11 +98,12 @@ if __name__ == '__main__':
             for i in range(0, iter_num):
                 confer.force = options.force
                 confer.model_postfix = "abtest" + str(i)
+                print(confer.model_postfix)
+                print(confer.get_classifier_file())
                 build.work(confer)
                 score_build.work(confer)
                 bitlize.work(confer)
                 selected.work(confer)
-
                 model.work(confer)
                 pd.set_option('display.expand_frame_repr', False)
                 pd.options.display.max_rows = 999
