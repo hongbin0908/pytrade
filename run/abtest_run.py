@@ -76,7 +76,7 @@ if __name__ == '__main__':
     abtest_models = {
         "Logit10":Logit2(nb_epoch=10),
         "Logit20":Logit2(nb_epoch=20),
-        "Logit20":Logit2(nb_epoch=30)
+        "Logit30":Logit2(nb_epoch=30)
     }
 
     result_dict = {}
