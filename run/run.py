@@ -90,11 +90,12 @@ if __name__ == '__main__':
         confer.force = True
         if not base.is_test_flag():
             dassert_yeod.work(confer)
-            dassert_ta.work(confer)
         build.work(confer)
         score_build.work(confer)
         bitlize.work(confer)
         selected.work(confer)
+        if not base.is_test_flag():
+            dassert_ta.work(confer)
         confer.force = True
         print(confer.get_classifier_file())
         model.work(confer)
