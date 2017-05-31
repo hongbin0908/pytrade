@@ -29,7 +29,7 @@ def get(snapname):
 
 def get2(snapname):
     last_trade_date = base.get_last_trade_date()
-    last_trade_date = '2017-05-22'
+    #last_trade_date = '2017-05-22'
     dirname = "sp500_snapshot_%s_%s" % (snapname, last_trade_date)
     url = "http://www.hongindex.com/yeod/%s.zip" % dirname
     zfdir = os.path.join(root, "data", "yeod")
