@@ -23,7 +23,7 @@ df2.reset_index(drop=True, inplace=True)
 last_date = list(df1.date.unique())[-1]
 
 df2 = df2[df2.date <= last_date]
-assert df1.shape == df2.shape
+assert df1.shape[1] == df2.shape[1]
 
 
 for col in base.get_feat_names(df1):
