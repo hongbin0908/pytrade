@@ -93,11 +93,13 @@ if __name__ == '__main__':
         bitlize.work(confer)
         selected.work(confer)
         confer.force = True
+        print(confer.get_classifier_file())
         model.work(confer)
         pd.set_option('display.expand_frame_repr', False)
         pd.options.display.max_rows = 999
         long_report_file = confer.get_long_report_file()
         short_report_file = confer.get_short_report_file()
+
         with open(long_report_file, mode='w') as f:
             report.work(confer,f=f)
             dfo = pd.read_pickle(confer.get_pred_file())
