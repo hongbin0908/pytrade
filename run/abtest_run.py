@@ -93,7 +93,7 @@ if __name__ == '__main__':
     (options, args)  = parser.parse_args()
 
     for confer in get_confs() if not base.is_test_flag() else get_test_confs():
-        report_file = confer.get_long_report_file()
+        report_file = confer.get_abtest_report_file()
         fd = open(report_file, "w")
         for model_name in abtest_models.keys():
             print(model_name, file = fd)

@@ -94,8 +94,8 @@ if __name__ == '__main__':
         score_build.work(confer)
         bitlize.work(confer)
         selected.work(confer)
-        if not base.is_test_flag():
-            dassert_ta.work(confer)
+        #if not base.is_test_flag():
+        #    dassert_ta.work(confer)
         confer.force = True
         print(confer.get_classifier_file())
         model.work(confer)
