@@ -39,6 +39,7 @@ assert len(syms1) == len(syms2)
 
 
 for sym in syms1:
+    print(sym)
     df1_s = df1[df1.sym == sym]
     df2_s = df2[df2.sym == sym]
     for col in base.get_feat_names(df1_s):
