@@ -84,27 +84,27 @@ class MltradeConf:
     def get_bitlize_file(self):
         if not os.path.exists(os.path.join(root, 'data', 'bitlize')):
             os.makedirs(os.path.join(root, 'data', 'bitlize'))
-        return os.path.join(root, "data", "bitlize", "%s.pkl" % (self.name_bitlize))
+        return os.path.join(root, "data", "bitlize", "%s.pkl" % (self.name_ta()))
         
     def get_feat_file(self):
         if not os.path.exists(os.path.join(root, 'data', 'feat')):
             os.makedirs(os.path.join(root, 'data', 'feat'))
-        return os.path.join(root, "data", "feat", "%s.pkl" % (self.name_bitlize))
+        return os.path.join(root, "data", "feat", "%s.pkl" % (self.name_ta()))
 
     def get_score_file(self):
         if not os.path.exists(os.path.join(root, 'data', 'score')):
             os.makedirs(os.path.join(root, 'data', 'score'))
-        return os.path.join(root, 'data', 'score', "%s.pkl" % (self.name_score))
+        return os.path.join(root, 'data', 'score', "%s_%s.pkl" % (self.name_score , self.last_trade_date))
 
     def get_sel_file(self):
         if not os.path.exists(os.path.join(root, 'data', 'sel')):
             os.makedirs(os.path.join(root, 'data', 'sel'))
-        return os.path.join(root, 'data', 'sel', "%s.pkl" % (self.name_sel))
+        return os.path.join(root, 'data', 'sel', "%s_%s.pkl" % (self.name_sel, self.last_trade_date))
 
     def get_pred_file(self):
         if not os.path.exists(os.path.join(root, 'data', 'pred')):
             os.makedirs(os.path.join(root, 'data', 'pred'))
-        return os.path.join(root, "data", "pred", "%s_%s.pkl" % (self.get_name_clazz(), self.model_postfix))
+        return os.path.join(root, "data", "pred", "%s_%s_%s.pkl" % (self.get_name_clazz(),  self.last_trade_date, self.model_postfix))
 
     def get_long_report_file(self):
         return os.path.join(local_path, '..','..',"data", 'report', self.last_trade_date + "_long.txt")
