@@ -88,7 +88,7 @@ if __name__ == '__main__':
     for confer in get_confs() if not base.is_test_flag() else get_test_confs():
         confer.force = options.force
         #confer.force = True
-        if base.is_test_flag():
+        if not base.is_test_flag():
             dassert_yeod.work(confer)
             dassert_ta.work(confer)
         build.work(confer)
