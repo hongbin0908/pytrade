@@ -20,7 +20,7 @@ df1.reset_index(drop=True, inplace=True)
 df2 = pd.read_pickle(sys.argv[2])
 df2.reset_index(drop=True, inplace=True)
 
-last_date = list(df1.date.unque())[-1]
+last_date = list(df1.date.unique())[-1]
 
 df2 = df2[df2.date <= last_date]
 assert df1.shape == df2.shape
