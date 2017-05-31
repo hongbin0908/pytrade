@@ -59,7 +59,7 @@ def get_stock(symbol):
     df.sort_values("date", ascending=True, inplace=True)
     df.reset_index(drop=True, inplace=True)
     df = df.set_index("date")
-    df = df[['sym',         'openo', 'higho', 'lowo', 'closeo', 'volume0',  'dividend', 'ratio', 'open', 'high', 'low', 'close', 'volume']]
+    df = df[['sym',         'openo', 'higho', 'lowo', 'closeo', 'volumeo',  'dividend', 'ratio', 'open', 'high', 'low', 'close', 'volume']]
     return df
     #return df.round(6)
 
