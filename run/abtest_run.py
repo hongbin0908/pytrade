@@ -73,15 +73,15 @@ def get_test_confs():
     ]
 
 if __name__ == '__main__':
-    iter_num = 5
+    iter_num = 1
     abtest_models = {
-        "Logit10":Logit2(nb_epoch=10),
-        "Logit20":Logit2(nb_epoch=20),
+        #"Logit10":Logit2(nb_epoch=10),
+        #"Logit20":Logit2(nb_epoch=20),
         "Logit30":Logit2(nb_epoch=30),
-        "Logit30-10":Logit2(nb_epoch=30, hs=10),
-        "Logit40":Logit2(nb_epoch=40),
+        #"Logit30-10":Logit2(nb_epoch=30, hs=10),
+        #"Logit40":Logit2(nb_epoch=40),
         "Logit50":Logit2(nb_epoch=50),
-        "Logit80":Logit2(nb_epoch=80),
+        #"Logit80":Logit2(nb_epoch=80),
         #"MDN" : MyMdnClassifier(),
     }
 
