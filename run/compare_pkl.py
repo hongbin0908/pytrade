@@ -29,6 +29,18 @@ df2 = df2[df2.date <= last_date]
 assert df1.shape[1] == df2.shape[1]
 
 
-for col in base.get_feat_names(df1):
-    print(col)
-    assert_frame_equal(df1[[col]], df2[[col]])
+
+
+syms1 = df1.sym.unique()
+syms2 = df2.sym.unique()
+
+print(syms1, syms2)
+assert len(syms1) == len(syms2)
+
+
+for sym in syms1:
+    df1_s = df1[df1.sym == sym]
+    df2_s = df2[df2.sym == sym]
+    for col in base.get_feat_names(df1_s):
+        print(col)
+        assert_frame_equal(df1_s[[col]], df2_s[[col]])
