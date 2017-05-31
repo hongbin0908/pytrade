@@ -20,7 +20,7 @@ df1.reset_index(drop=True, inplace=True)
 df2 = pd.read_pickle(sys.argv[2])
 df2.reset_index(drop=True, inplace=True)
 
-last_date = df1.date.unique()[-1]
+last_date = df1.sort_values['date'].date.unique()[-1]
 print(last_date)
 
 print(len(df1), len(df2))
