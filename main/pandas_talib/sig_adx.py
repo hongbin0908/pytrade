@@ -43,4 +43,3 @@ def main(df):
     del df["cross_%d" % span] 
     del df["cross_%d_shift_1" % span]
     return df
-

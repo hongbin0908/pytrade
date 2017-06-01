@@ -55,9 +55,12 @@ def _one_work(sym, ta, confer, dirname = ""):
         if len(df[df["high"] < df['close']])>0 or len(df[df["low"] > df["close"]])>0:
             print(sym, "high < close or low > close ")
             return None
-        df = ta.get_ta(df, confer)
-        #df.to_pickle(os.path.join(base.dir_ta(ta.get_name()), sym+".pkl"))
-        return df
+        if confer.is_adj:
+            df2 = df[["open", 'high', 'low', 'close', 'volume']]
+        else:
+            df2 = df[["openo", 'higho', 'lowo', 'closeo', 'volume']]
+            df2.columns = ['open', 'high', 'low', 'close', 'volume']
+        return ta.get_ta(df2, confer)
     except:
         traceback.print_exc()
         assert False
@@ -109,9 +112,3 @@ def work(pool_num, symset, ta, confer, dirname = ""):
     #        print("filter....")
     #        result = result[result.apply(lambda x: datetime.strptime(x['date'], "%Y-%m-%d").weekday()==confer.week, axis=1) ]
     #return df
-
-
-if __name__ == '__main__':
-    ta = ta_set.TaSetBase1Ext8()
-    df = _one_work("AAPL", ta)
-    print(is_trend_long(df))
