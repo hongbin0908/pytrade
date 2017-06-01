@@ -57,7 +57,7 @@ class MltradeConf:
         self.name_sel = "%s" % (self.selector.get_name())
 
     def get_name_clazz(self):
-        return "%s_%s_%s_%s_%s" % (self.syms.get_name(), self.ta.get_name(),
+        return "%s_%s_%d_%s_%s_%s" % (self.syms.get_name(), self.ta.get_name(), self.is_adj,
                                                   self.model_split.train_start, self.model_split.train_end,
                                                   self.classifier.get_name())
     def name_ta(self):
