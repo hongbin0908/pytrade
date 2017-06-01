@@ -88,7 +88,7 @@ def work(pool_num, symset, ta, confer, dirname = ""):
                     if data is None:
                         continue
                     #data = data[data.ta_NATR_7 > 1.0]
-                    data = data[data.closeo > 10]
+                    #data = data[data.closeo > 10]
                     if (len(data) < 300):
                         print(sym, "too short!")
                         continue
