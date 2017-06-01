@@ -56,10 +56,10 @@ def _one_work(sym, ta, confer, dirname = ""):
             print(sym, "high < close or low > close ")
             return None
         if confer.is_adj:
-            df2 = df[['sym',"open", 'high', 'low', 'close', 'volume']]
+            df2 = df[['sym','date', "open", 'high', 'low', 'close', 'volume']]
         else:
-            df2 = df[['sym', "openo", 'higho', 'lowo', 'closeo', 'volume']]
-            df2.columns = ['sym', 'open', 'high', 'low', 'close', 'volume']
+            df2 = df[['sym', 'date', "openo", 'higho', 'lowo', 'closeo', 'volume']]
+            df2.columns = ['sym', 'date', 'open', 'high', 'low', 'close', 'volume']
         return ta.get_ta(df2, confer)
     except:
         traceback.print_exc()
