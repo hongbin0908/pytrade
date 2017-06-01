@@ -46,9 +46,9 @@ def _one_work(sym, ta, confer, dirname = ""):
         if (len(df) < 300):
             print(sym, "too short!")
             return None
-        if (len(df[df.closeo< 10])/len(df) > 0.5):
-            print(sym, "price too low!")
-            return None
+        #if (len(df[df.closeo< 10])/len(df) > 0.5):
+        #    print(sym, "price too low!")
+        #    return None
         if (len(df[df.volume< 100000])/len(df) > 0.5):
             print(sym, "volume too low!")
             return None
