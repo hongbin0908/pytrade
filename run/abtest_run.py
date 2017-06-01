@@ -117,7 +117,7 @@ if __name__ == '__main__':
             model.work(confer)
             pd.set_option('display.expand_frame_repr', False)
             pd.options.display.max_rows = 999
-            topn_value = 10 if base.is_test_flag() else 10000
+            topn_value = 10 if base.is_test_flag() else 1000
             res = abtest_report.work(confer,f=fd, round = i, topn=topn_value)
             result_dict[model_name]['sum_x'] += res["accurate"][0]
             result_dict[model_name]['exp_x2'] += res["accurate"][0] * res["accurate"][0]
