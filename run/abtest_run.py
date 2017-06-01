@@ -4,6 +4,8 @@
 
 import sys
 import os
+import numpy as np
+np.random.seed(608317)
 import pandas as pd
 
 local_path = os.path.dirname(__file__)
