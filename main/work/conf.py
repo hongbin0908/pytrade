@@ -48,20 +48,23 @@ class MltradeConf:
             self.selector = selector
 
 
-        self.name_score = ""
-        for score in self.scores:
-            self.name_score += "%s_" % score.get_name()
-        self.name_score += self.last_trade_date
         self.name_bitlize = "%s_%s_%s_%s" % (self.name_ta(), self.model_split.train_start,
                                                 self.model_split.train_end, self.scores[0].get_name())
         self.name_sel = "%s" % (self.selector.get_name())
 
+    def name_score(self):
+        name_score = ""
+        for score in self.scores:
+            name_score += "%s_" % score.get_name()
+        name_score += self.last_trade_date
+        return name_score
+
     def get_name_clazz(self):
-        return "%s_%s_%d_%s_%s_%s" % (self.syms.get_name(), self.ta.get_name(), self.is_adj,
-                                                  self.model_split.train_start, self.model_split.train_end,
+        return "%s_%s_%d_%s_%s_%s_%s" % (self.syms.get_name(), self.ta.get_name(), self.is_adj,
+                                                  self.name_score, self.model_split.train_start, self.model_split.train_end,
                                                   self.classifier.get_name())
     def name_ta(self):
-        return "%s_%s_%d_%s" % (self.syms.get_name(), self.ta.get_name(), self.is_adj, self.last_trade_date)
+        return "%s_%s_%d_%s_%s" % (self.syms.get_name(), self.ta.get_name(), self.is_adj, self.name_score(), self.last_trade_date)
     def get_years(self, df):
         if "yyyy" not in df:
             df['yyyy'] = df.date.str.slice(0,4)
@@ -78,9 +81,10 @@ class MltradeConf:
 
     
     def get_ta_file(self):
+        name_ta = "%s_%s_%d_%s" % (self.syms.get_name(), self.ta.get_name(), self.is_adj, self.last_trade_date)
         if not os.path.exists(os.path.join(root, 'data', 'ta')):
             os.makedirs(os.path.join(root,'data','ta'))
-        return os.path.join(root, "data", "ta", "%s.pkl" % (self.name_ta()))
+        return os.path.join(root, "data", "ta", "%s.pkl" % (name_ta))
 
     def get_bitlize_file(self):
         if not os.path.exists(os.path.join(root, 'data', 'bitlize')):
@@ -100,12 +104,12 @@ class MltradeConf:
     def get_sel_file(self):
         if not os.path.exists(os.path.join(root, 'data', 'sel')):
             os.makedirs(os.path.join(root, 'data', 'sel'))
-        return os.path.join(root, 'data', 'sel', "%s_%s.pkl" % (self.name_sel, self.last_trade_date))
+        return os.path.join(root, 'data', 'sel', "%s.pkl" % (self.name_ta()))
 
     def get_pred_file(self):
         if not os.path.exists(os.path.join(root, 'data', 'pred')):
             os.makedirs(os.path.join(root, 'data', 'pred'))
-        return os.path.join(root, "data", "pred", "%s_%s_%s.pkl" % (self.get_name_clazz(),  self.last_trade_date, self.model_postfix))
+        return os.path.join(root, "data", "pred", "%s_%s_%s.pkl" % (self.name_ta(), self.get_name_clazz(), self.model_postfix))
 
     def get_long_report_file(self):
         return os.path.join(local_path, '..','..',"data", 'report', self.last_trade_date + "_long.txt")
