@@ -52,7 +52,7 @@ class MltradeConf:
                                                 self.model_split.train_end, self.scores[0].get_name())
         self.name_sel = "%s" % (self.selector.get_name())
 
-    def name_score(self):
+    def get_name_score(self):
         name_score = ""
         for score in self.scores:
             name_score += "%s_" % score.get_name()
@@ -61,10 +61,10 @@ class MltradeConf:
 
     def get_name_clazz(self):
         return "%s_%s_%d_%s_%s_%s_%s" % (self.syms.get_name(), self.ta.get_name(), self.is_adj,
-                                                  self.name_score, self.model_split.train_start, self.model_split.train_end,
+                                                  self.get_name_score(), self.model_split.train_start, self.model_split.train_end,
                                                   self.classifier.get_name())
     def name_ta(self):
-        return "%s_%s_%d_%s_%s" % (self.syms.get_name(), self.ta.get_name(), self.is_adj, self.name_score(), self.last_trade_date)
+        return "%s_%s_%d_%s_%s" % (self.syms.get_name(), self.ta.get_name(), self.is_adj, self.get_name_score(), self.last_trade_date)
     def get_years(self, df):
         if "yyyy" not in df:
             df['yyyy'] = df.date.str.slice(0,4)
@@ -99,7 +99,7 @@ class MltradeConf:
     def get_score_file(self):
         if not os.path.exists(os.path.join(root, 'data', 'score')):
             os.makedirs(os.path.join(root, 'data', 'score'))
-        return os.path.join(root, 'data', 'score', "%s_%s.pkl" % (self.name_score() , self.last_trade_date))
+        return os.path.join(root, 'data', 'score', "%s_%s.pkl" % (self.get_name_score() , self.last_trade_date))
 
     def get_sel_file(self):
         if not os.path.exists(os.path.join(root, 'data', 'sel')):
