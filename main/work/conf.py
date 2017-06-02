@@ -109,7 +109,7 @@ class MltradeConf:
     def get_pred_file(self):
         if not os.path.exists(os.path.join(root, 'data', 'pred')):
             os.makedirs(os.path.join(root, 'data', 'pred'))
-        return os.path.join(root, "data", "pred", "%s_%s_%s.pkl" % (self.name_ta(), self.get_name_clazz(), self.model_postfix))
+        return os.path.join(root, "data", "pred", "%s_%s_%s.pkl" % (self.name_ta(), self.classifier.get_name(), self.model_postfix))
 
     def get_long_report_file(self):
         return os.path.join(local_path, '..','..',"data", 'report', self.last_trade_date + "_long.txt")
