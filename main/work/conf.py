@@ -99,7 +99,7 @@ class MltradeConf:
     def get_score_file(self):
         if not os.path.exists(os.path.join(root, 'data', 'score')):
             os.makedirs(os.path.join(root, 'data', 'score'))
-        return os.path.join(root, 'data', 'score', "%s_%s.pkl" % (self.name_score , self.last_trade_date))
+        return os.path.join(root, 'data', 'score', "%s_%s.pkl" % (self.name_score() , self.last_trade_date))
 
     def get_sel_file(self):
         if not os.path.exists(os.path.join(root, 'data', 'sel')):
