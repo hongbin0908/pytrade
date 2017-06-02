@@ -37,8 +37,11 @@ if __name__ == '__main__':
     }
 
     abtest_confs = {
-        "adj": MyConfStableLTa(classifier=Logit2(30)),
+        "adj": MyConfStableLTa(classifier=Logit2(30), is_adj= True),
         "not_adj": MyConfStableLTa(classifier=Logit2(30), is_adj = False),
+        "score2": MyConfStableLTa(classifier=Logit2(30), is_adj = False, score=2),
+        "score8": MyConfStableLTa(classifier=Logit2(30), is_adj = False, score=8),
+        "score32": MyConfStableLTa(classifier=Logit2(30), is_adj = False, score=32),
     }
     result_dict = {}
 

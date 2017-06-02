@@ -113,11 +113,8 @@ class MltradeConf:
     def get_short_report_file(self):
         return os.path.join(local_path, '..','..',"data", 'report', self.last_trade_date + "_short.txt")
 
-    def get_abtest_report_file(self):
-        return os.path.join(local_path, '..','..',"data", 'report', self.last_trade_date + "_abtest.txt")
-
 class MyConfStableLTa(MltradeConf):
-    def __init__(self, ta = ta_set.TaSetBase1Ext4(), is_adj = True,
+    def __init__(self, ta = ta_set.TaSetBase1Ext4(), is_adj = False,
             classifier=RFCv1n2000md6msl100(),
             #train_start="1990",
             train_start="2000",
