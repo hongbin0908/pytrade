@@ -2,15 +2,15 @@ import numpy as np
 import tensorflow as tf
 import math
 from sklearn.decomposition import PCA
-
+"""
 class Model:
     def fit(self, x_data, y_data):
         pass
     def predict(self, x_data):
         pass
+"""
 
-
-class ModelMdn(Model):
+class ModelMdn():
     def __init__(self, inputsize = 1,  hidden_size = 60, model_size = 60, lr = 0.0001, ispca = True):
         self.ispca = ispca
         NHIDDEN = hidden_size
@@ -27,7 +27,7 @@ class ModelMdn(Model):
         bh1 = tf.Variable(tf.zeros ([1, NHIDDEN], dtype=tf.float64))
         Wh2 = tf.Variable(tf.random_normal([NHIDDEN, NHIDDEN], stddev=STDEV, dtype=tf.float64))
         bh2 = tf.Variable(tf.zeros([1, NHIDDEN], dtype=tf.float64))
-        Wo = tf.Variable(tf.random_normal([NHIDDEN, NOUT], stddev=STDEV, dtype=tf.float64))
+        Wo = tf.Variable(tf.random_normal([3*NHIDDEN, NOUT], stddev=STDEV, dtype=tf.float64))
        # bo = tf.Variable(tf.random_normal([1, NOUT], stddev=STDEV, dtype=tf.float32))
         #Wo = tf.Variable(tf.zeros([NHIDDEN, NOUT],dtype=tf.float32))
         bo = tf.Variable(tf.zeros([1, NOUT], dtype=tf.float64))
