@@ -62,7 +62,7 @@ def work(pool_num, symset, confer, dirname = ""):
         df = df.sort_values(["sym", "date"])
         df.reset_index(drop=True).to_pickle(confer.get_score_file())
 
-
+"""
 def work_with_original_fea(pool_num, symset, confer, dirname = ""):
     if not os.path.exists(confer.get_score_with_original_file()) or  confer.force:
         to_apends = []
@@ -80,6 +80,28 @@ def work_with_original_fea(pool_num, symset, confer, dirname = ""):
                     traceback.print_exc()
                     executor.shutdown(wait=False)
                     sys.exit(1)
+        df = pd.concat(to_apends)
+        df = df.sort_values(["sym", "date"])
+
+        df_ta = pd.read_pickle(confer.get_ta_file())
+        df_ta["sd"] = df_ta["sym"] + df_ta["date"]
+        df_ta = df_ta.set_index("sd")
+
+        df["sd"] = df["sym"] + df["date"]
+        df = df.set_index("sd")
+
+        df_merge = pd.concat([df_ta, df[[score.get_name() for score in confer.scores]]], axis=1,
+                       join_axes=[df_ta.index])
+
+        df_merge.reset_index(drop=True).to_pickle(confer.get_score_with_original_file())
+"""
+def work_with_original_fea(pool_num, symset, confer, dirname = ""):
+    if not os.path.exists(confer.get_score_with_original_file()) or  confer.force:
+        to_apends = []
+        for sym in symset:
+            data = _one_work(sym, confer, dirname)
+            to_apends.append(data)
+
         df = pd.concat(to_apends)
         df = df.sort_values(["sym", "date"])
 

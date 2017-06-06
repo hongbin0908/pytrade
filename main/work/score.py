@@ -31,7 +31,13 @@ def work2(syms, confer, n_pool):
     build.work(n_pool, confer.syms.get_syms(),
                     confer, dirname = dir_name)
 
-def work_with_original_fea(syms, confer, n_pool):
+def work_with_original_fea(confer):
+    assert isinstance(confer, MltradeConf)
+    syms = confer.syms
+    n_pool = confer.n_pool
+    work2_with_original_fea(syms, confer, n_pool)
+
+def work2_with_original_fea(syms, confer, n_pool):
     dir_name = confer.syms.get_name() + '_' + confer.last_trade_date
-    build.work(n_pool, confer.syms.get_syms(),
+    build.work_with_original_fea(n_pool, confer.syms.get_syms(),
                confer, dirname=dir_name)

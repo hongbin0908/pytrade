@@ -74,7 +74,7 @@ def bit_apply(df, name, fname, start, end):
     except:
         traceback.print_exc()
         assert False
-
+"""
 def work(pool_num, symset, ta, confer, dirname = ""):
     if not os.path.exists(confer.get_ta_file()) or  confer.force:
         to_apends = []
@@ -112,3 +112,14 @@ def work(pool_num, symset, ta, confer, dirname = ""):
     #        print("filter....")
     #        result = result[result.apply(lambda x: datetime.strptime(x['date'], "%Y-%m-%d").weekday()==confer.week, axis=1) ]
     #return df
+"""
+
+def work(pool_num, symset, ta, confer, dirname = ""):
+    if not os.path.exists(confer.get_ta_file()) or  confer.force:
+        to_apends = []
+        for sym in symset:
+            data = _one_work(sym, ta, confer, dirname)
+            to_apends.append(data)
+        df = pd.concat(to_apends)
+        df = df.sort_values(["sym", "date"])
+        df.reset_index(drop=True).to_pickle(confer.get_ta_file())

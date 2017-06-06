@@ -101,7 +101,7 @@ class MltradeConf:
             os.makedirs(os.path.join(root, 'data', 'score_with_original_fea'))
         return os.path.join(root, 'data',
                             'score_with_original_fea', "%s_%s.pkl"
-                            % (self.name_score, self.last_trade_date))
+                            % (self.get_name_score(), self.last_trade_date))
 
     def get_score_file(self):
         if not os.path.exists(os.path.join(root, 'data', 'score')):
@@ -156,4 +156,4 @@ class MyMdnConfForTest(MltradeConf):
     def __init__(self, inputsiz, hidden_size, model_size, lr, train_Begin, train_end, test_begin, test_end):
         classifier = MyMdnClassifier(inputsiz, hidden_size, model_size, lr)
         model_split = YearSpliter(test_begin, test_end, train_Begin, train_end)
-        MltradeConf.__init__(self, model_split=model_split, classifier=classifier, n_pool=3, syms=yeod.SymsForTest())
+        MltradeConf.__init__(self, model_split=model_split, classifier=classifier, n_pool=1, syms=yeod.SymsForTest())
