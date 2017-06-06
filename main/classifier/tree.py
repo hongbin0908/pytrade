@@ -291,7 +291,7 @@ class MyMdnClassifier(BaseClassifier):
     def predict_proba(self, X):
         is_debug = True
         prob, debug = self.classifier.predict_value(X, is_debug)
-        return np.reshape(prob, [-1, 1])
+        return np.concatenate((prob, debug), axis=1)
 
 
 class MyRandomForestClassifier(BaseClassifier):

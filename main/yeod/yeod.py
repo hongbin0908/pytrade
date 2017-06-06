@@ -124,6 +124,6 @@ def main2( poolnum, base, target, symbols):
 
 if __name__ == '__main__':
     if base.is_test_flag():
-        main2(poolnum=1, 
+        main2(poolnum=1, base = '/Users/lingsu/wp/pytrade_branch/pytrade/data/', 
                 target=os.path.join(root, "main", "yeod", "yeod_demo.zip"),
                 symbols = sp100_snapshot("20091129").get_syms()[0:10])

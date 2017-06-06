@@ -96,6 +96,13 @@ class MltradeConf:
             os.makedirs(os.path.join(root, 'data', 'feat'))
         return os.path.join(root, "data", "feat", "%s.pkl" % (self.name_ta()))
 
+    def get_score_with_original_file(self):
+        if not os.path.exists(os.path.join(root, 'data', 'score_with_original_fea')):
+            os.makedirs(os.path.join(root, 'data', 'score_with_original_fea'))
+        return os.path.join(root, 'data',
+                            'score_with_original_fea', "%s_%s.pkl"
+                            % (self.name_score, self.last_trade_date))
+
     def get_score_file(self):
         if not os.path.exists(os.path.join(root, 'data', 'score')):
             os.makedirs(os.path.join(root, 'data', 'score'))

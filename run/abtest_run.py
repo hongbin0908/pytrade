@@ -7,6 +7,7 @@ import os
 import numpy as np
 np.random.seed(608317)
 import pandas as pd
+from main.classifier.tree import MyMdnClassifier
 
 local_path = os.path.dirname(__file__)
 root = os.path.join(local_path, '..')
@@ -60,6 +61,7 @@ if __name__ == '__main__':
         result_dict[model_name]["exp_x2"] = 0
         result_dict[model_name]["sum_x"] = 0
         result_dict[model_name]['sum_base'] = 0
+        result_list = []
         confer = abtest_confs[model_name]
         for i in range(0, iter_num):
             confer.force = options.force
@@ -76,18 +78,19 @@ if __name__ == '__main__':
             topn_value = 10 if base.is_test_flag() else 1000
             res = abtest_report.work(confer,f=fd, round = i, topn=topn_value)
             result_dict[model_name]['sum_x'] += res["accurate"][0]
-            result_dict[model_name]['exp_x2'] += res["accurate"][0] * res["accurate"][0]
             result_dict[model_name]['sum_base'] += res['accurate'][1]
-            """
-            dfo = pd.read_pickle(confer.get_pred_file())
-            df = dfo[(dfo.date >=confer.model_split.test_start)]
-            df_sort = df.sort_values('pred', ascending=False)[["date", "sym", "open", "high", "low", "close", "pred"]]
-            #print(df_sort[df_sort.date == confer.last_trade_date].head(), file=fd)
-            """
+            result_list.append(res['accurate'][0])
+        result_dict[model_name]['cov'] = np.cov(result_list)
+        """
+        dfo = pd.read_pickle(confer.get_pred_file())
+        df = dfo[(dfo.date >=confer.model_split.test_start)]
+        df_sort = df.sort_values('pred', ascending=False)[["date", "sym", "open", "high", "low", "close", "pred"]]
+        #print(df_sort[df_sort.date == confer.last_trade_date].head(), file=fd)
+        """
     print("summary", file = fd)
     for i in result_dict:
         value_x = result_dict[i]['sum_x'] * 1.0 / iter_num
-        cov_x = (result_dict[i]['exp_x2'] - iter_num * value_x * value_x) * 1.0/iter_num
+        cov_x = np.sqrt(result_dict[i]['cov'])
         value_base = result_dict[i]['sum_base'] * 1.0 / iter_num
         sharp_value = ana.get_sharp(value_x= value_x, value_base= value_base, value_sigma= cov_x)
         print("model %s: avg = %.4f, cov = %.4f, sharp_index = %.6f" %(i, value_x, cov_x, sharp_value), file = fd)

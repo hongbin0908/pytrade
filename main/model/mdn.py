@@ -1,6 +1,7 @@
 import numpy as np
 import tensorflow as tf
 import math
+from sklearn.decomposition import PCA
 
 class Model:
     def fit(self, x_data, y_data):
@@ -10,7 +11,8 @@ class Model:
 
 
 class ModelMdn(Model):
-    def __init__(self, inputsize = 1,  hidden_size = 60, model_size = 60, lr = 0.0001):
+    def __init__(self, inputsize = 1,  hidden_size = 60, model_size = 60, lr = 0.0001, ispca = True):
+        self.ispca = ispca
         NHIDDEN = hidden_size
         STDEV = 0.01
         self.KMIX = model_size  # number of mixtures
@@ -32,7 +34,8 @@ class ModelMdn(Model):
         hidden_layer = tf.nn.relu(tf.matmul(self.x, Wh) + bh)
         hidden_layer1 = tf.nn.relu(tf.matmul(hidden_layer, Wh1) + bh1)
         hidden_layer2 = tf.nn.relu(tf.matmul(hidden_layer1, Wh2) + bh2)
-        self.output = tf.matmul(hidden_layer2, Wo) + bo
+        self.output = tf.matmul(tf.concat((hidden_layer, hidden_layer1, hidden_layer2), axis=1),
+                                Wo) + bo
         out_pi, out_sigma, out_mu = self._get_mixture_coef(self.output)
         self.lossfunc = self._get_lossfunc(out_pi, out_sigma, out_mu, self.y)
         self.train_op = tf.train.AdamOptimizer(learning_rate= lr, beta1=0.0001).minimize(self.lossfunc)
@@ -40,13 +43,18 @@ class ModelMdn(Model):
         self.sess.run(tf.initialize_all_variables())
 
     def fit(self, x_, y_):
+        if self.ispca == True:
+            self.pca_model = PCA(n_component = 150)
+            x_fit = self.pca_model.fit_transform(x_)
+        else:
+            x_fit = x_
         y_ = np.reshape(y_, (-1, 1))
         self.NEPOCH = 50
         self.loss = np.zeros(self.NEPOCH)  # store the training progress here.
 
         for i in range(self.NEPOCH):
-            self.sess.run(self.train_op, feed_dict={self.x: x_, self.y: y_})
-            loss = self.sess.run(self.lossfunc, feed_dict={self.x: x_, self.y: y_})
+            self.sess.run(self.train_op, feed_dict={self.x: x_fit, self.y: y_})
+            loss = self.sess.run(self.lossfunc, feed_dict={self.x: x_fit, self.y: y_})
             print("step %d: loss=%.4f" %(i, loss) )
             self.loss[i] = loss
 
@@ -60,9 +68,12 @@ class ModelMdn(Model):
 
     def predict_value(self, x_, is_debug = False):
         out_pi, out_sigma, out_mu = self.sess.run(self._get_mixture_coef(self.output), feed_dict={self.x:x_})
+        if self.ispca == True:
+            x_fit = self.pca_model.transform(x_)
+        else:
+            x_fit = x_
 
-        print(out_pi)
-        return self.get_maxprob_mu(out_pi, out_sigma, out_mu, x_.shape[1], is_debug)
+        return self.get_maxprob_mu(out_pi, out_sigma, out_mu, x_fit.shape[1], is_debug)
 
     def get_maxprob_mu(self, out_pi, out_sigma, out_mu, x_shape, is_debug = False):
         debug_result = []
@@ -128,10 +139,10 @@ class ModelMdn(Model):
         result = tf.reduce_mean(result)
 
         result2 = tf.reduce_mean(tf.multiply(out_mu, out_mu))
+        result3 = tf.add(result, result2)
+        return result3
 
 
-
-        return result + result2
     def _get_pi_idx(self, x, pdf):
         N = pdf.size
         accumulate = 0
@@ -156,3 +167,9 @@ class ModelMdn(Model):
                 std = out_sigma[i, idx]
                 result[i, j] = mu + rn[i, j]*std
         return result
+
+    def predict_filter(self, pd):
+        thread_matrix = pd['threshold']
+        avg = np.mean(thread_matrix)
+        pd = pd[pd.threshold > avg]
+        return pd

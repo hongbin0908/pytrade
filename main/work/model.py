@@ -20,6 +20,7 @@ import main.base as base
 from main.model import ana
 from main.base import decision_path
 from main.model.post import Poster
+from main.model.post import ConPoster
 
 def get_ipts(confer):
     df = pd.read_pickle(confer.get_sel_file())
@@ -184,3 +185,12 @@ def work(confer):
 
     #from shutil import copyfile
     #copyfile(out_file_html, os.path.join(root, "report", "model.html"))
+
+
+def work_with_original_Fea(confer):
+    if os.path.exists(confer.get_pred_file()) and not confer.force :
+        return
+    post = ConPoster(confer)
+    post.work()
+    df_pred = post.pred(start='2010-01-01')
+    df_pred.to_pickle(confer.get_pred_file())
