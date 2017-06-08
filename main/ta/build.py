@@ -74,7 +74,7 @@ def bit_apply(df, name, fname, start, end):
 def work(pool_num, symset, ta, confer, dirname = ""):
     if not os.path.exists(confer.get_ta_file()) or  confer.force:
         to_apends = []
-        Executor = concurrent.futures.ThreadPoolExecutor
+        Executor = concurrent.futures.ProcessPoolExecutor
         with Executor(max_workers=pool_num) as executor:
             futures = {executor.submit(_one_work, sym, ta, confer, dirname): sym for sym in symset}
             for future in concurrent.futures.as_completed(futures):

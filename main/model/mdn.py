@@ -12,22 +12,26 @@ class Model:
 
 class ModelMdn():
     def __init__(self, inputsize = 1,  hidden_size = 60, model_size = 60, lr = 0.0001, ispca = True):
+        self.inputsize=inputsize
+        self.hidden_size = hidden_size
+        self.model_size = model_size
+        self.lr = lr
         self.ispca = ispca
-        NHIDDEN = hidden_size
+    def init_model(self):
         STDEV = 0.01
-        self.KMIX = model_size  # number of mixtures
+        self.KMIX = self.model_size  # number of mixtures
         NOUT = self.KMIX * 3  # pi, mu, stdev
-        self.x = tf.placeholder(dtype=tf.float64, shape=[None, inputsize], name="x")
+        self.x = tf.placeholder(dtype=tf.float64, shape=[None, self.inputsize], name="x")
         self.y = tf.placeholder(dtype=tf.float64, shape=[None, 1], name="y")
-        Wh = tf.Variable(tf.random_normal([inputsize, NHIDDEN], stddev=STDEV, dtype=tf.float64))
+        Wh = tf.Variable(tf.random_normal([self.inputsize, self.hidden_size], stddev=STDEV, dtype=tf.float64))
         #Wh = tf.Variable(tf.zeros([inputsize, NHIDDEN], dtype=tf.float64))
         #bh = tf.Variable(tf.random_normal([1, NHIDDEN], stddev=STDEV, dtype=tf.float32))
-        bh = tf.Variable(tf.zeros ([1, NHIDDEN], dtype=tf.float64))
-        Wh1 = tf.Variable(tf.random_normal([NHIDDEN, NHIDDEN], stddev=STDEV, dtype=tf.float64))
-        bh1 = tf.Variable(tf.zeros ([1, NHIDDEN], dtype=tf.float64))
-        Wh2 = tf.Variable(tf.random_normal([NHIDDEN, NHIDDEN], stddev=STDEV, dtype=tf.float64))
-        bh2 = tf.Variable(tf.zeros([1, NHIDDEN], dtype=tf.float64))
-        Wo = tf.Variable(tf.random_normal([3*NHIDDEN, NOUT], stddev=STDEV, dtype=tf.float64))
+        bh = tf.Variable(tf.zeros ([1, self.hidden_size], dtype=tf.float64))
+        Wh1 = tf.Variable(tf.random_normal([self.hidden_size, self.hidden_size], stddev=STDEV, dtype=tf.float64))
+        bh1 = tf.Variable(tf.zeros ([1, self.hidden_size], dtype=tf.float64))
+        Wh2 = tf.Variable(tf.random_normal([self.hidden_size, self.hidden_size], stddev=STDEV, dtype=tf.float64))
+        bh2 = tf.Variable(tf.zeros([1, self.hidden_size], dtype=tf.float64))
+        Wo = tf.Variable(tf.random_normal([3*self.hidden_size, NOUT], stddev=STDEV, dtype=tf.float64))
        # bo = tf.Variable(tf.random_normal([1, NOUT], stddev=STDEV, dtype=tf.float32))
         #Wo = tf.Variable(tf.zeros([NHIDDEN, NOUT],dtype=tf.float32))
         bo = tf.Variable(tf.zeros([1, NOUT], dtype=tf.float64))
@@ -38,11 +42,12 @@ class ModelMdn():
                                 Wo) + bo
         out_pi, out_sigma, out_mu = self._get_mixture_coef(self.output)
         self.lossfunc = self._get_lossfunc(out_pi, out_sigma, out_mu, self.y)
-        self.train_op = tf.train.AdamOptimizer(learning_rate= lr, beta1=0.0001).minimize(self.lossfunc)
-        self.sess = tf.InteractiveSession()
-        self.sess.run(tf.initialize_all_variables())
+        self.train_op = tf.train.AdamOptimizer(learning_rate= self.lr, beta1=0.0001).minimize(self.lossfunc)
+        #self.sess = tf.InteractiveSession()
+        #self.sess.run(tf.initialize_all_variables())
 
     def fit(self, x_, y_):
+        self.init_model()
         if self.ispca == True:
             self.pca_model = PCA(n_component = 150)
             x_fit = self.pca_model.fit_transform(x_)
