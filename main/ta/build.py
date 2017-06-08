@@ -28,10 +28,7 @@ def is_trend_long(df):
 
 
 def _one_work(sym, ta, confer, dirname = ""):
-    if True:
-        filename = os.path.join(base.dir_eod(), dirname, sym + ".csv")
-    else:
-        filename = os.path.join(base.dir_eod(), dirname, sym + ".rel.csv")
+    filename = os.path.join(base.dir_eod(), dirname, sym + ".csv")
     try:
         if not os.path.exists(filename):
             print("Not exsits %s!!!!!!" % filename)
@@ -74,11 +71,10 @@ def bit_apply(df, name, fname, start, end):
     except:
         traceback.print_exc()
         assert False
-"""
 def work(pool_num, symset, ta, confer, dirname = ""):
     if not os.path.exists(confer.get_ta_file()) or  confer.force:
         to_apends = []
-        Executor = concurrent.futures.ProcessPoolExecutor
+        Executor = concurrent.futures.ThreadPoolExecutor
         with Executor(max_workers=pool_num) as executor:
             futures = {executor.submit(_one_work, sym, ta, confer, dirname): sym for sym in symset}
             for future in concurrent.futures.as_completed(futures):
@@ -123,3 +119,4 @@ def work(pool_num, symset, ta, confer, dirname = ""):
         df = pd.concat(to_apends)
         df = df.sort_values(["sym", "date"])
         df.reset_index(drop=True).to_pickle(confer.get_ta_file())
+"""
