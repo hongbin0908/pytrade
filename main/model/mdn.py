@@ -43,13 +43,13 @@ class ModelMdn():
         out_pi, out_sigma, out_mu = self._get_mixture_coef(self.output)
         self.lossfunc = self._get_lossfunc(out_pi, out_sigma, out_mu, self.y)
         self.train_op = tf.train.AdamOptimizer(learning_rate= self.lr, beta1=0.0001).minimize(self.lossfunc)
-        #self.sess = tf.InteractiveSession()
-        #self.sess.run(tf.initialize_all_variables())
+        self.sess = tf.InteractiveSession()
+        self.sess.run(tf.initialize_all_variables())
 
     def fit(self, x_, y_):
         self.init_model()
         if self.ispca == True:
-            self.pca_model = PCA(n_component = 150)
+            self.pca_model = PCA(n_components= 150)
             x_fit = self.pca_model.fit_transform(x_)
         else:
             x_fit = x_
