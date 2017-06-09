@@ -72,12 +72,12 @@ class ModelMdn():
 
 
     def predict_value(self, x_, is_debug = False):
-        out_pi, out_sigma, out_mu = self.sess.run(self._get_mixture_coef(self.output), feed_dict={self.x:x_})
+
         if self.ispca == True:
             x_fit = self.pca_model.transform(x_)
         else:
             x_fit = x_
-
+        out_pi, out_sigma, out_mu = self.sess.run(self._get_mixture_coef(self.output), feed_dict={self.x: x_fit})
         return self.get_maxprob_mu(out_pi, out_sigma, out_mu, x_fit.shape[1], is_debug)
 
     def get_maxprob_mu(self, out_pi, out_sigma, out_mu, x_shape, is_debug = False):
