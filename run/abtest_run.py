@@ -38,7 +38,7 @@ if __name__ == '__main__':
 
     abtest_confs = {
         #"adj": MyConfStableLTa(classifier=Logit2(30), is_adj= True),
-        #"score5": MyConfStableLTa(classifier=Logit2(30), is_adj = False),
+        "score5": MyConfStableLTa(classifier=Logit2(30), is_adj = False),
         "score4": MyConfStableLTa(classifier=Logit2(30), is_adj = False, score=4),
         "score6": MyConfStableLTa(classifier=Logit2(30), is_adj = False, score=6),
         #"score2": MyConfStableLTa(classifier=Logit2(30), is_adj = False, score=2),
