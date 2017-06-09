@@ -104,7 +104,6 @@ if __name__ == '__main__':
         build.work(confer)
 
         score_build.work_with_original_fea(confer)
-        """
         confer.force = True
         print(confer.get_classifier_file())
         model.work_with_original_Fea(confer)
@@ -127,4 +126,3 @@ if __name__ == '__main__':
             df_sort = df.sort_values('pred', ascending=True)[["date", "sym", "open", "high", "low", "close", "pred"]]
             print(df_sort[df_sort.date == confer.last_trade_date].head(), file=f)
 
-        """
