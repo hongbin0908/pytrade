@@ -104,7 +104,6 @@ if __name__ == '__main__':
         build.work(confer)
 
         score_build.work_with_original_fea(confer)
-
         confer.force = True
         print(confer.get_classifier_file())
         model.work_with_original_Fea(confer)
