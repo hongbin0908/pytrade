@@ -18,10 +18,7 @@ import main.base as base
 from main.score.score import ScoreLabel
 
 def _one_work(sym, confer, dirname = ""):
-    if True:
-        filename = os.path.join(base.dir_eod(), dirname, sym + ".csv")
-    else:
-        filename = os.path.join(base.dir_eod(), dirname, sym + ".rel.csv")
+    filename = os.path.join(base.dir_eod(), dirname, sym + ".csv")
     try:
         if not os.path.exists(filename):
             print("Not exsits %s!!!!!!" % filename)
@@ -62,7 +59,6 @@ def work(pool_num, symset, confer, dirname = ""):
         df = df.sort_values(["sym", "date"])
         df.reset_index(drop=True).to_pickle(confer.get_score_file())
 
-"""
 def work_with_original_fea(pool_num, symset, confer, dirname = ""):
     if not os.path.exists(confer.get_score_with_original_file()) or  confer.force:
         to_apends = []
@@ -116,3 +112,4 @@ def work_with_original_fea(pool_num, symset, confer, dirname = ""):
                        join_axes=[df_ta.index])
 
         df_merge.reset_index(drop=True).to_pickle(confer.get_score_with_original_file())
+"""

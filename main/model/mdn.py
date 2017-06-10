@@ -69,8 +69,6 @@ class ModelMdn():
         return self._generate_ensemble(out_pi, out_mu, out_sigma)
 
 
-
-
     def predict_value(self, x_, is_debug = False):
 
         if self.ispca == True:

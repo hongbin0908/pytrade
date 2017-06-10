@@ -7,7 +7,6 @@ import os
 import numpy as np
 np.random.seed(608317)
 import pandas as pd
-from main.classifier.tree import MyMdnClassifier
 
 local_path = os.path.dirname(__file__)
 root = os.path.join(local_path, '..')
