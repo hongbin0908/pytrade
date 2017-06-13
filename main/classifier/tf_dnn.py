@@ -34,7 +34,7 @@ class TfDnn(BaseClassifier):
             self.x_pl = tf.placeholder(dtype=tf.float32, shape=[None, self.input_dim], name="x")
             self.y_pl = tf.placeholder(dtype=tf.float32, shape=[None], name='y')
             self.logits = self.inference(X_train)
-            self.loss = self.loss(self.logits, self.y_pl)
+            self.loss = self._loss(self.logits, self.y_pl)
             train_op = self.training(self.loss)
 
             init = tf.global_variables_initializer()
@@ -86,7 +86,7 @@ class TfDnn(BaseClassifier):
             logits = tf.matmul(hidden[i], weights) + biases
         return logits
 
-    def loss(self, logits, labels):
+    def _loss(self, logits, labels):
         labels = tf.to_int64(labels)
         cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(
             labels=labels, logits=logits, name='xentropy')
