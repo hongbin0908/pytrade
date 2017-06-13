@@ -43,6 +43,7 @@ if __name__ == '__main__':
         "score5": MyConfStableLTa(classifier=Logit2(30), is_adj = False),
         "score4": MyConfStableLTa(classifier=Logit2(30), is_adj = False, score=4),
         "score6": MyConfStableLTa(classifier=Logit2(30), is_adj = False, score=6),
+        "TfDnn":  MyConfStableLTa(classifier=TfDnn(),is_adj=False, score=5),
         #"score2": MyConfStableLTa(classifier=Logit2(30), is_adj = False, score=2),
         #"score8": MyConfStableLTa(classifier=Logit2(30), is_adj = False, score=8),
         #"score32": MyConfStableLTa(classifier=Logit2(30), is_adj = False, score=32),
