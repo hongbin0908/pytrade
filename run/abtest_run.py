@@ -21,10 +21,11 @@ from main.work import abtest_report
 from main.model import ana
 from main import base
 from main.classifier.logit2 import Logit2
+from main.classifier.tf_dnn import TfDnn
 from main.work.conf import MyConfStableLTa
 
 if __name__ == '__main__':
-    iter_num = 2
+    iter_num = 1
     abtest_models = {
         #"Logit10":Logit2(nb_epoch=10),
         "Logit20":Logit2(nb_epoch=20),
@@ -32,6 +33,7 @@ if __name__ == '__main__':
         #"Logit30-10":Logit2(nb_epoch=30, hs=10),
         #"Logit40":Logit2(nb_epoch=40),
         "Logit50":Logit2(nb_epoch=50),
+        "TfDnn":TfDnn(),
         #"Logit80":Logit2(nb_epoch=80),
         #"MDN" : MyMdnClassifier(),
     }

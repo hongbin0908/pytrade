@@ -56,6 +56,8 @@ class Poster:
                 self.confer.classifier.save(class_dump_file)
             elif self.confer.classifier.get_name().startswith('mdn'):
                 return
+            elif self.confer.classifier.get_name().startswith('tf'):
+                return
             else:
                 with open(class_dump_file, 'wb') as fout:
                     pickle.dump(self.confer.classifier, fout, protocol=-1)
