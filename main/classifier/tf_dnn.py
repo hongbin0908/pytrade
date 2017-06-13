@@ -19,7 +19,7 @@ from main.classifier.base_classifier import BaseClassifier
 from main.classifier.interval_acc import IntervalAcc
 
 class TfDnn(BaseClassifier):
-    def __init__(self, dim = 64, hs = 3, batch_size = 100, nb_epoch=1, verbose = 1):
+    def __init__(self, dim = 64, hs = 3, batch_size = 100, nb_epoch=30, verbose = 1):
         self.batch_size = batch_size
         self.nb_epoch = nb_epoch
         self.verbose = verbose
