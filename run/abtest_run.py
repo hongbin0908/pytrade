@@ -25,19 +25,7 @@ from main.classifier.tf_dnn import TfDnn
 from main.work.conf import MyConfStableLTa
 
 if __name__ == '__main__':
-    iter_num = 1
-    abtest_models = {
-        #"Logit10":Logit2(nb_epoch=10),
-        "Logit20":Logit2(nb_epoch=20),
-        "Logit30":Logit2(nb_epoch=30),
-        #"Logit30-10":Logit2(nb_epoch=30, hs=10),
-        #"Logit40":Logit2(nb_epoch=40),
-        "Logit50":Logit2(nb_epoch=50),
-        "TfDnn":TfDnn(),
-        #"Logit80":Logit2(nb_epoch=80),
-        #"MDN" : MyMdnClassifier(),
-    }
-
+    iter_num = 3
     abtest_confs = {
         #"adj": MyConfStableLTa(classifier=Logit2(30), is_adj= True),
         "score5": MyConfStableLTa(classifier=Logit2(30), is_adj = False),

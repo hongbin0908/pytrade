@@ -64,7 +64,7 @@ class TfDnn(BaseClassifier):
                 name = 'weights'
             )
             biases = tf.Variable(tf.zeros([self.dim]), name='biases')
-            hidden.append(tf.nn.dropout(tf.nn.relu(tf.matmul(self.x_pl, weights) + biases), 0.5))
+            hidden.append(tf.nn.dropout(tf.nn.relu(tf.matmul(self.x_pl, weights) + biases), 0.75))
 
         for i in range(1, self.hs):
             with tf.name_scope('hidden%d' % i):
@@ -74,7 +74,7 @@ class TfDnn(BaseClassifier):
                     name = 'weights'
                 )
                 biases = tf.Variable(tf.zeros([self.dim]), name='biases')
-                hidden.append(tf.nn.dropout(tf.nn.relu(tf.matmul(hidden[i-1], weights) + biases), 0.5))
+                hidden.append(tf.nn.dropout(tf.nn.relu(tf.matmul(hidden[i-1], weights) + biases), 0.75))
         with tf.name_scope('softmax_linear'):
             weights = tf.Variable(
                 tf.truncated_normal([self.dim, 2],
