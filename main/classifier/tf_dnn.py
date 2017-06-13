@@ -19,7 +19,7 @@ from main.classifier.base_classifier import BaseClassifier
 from main.classifier.interval_acc import IntervalAcc
 
 class TfDnn(BaseClassifier):
-    def __init__(self, dim = 64, hs = 3, batch_size = 100, nb_epoch=30, verbose = 1):
+    def __init__(self, dim = 64, hs = 3, batch_size = 100, nb_epoch=1, verbose = 1):
         self.batch_size = batch_size
         self.nb_epoch = nb_epoch
         self.verbose = verbose
@@ -64,7 +64,7 @@ class TfDnn(BaseClassifier):
                 name = 'weights'
             )
             biases = tf.Variable(tf.zeros([self.dim]), name='biases')
-            hidden.append(tf.nn.dropout(tf.nn.relu(tf.matmul(self.x_pl, weights) + biases), 0.75))
+            hidden.append(tf.nn.dropout(tf.nn.relu(tf.matmul(self.x_pl, weights) + biases), 0.5))
 
         for i in range(1, self.hs):
             with tf.name_scope('hidden%d' % i):
@@ -74,7 +74,7 @@ class TfDnn(BaseClassifier):
                     name = 'weights'
                 )
                 biases = tf.Variable(tf.zeros([self.dim]), name='biases')
-                hidden.append(tf.nn.dropout(tf.nn.relu(tf.matmul(hidden[i-1], weights) + biases), 0.75))
+                hidden.append(tf.nn.dropout(tf.nn.relu(tf.matmul(hidden[i-1], weights) + biases), 0.5))
         with tf.name_scope('softmax_linear'):
             weights = tf.Variable(
                 tf.truncated_normal([self.dim, 2],
