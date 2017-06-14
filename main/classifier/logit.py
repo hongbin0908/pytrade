@@ -25,7 +25,7 @@ class Logit(BaseClassifier):
         self.hs = hs
         pass
     def get_name(self):
-        return "ccl-logit-%d-%d-%d-%d" % (self.nb_epoch, self.batch_size, self.dim, self.hs)
+        return "ccl-logit2-%d-%d-%d-%d" % (self.nb_epoch, self.batch_size, self.dim, self.hs)
     def fit(self, X, y, df_test, score):
         import numpy as np
         np.random.seed(608317)
