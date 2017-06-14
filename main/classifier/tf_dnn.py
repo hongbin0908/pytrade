@@ -70,7 +70,7 @@ class TfDnn(BaseClassifier):
             with tf.name_scope('hidden%d' % i):
                 weights = tf.Variable(
                     tf.truncated_normal([self.dim, self.dim],
-                            stddev=1.0/math.sqrt(float(self.input_dim))),
+                            stddev=1.0/math.sqrt(float(self.dim))),
                     name = 'weights'
                 )
                 biases = tf.Variable(tf.zeros([self.dim]), name='biases')
