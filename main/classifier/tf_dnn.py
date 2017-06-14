@@ -83,11 +83,12 @@ class TfDnn(BaseClassifier):
             )
             biases = tf.Variable(tf.zeros([2]), name='biases')
 
-            logits = tf.matmul(hidden[i], weights) + biases
+            logits = tf.nn.sigmoid(tf.matmul(hidden[i], weights) + biases, name="sigmoid")
         return logits
 
     def _loss(self, logits, labels):
         labels = tf.to_int64(labels)
+        return tf.nn.l2_loss(logits-labels, name = "squared_error_cost")
         cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(
             labels=labels, logits=logits, name='xentropy')
         return tf.reduce_mean(cross_entropy, name='xentropy_mean')
