@@ -21,6 +21,7 @@ from main.work import abtest_report
 from main.model import ana
 from main import base
 from main.classifier.logit2 import Logit2
+from main.classifier.logit import Logit
 from main.classifier.tf_dnn import TfDnn
 from main.work.conf import MyConfStableLTa
 
@@ -29,6 +30,7 @@ if __name__ == '__main__':
     abtest_confs = {
         #"adj": MyConfStableLTa(classifier=Logit2(30), is_adj= True),
         "score5": MyConfStableLTa(classifier=Logit2(30), is_adj = False),
+        "delta": MyConfStableLTa(classifier=Logit(30), is_adj = False),
         "score4": MyConfStableLTa(classifier=Logit2(30), is_adj = False, score=4),
         "score6": MyConfStableLTa(classifier=Logit2(30), is_adj = False, score=6),
         "TfDnn2":  MyConfStableLTa(classifier=TfDnn(nb_epoch=20),is_adj=False, score=5),
