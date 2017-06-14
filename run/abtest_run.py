@@ -25,13 +25,13 @@ from main.classifier.tf_dnn import TfDnn
 from main.work.conf import MyConfStableLTa
 
 if __name__ == '__main__':
-    iter_num = 3
+    iter_num = 1
     abtest_confs = {
         #"adj": MyConfStableLTa(classifier=Logit2(30), is_adj= True),
         "score5": MyConfStableLTa(classifier=Logit2(30), is_adj = False),
         "score4": MyConfStableLTa(classifier=Logit2(30), is_adj = False, score=4),
         "score6": MyConfStableLTa(classifier=Logit2(30), is_adj = False, score=6),
-        "TfDnn":  MyConfStableLTa(classifier=TfDnn(),is_adj=False, score=5),
+        "TfDnn":  MyConfStableLTa(classifier=TfDnn(nb_epoch=1),is_adj=False, score=5),
         #"score2": MyConfStableLTa(classifier=Logit2(30), is_adj = False, score=2),
         #"score8": MyConfStableLTa(classifier=Logit2(30), is_adj = False, score=8),
         #"score32": MyConfStableLTa(classifier=Logit2(30), is_adj = False, score=32),
