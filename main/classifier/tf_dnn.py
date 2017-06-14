@@ -77,19 +77,17 @@ class TfDnn(BaseClassifier):
                 hidden.append(tf.nn.dropout(tf.nn.relu(tf.matmul(hidden[i-1], weights) + biases), 0.5))
         with tf.name_scope('softmax_linear'):
             weights = tf.Variable(
-                tf.truncated_normal([self.dim],
+                tf.truncated_normal([self.dim, 2],
                                     stddev=1.0/math.sqrt(float(self.dim))),
                 name='weights'
             )
-            biases = tf.Variable(tf.zeros(1), name='biases')
+            biases = tf.Variable(tf.zeros([2]), name='biases')
 
-            logits = tf.nn.sigmoid(tf.matmul(hidden[i], weights) + biases, name="sigmoid")
+            logits = tf.matmul(hidden[i], weights) + biases
         return logits
 
     def _loss(self, logits, labels):
         labels = tf.to_int64(labels)
-        labels = tf.to_float(labels)
-        return tf.nn.l2_loss(logits-labels, name = "squared_error_cost")
         cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(
             labels=labels, logits=logits, name='xentropy')
         return tf.reduce_mean(cross_entropy, name='xentropy_mean')
@@ -104,10 +102,7 @@ class TfDnn(BaseClassifier):
 
     def predict_proba(self, X):
         y = tf.nn.softmax(logits=self.logits)
-        #pred = self.sess.run(y, feed_dict={self.x_pl:X})
-        pred = self.sess.run(self.logits, feed_dict={self.x_pl:X})
-        print(pred)
-        return np.vstack([pred, 1-pred])
+        pred = self.sess.run(y, feed_dict={self.x_pl:X})
         return pred
 
     def save(self, save_path):
