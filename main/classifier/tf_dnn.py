@@ -106,7 +106,7 @@ class TfDnn(BaseClassifier):
         y = tf.nn.softmax(logits=self.logits)
         #pred = self.sess.run(y, feed_dict={self.x_pl:X})
         pred = self.sess.run(self.logits, feed_dict={self.x_pl:X})
-        return np.vstack(pred, 1-pred)
+        return np.vstack([pred, 1-pred])
         return pred
 
     def save(self, save_path):
