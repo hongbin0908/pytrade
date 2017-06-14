@@ -46,7 +46,7 @@ class Logit(BaseClassifier):
         self.classifier.add(Activation('sigmoid'))
         #opt = SGD(lr=0.01)
         opt = Adam(lr=4e-5)
-        opt = Adadelta(lr=4e-5)
+        opt = Adadelta()
         self.classifier.compile(loss='binary_crossentropy', optimizer=opt, metrics=['accuracy'])
         ival = IntervalAcc(cls = self, validation_data=(df_test, score), interval=1)
         self.classifier.fit(X, y, shuffle=False, batch_size=self.batch_size, nb_epoch=self.nb_epoch, callbacks=[ival])
