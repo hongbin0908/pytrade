@@ -77,11 +77,11 @@ class TfDnn(BaseClassifier):
                 hidden.append(tf.nn.dropout(tf.nn.relu(tf.matmul(hidden[i-1], weights) + biases), 0.5))
         with tf.name_scope('softmax_linear'):
             weights = tf.Variable(
-                tf.truncated_normal([self.dim, 2],
+                tf.truncated_normal([self.dim, 1],
                                     stddev=1.0/math.sqrt(float(self.dim))),
                 name='weights'
             )
-            biases = tf.Variable(tf.zeros([2]), name='biases')
+            biases = tf.Variable(tf.zeros([1]), name='biases')
 
             logits = tf.nn.sigmoid(tf.matmul(hidden[i], weights) + biases, name="sigmoid")
         return logits
