@@ -88,7 +88,7 @@ class TfDnn(BaseClassifier):
 
     def _loss(self, logits, labels):
         labels = tf.to_int64(labels)
-        labels = tf.to_float32(labels)
+        labels = tf.to_float(labels)
         return tf.nn.l2_loss(logits-labels, name = "squared_error_cost")
         cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(
             labels=labels, logits=logits, name='xentropy')
