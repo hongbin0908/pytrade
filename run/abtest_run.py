@@ -36,6 +36,7 @@ if __name__ == '__main__':
         "score5_24": MyConfStableLTa(classifier=Logit2(dim=24), is_adj = False),
         "score5_32": MyConfStableLTa(classifier=Logit2(dim=32), is_adj = False),
         "score5_40": MyConfStableLTa(classifier=Logit2(dim=40), is_adj = False),
+        "score5_48": MyConfStableLTa(classifier=Logit2(dim=48), is_adj = False),
         #"ccl2": MyConfStableLTa(classifier=Logit2(), is_adj = False),
         #"ccl3": MyConfStableLTa(classifier=Logit2(dim=10, hs=6), is_adj = False),
         #"delta": MyConfStableLTa(classifier=Logit(nb_epoch=10), is_adj = False),
