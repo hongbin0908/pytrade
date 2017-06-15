@@ -26,17 +26,19 @@ from main.classifier.tf_dnn import TfDnn
 from main.work.conf import MyConfStableLTa
 
 if __name__ == '__main__':
-    iter_num = 1
+    iter_num = 3
     abtest_confs = {
         #"adj": MyConfStableLTa(classifier=Logit2(30), is_adj= True),
-        "score5": MyConfStableLTa(classifier=Logit2(30), is_adj = False),
-        "ccl2": MyConfStableLTa(classifier=Logit2(), is_adj = False),
-        "ccl3": MyConfStableLTa(classifier=Logit2(dim=10, hs=6), is_adj = False),
-        "delta": MyConfStableLTa(classifier=Logit(nb_epoch=10), is_adj = False),
-        "delta2": MyConfStableLTa(classifier=Logit(nb_epoch=20), is_adj = False),
-        "score4": MyConfStableLTa(classifier=Logit2(30), is_adj = False, score=4),
-        "score6": MyConfStableLTa(classifier=Logit2(30), is_adj = False, score=6),
+        "score5_30": MyConfStableLTa(classifier=Logit2(30), is_adj = False),
+        "score5_64": MyConfStableLTa(classifier=Logit2(), is_adj = False),
+        #"ccl2": MyConfStableLTa(classifier=Logit2(), is_adj = False),
+        #"ccl3": MyConfStableLTa(classifier=Logit2(dim=10, hs=6), is_adj = False),
+        #"delta": MyConfStableLTa(classifier=Logit(nb_epoch=10), is_adj = False),
+        #"delta2": MyConfStableLTa(classifier=Logit(nb_epoch=20), is_adj = False),
+        #"score4": MyConfStableLTa(classifier=Logit2(30), is_adj = False, score=4),
+        #"score6": MyConfStableLTa(classifier=Logit2(30), is_adj = False, score=6),
         "TfDnn2":  MyConfStableLTa(classifier=TfDnn(dim=30, nb_epoch=20),is_adj=False, score=5),
+        "TfDnn1":  MyConfStableLTa(classifier=TfDnn(dim=30, nb_epoch=30),is_adj=False, score=5),
         "TfDnn3":  MyConfStableLTa(classifier=TfDnn(nb_epoch=10),is_adj=False, score=5),
         #"score2": MyConfStableLTa(classifier=Logit2(30), is_adj = False, score=2),
         #"score8": MyConfStableLTa(classifier=Logit2(30), is_adj = False, score=8),
