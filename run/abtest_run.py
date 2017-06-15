@@ -29,8 +29,9 @@ if __name__ == '__main__':
     iter_num = 3
     abtest_confs = {
         #"adj": MyConfStableLTa(classifier=Logit2(30), is_adj= True),
-        "score5_30": MyConfStableLTa(classifier=Logit2(30), is_adj = False),
-        "score5_64": MyConfStableLTa(classifier=Logit2(), is_adj = False),
+        "score5_30": MyConfStableLTa(classifier=Logit2(dim=30), is_adj = False),
+        "score5_64": MyConfStableLTa(classifier=Logit2(dim=64), is_adj = False),
+        "score5_8": MyConfStableLTa(classifier=Logit2(dim=8), is_adj = False),
         #"ccl2": MyConfStableLTa(classifier=Logit2(), is_adj = False),
         #"ccl3": MyConfStableLTa(classifier=Logit2(dim=10, hs=6), is_adj = False),
         #"delta": MyConfStableLTa(classifier=Logit(nb_epoch=10), is_adj = False),
@@ -49,7 +50,7 @@ if __name__ == '__main__':
     from optparse import OptionParser
     parser = OptionParser()
     parser.add_option('-f', '--force', action='store_true',default = False, dest='force', help = 'do not use any tmp file')
-    (options, args)  = parser.parse_args()
+    (options, args) = parser.parse_args()
 
     report_file = os.path.join(root, 'data', 'report', 'abtest.txt')
     fd = open(report_file, "w")
