@@ -26,7 +26,11 @@ class Logit2(BaseClassifier):
         self.dropout = dropout
         pass
     def get_name(self):
-        return "ccl-logit-%d-%d-%d-%d" % (self.nb_epoch, self.batch_size, self.dim, self.hs)
+        if self.dropout == 0.5:
+            return "ccl-logit-%d-%d-%d-%d" % (self.nb_epoch, self.batch_size, self.dim, self.hs)
+        else:
+            return "ccl-logit-%d-%d-%d-%d-%d" % (self.nb_epoch, self.batch_size, self.dim, self.hs, self.dropout * 10)
+
     def fit(self, X, y, df_test, score):
         import numpy as np
         np.random.seed(608317)
