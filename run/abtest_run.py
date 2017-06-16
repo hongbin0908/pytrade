@@ -45,7 +45,7 @@ if __name__ == '__main__':
         "score5_40_6_3": MyConfStableLTa(classifier=Logit2(hs=3, dim=40, dropout=0.6), is_adj = False), # best
         "score5_40_6_3_delta": MyConfStableLTa(classifier=Logit3(hs=3, dim=40, dropout=0.6), is_adj = False), # best
         "score5_40_6_3_adam1": MyConfStableLTa(classifier=Logit3(hs=3, dim=40, dropout=0.6, lr=4e-5), is_adj = False), # best
-        "score5_40_6_3_adam2": MyConfStableLTa(classifier=Logit3(hs=3, dim=40, dropout=0.6, lr=4e-4), is_adj = False), # best
+        "score5_40_6_3_adam2": MyConfStableLTa(classifier=Logit3(hs=3, dim=40, dropout=0.6, lr=4e-6), is_adj = False), # best
         "score5_40_6_3_adam3": MyConfStableLTa(classifier=Logit3(hs=3, dim=40, dropout=0.6, lr=4e-3), is_adj = False), # best
         "score5_40_6_3_adam4": MyConfStableLTa(classifier=Logit3(hs=3, dim=40, dropout=0.6, lr=4e-2), is_adj = False), # best
         "score5_40_6_4": MyConfStableLTa(classifier=Logit2(hs=4, dim=40, dropout=0.6), is_adj = False),
