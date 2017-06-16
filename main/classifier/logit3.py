@@ -26,3 +26,8 @@ class Logit3(Logit2):
         self.hs = hs
         self.dropout = dropout
         self.opt = optimizers.Adagrad(lr=4e-5)
+    def get_name(self):
+        if self.dropout == 0.5:
+            return "ccl-logit3-%d-%d-%d-%d" % (self.nb_epoch, self.batch_size, self.dim, self.hs)
+        else:
+            return "ccl-logit3-%d-%d-%d-%d-%d" % (self.nb_epoch, self.batch_size, self.dim, self.hs, self.dropout * 10)
