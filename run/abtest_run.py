@@ -27,7 +27,7 @@ from main.classifier.tf_dnn import TfDnn
 from main.work.conf import MyConfStableLTa
 
 if __name__ == '__main__':
-    iter_num = 1
+    iter_num = 2
     abtest_confs = {
         #"adj": MyConfStableLTa(classifier=Logit2(30), is_adj= True),
         #"score5_30": MyConfStableLTa(classifier=Logit2(dim=30), is_adj = False),
@@ -45,8 +45,8 @@ if __name__ == '__main__':
         #"score5_40_6_3": MyConfStableLTa(classifier=Logit2(hs=3, dim=40, dropout=0.6), is_adj = False), # best
         "score5_40_6_3_adam1": MyConfStableLTa(classifier=Logit3(hs=3, dim=40, dropout=0.6, lr=4e-5), is_adj = False), # best
         "score5_40_6_3_adam2": MyConfStableLTa(classifier=Logit3(hs=3, dim=40, dropout=0.6, lr=8e-5), is_adj = False), # best
-        "score5_40_6_3_adam3": MyConfStableLTa(classifier=Logit3(hs=3, dim=40, dropout=0.6, lr=2e-5), is_adj = False), # best
-        "score5_40_6_3_adam4": MyConfStableLTa(classifier=Logit3(hs=3, dim=40, dropout=0.6, lr=1e-6), is_adj = False), # best
+        #"score5_40_6_3_adam3": MyConfStableLTa(classifier=Logit3(hs=3, dim=40, dropout=0.6, lr=2e-5), is_adj = False), # best
+        #"score5_40_6_3_adam4": MyConfStableLTa(classifier=Logit3(hs=3, dim=40, dropout=0.6, lr=1e-6), is_adj = False), # best
         #"score5_40_6_4": MyConfStableLTa(classifier=Logit2(hs=4, dim=40, dropout=0.6), is_adj = False),
         #"score5_40_6_5": MyConfStableLTa(classifier=Logit2(hs=5, dim=40, dropout=0.6), is_adj = False),
         #"score5_40_6_6": MyConfStableLTa(classifier=Logit2(hs=6, dim=40, dropout=0.6), is_adj = False),
