@@ -18,16 +18,13 @@ from main.classifier.logit2 import Logit2
 from main.classifier.interval_acc import IntervalAcc
 
 class Logit3(Logit2):
-    def __init__(self, dim = 64, hs = 3, batch_size = 100, nb_epoch=30, dropout=0.5, verbose = 1):
+    def __init__(self, dim = 64, hs = 3, batch_size = 100, nb_epoch=30, dropout=0.5, lr=4e-5, verbose = 1):
         self.batch_size = batch_size
         self.nb_epoch = nb_epoch
         self.verbose = verbose
         self.dim = dim
         self.hs = hs
         self.dropout = dropout
-        self.opt = optimizers.Adadelta()
+        self.opt = optimizers.Adam(lr=4e-5)
     def get_name(self):
-        if self.dropout == 0.5:
-            return "ccl-logit3-adadelta-%d-%d-%d-%d" % (self.nb_epoch, self.batch_size, self.dim, self.hs)
-        else:
-            return "ccl-logit3-adadelta-%d-%d-%d-%d-%d" % (self.nb_epoch, self.batch_size, self.dim, self.hs, self.dropout * 10)
+        return "ccl-logit3-adadelta-%d-%d-%d-%d-%d" % (self.nb_epoch, self.batch_size, self.dim, self.hs, self.dropout * 10)
