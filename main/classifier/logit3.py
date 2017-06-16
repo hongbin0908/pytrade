@@ -25,6 +25,7 @@ class Logit3(Logit2):
         self.dim = dim
         self.hs = hs
         self.dropout = dropout
-        self.opt = optimizers.Adam(lr=4e-5)
+        self.lr = lr
+        self.opt = optimizers.Adam(lr=self.lr)
     def get_name(self):
-        return "ccl-logit3-adam-%d-%d-%d-%d-%d" % (self.nb_epoch, self.batch_size, self.dim, self.hs, self.dropout * 10)
+        return "ccl-logit3-adam-%d-%d-%d-%d-%d-%s" % (self.nb_epoch, self.batch_size, self.dim, self.hs, self.dropout * 10, str(self.lr))
