@@ -24,6 +24,7 @@ class Logit2(BaseClassifier):
         self.dim = dim
         self.hs = hs
         self.dropout = dropout
+        self.opt = Adam(4e-5)
         pass
     def get_name(self):
         if self.dropout == 0.5:
@@ -49,9 +50,7 @@ class Logit2(BaseClassifier):
         self.classifier.add(Dense(output_dim=1, kernel_initializer=keras.initializers.glorot_uniform(seed=447630),
                                   bias_initializer=keras.initializers.constant(0.0)))
         self.classifier.add(Activation('sigmoid'))
-        #opt = SGD(lr=0.01)
-        opt = Adam(lr=4e-5)
-        self.classifier.compile(loss='binary_crossentropy', optimizer=opt, metrics=['accuracy'])
+        self.classifier.compile(loss='binary_crossentropy', optimizer=self.opt, metrics=['accuracy'])
         ival = IntervalAcc(cls = self, validation_data=(df_test, score), interval=1)
         self.classifier.fit(X, y, shuffle=False, batch_size=self.batch_size, nb_epoch=self.nb_epoch, callbacks=[ival])
     def predict_proba(self, X):
