@@ -32,7 +32,7 @@ class MltradeConf:
                  syms=yeod.sp500_snapshot("sp500_snapshot_20091231"),
                  week=0, model_postfix="", train_iters = 1):
         self.model_split = model_split
-        #self.classifier = classifier
+        self.classifier = classifier
         self.n_pool = n_pool
         self.scores = scores
         self.syms = syms

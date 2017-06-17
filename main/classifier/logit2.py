@@ -24,7 +24,7 @@ class Logit2(BaseClassifier):
         self.dim = dim
         self.hs = hs
         self.dropout = dropout
-        self.opt = Adam(4e-5)
+        self.lr = 4e-5
         pass
     def get_name(self):
         if self.dropout == 0.5:
@@ -33,6 +33,7 @@ class Logit2(BaseClassifier):
             return "ccl-logit-%d-%d-%d-%d-%d" % (self.nb_epoch, self.batch_size, self.dim, self.hs, self.dropout * 10)
 
     def fit(self, X, y, df_test, score):
+        self.opt = Adam(self.lr)
         import numpy as np
         np.random.seed(608317)
         model = Sequential()
