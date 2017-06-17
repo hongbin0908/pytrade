@@ -69,7 +69,6 @@ class IntervalAcc(Callback):
         return (score1,score2,scoren, score0)
 
     def on_epoch_end(self, epoch, logs={}):
-        return
         if epoch % (self.interval*5) != 0:
             return
         print("")

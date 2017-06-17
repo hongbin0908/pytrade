@@ -28,6 +28,7 @@ from main.classifier.tree import cnn
 from main.classifier.tree import ccl2
 from main.classifier.ts import Ts
 from main.classifier.logit2 import Logit2
+from main.classifier.logit3 import Logit3
 from main.work.conf import MyConfStableLTa
 from main.work.conf import MyConfForTest
 from main.work.conf import MyMdnConfForTest
@@ -62,6 +63,7 @@ def get_confs():
         #MyConfStableLTa(classifier=cnn(batch_size=32, nb_epoch=20), score=score),
         #MyConfStableLTa(classifier=Logit2(), score=score),
         MyConfStableLTa(classifier=Logit2(nb_epoch=30), score=score),
+        MyConfStableLTa(classifier=Logit3(hs=3, dim=40, dropout=0.6, lr=8e-5), is_adj = False), # best
     ]
 
 def get_mdnconfs():
@@ -94,8 +96,8 @@ if __name__ == '__main__':
         score_build.work(confer)
         bitlize.work(confer)
         selected.work(confer)
-        #if not base.is_test_flag():
-        #    dassert_ta.work(confer)
+        if not base.is_test_flag():
+            dassert_ta.work(confer)
         confer.force = True
         print(confer.get_classifier_file())
         model.work(confer)
