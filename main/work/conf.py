@@ -130,11 +130,11 @@ class MyConfStableLTa(MltradeConf):
 
         model_split=YearSpliter(train_end, "2017", train_start, train_end)
         week=-1
-        MltradeConf.__init__(self,
-                model_split=model_split,
-                classifier=classifier,
-                scores = [ScoreLabel(score, 1.0), ScoreRelative(score), ScoreRelativeOpen(score)],
-                ta = ta, is_adj = is_adj, n_pool=30, syms=syms, week = week)
+        #MltradeConf.__init__(self,
+        #        model_split=model_split,
+        #        classifier=classifier,
+        #        scores = [ScoreLabel(score, 1.0), ScoreRelative(score), ScoreRelativeOpen(score)],
+        #        ta = ta, is_adj = is_adj, n_pool=30, syms=syms, week = week)
 
 class MyConfForTest(MltradeConf):
     def __init__(self):
