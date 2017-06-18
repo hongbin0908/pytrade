@@ -27,7 +27,7 @@ from main.classifier.tf_dnn import TfDnn
 from main.work.conf import MyConfStableLTa
 
 if __name__ == '__main__':
-    iter_num = 10
+    iter_num = 3
     abtest_confs = {
         #"adj": MyConfStableLTa(classifier=Logit2(30), is_adj= True),
         #"score5_30": MyConfStableLTa(classifier=Logit2(dim=30), is_adj = False),
