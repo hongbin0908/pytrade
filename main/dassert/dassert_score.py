@@ -21,9 +21,6 @@ def work(confer):
     score2 = confer.get_score_file()
     confer.last_trade_date = last_trade_date
 
-    print(score1,score2)
-
-
     df1 = pd.read_pickle(score1)
     df1 = df1[df1.date <= base.get_second_trade_date_local(confer.syms.get_name())]
     df2 = pd.read_pickle(score2)
@@ -32,16 +29,20 @@ def work(confer):
     syms2 = df2.sym.unique()
 
     print(syms1, syms2)
-    #assert len(syms1) == len(syms2)
-
-    for sym in syms1:
-        print(sym)
-        df_s_1 = df1[df1.sym == sym]
-        df_s_1.reset_index(drop=True, inplace=True)
-        df_s_2 = df2[df2.sym == sym]
-        df_s_2.reset_index(drop=True, inplace=True)
-        print(df_s_1.head(), df_s_2.head())
-        assert_frame_equal(df_s_1[base.get_feat_names(df_s_1)].round(1), df_s_2[base.get_feat_names(df_s_2)].round(1))
-
-
+    assert len(syms1) == len(syms2)
+    df1.reset_index(drop=True, inplace=True)
+    df2.reset_index(drop=True, inplace=True)
     assert len(df1) == len(df2)
+    assert_frame_equal(df1, df2)
+
+    #for sym in syms1:
+    #    print(sym)
+    #    df_s_1 = df1[df1.sym == sym]
+    #    df_s_1.reset_index(drop=True, inplace=True)
+    #    df_s_2 = df2[df2.sym == sym]
+    #    df_s_2.reset_index(drop=True, inplace=True)
+    #    print(df_s_1.head(), df_s_2.head())
+    #    assert_frame_equal(df_s_1[base.get_feat_names(df_s_1)].round(1), df_s_2[base.get_feat_names(df_s_2)].round(1))
+
+
+    #assert len(df1) == len(df2)
