@@ -40,10 +40,10 @@ def work(confer):
         print(sym)
         df_s_1 = df1[df1.sym == sym]
         df_s_1.reset_index(drop=True, inplace=True)
+        df_s_1 = df_s_1.drop(df_s_1.tail(10))
         df_s_2 = df2[df2.sym == sym]
         df_s_2.reset_index(drop=True, inplace=True)
-        print(df_s_1.score_rel_5_0)
-        print(df_s_2.score_rel_5_0)
+        df_s_2 = df_s_2.drop(df_s_2.tail(10))
         assert_frame_equal(df_s_1[base.get_feat_score_names(df_s_1)],
                            df_s_2[base.get_feat_score_names(df_s_2)])
 
