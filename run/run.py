@@ -96,6 +96,7 @@ if __name__ == '__main__':
         build.work(confer)
         if not base.is_test_flag():
             dassert_ta.work(confer)
+        confer.force = True
         score_build.work(confer)
         if not base.is_test_flag():
             dassert_score.work(confer)

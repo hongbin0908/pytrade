@@ -18,10 +18,7 @@ import main.base as base
 from main.score.score import ScoreLabel
 
 def _one_work(sym, confer, dirname = ""):
-    if True:
-        filename = os.path.join(base.dir_eod(), dirname, sym + ".csv")
-    else:
-        filename = os.path.join(base.dir_eod(), dirname, sym + ".rel.csv")
+    filename = os.path.join(base.dir_eod(), dirname, sym + ".csv")
     try:
         if not os.path.exists(filename):
             print("Not exsits %s!!!!!!" % filename)
