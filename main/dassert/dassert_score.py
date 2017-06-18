@@ -32,7 +32,7 @@ def work(confer):
     syms2 = df2.sym.unique()
 
     print(syms1, syms2)
-    assert len(syms1) == len(syms2)
+    #assert len(syms1) == len(syms2)
 
     for sym in syms1:
         print(sym)
