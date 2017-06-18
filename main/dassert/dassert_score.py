@@ -18,7 +18,7 @@ def work(confer):
     last_trade_date = confer.last_trade_date
     confer.last_trade_date = base.get_second_trade_date_local(confer.syms.get_name())
     print(confer.last_trade_date)
-    score2 = confer.get_ta_file()
+    score2 = confer.get_score_file()
     confer.last_trade_date = last_trade_date
 
     print(score1,score2)
