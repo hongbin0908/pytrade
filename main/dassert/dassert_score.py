@@ -42,7 +42,6 @@ def work(confer):
         df_s_1.reset_index(drop=True, inplace=True)
         df_s_2 = df2[df2.sym == sym]
         df_s_2.reset_index(drop=True, inplace=True)
-        print(df_s_1.head(), df_s_2.head())
         print(df_s_1.score_rel_5_0)
         print(df_s_2.score_rel_5_0)
         assert_frame_equal(df_s_1[base.get_feat_score_names(df_s_1)],
