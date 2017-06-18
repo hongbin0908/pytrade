@@ -57,4 +57,5 @@ def work(pool_num, symset, confer, dirname = ""):
                     sys.exit(1)
         df = pd.concat(to_apends)
         df = df.sort_values(["sym", "date"])
+        print(df)
         df.reset_index(drop=True).to_pickle(confer.get_score_file())
