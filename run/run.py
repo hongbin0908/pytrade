@@ -34,6 +34,7 @@ from main.work.conf import MyConfForTest
 from main.work.conf import MyMdnConfForTest
 from main.dassert import dassert_yeod
 from main.dassert import dassert_ta
+from main.dassert import dassert_score
 
 
 def get_confs2():
@@ -93,11 +94,13 @@ if __name__ == '__main__':
         if not base.is_test_flag():
             dassert_yeod.work(confer)
         build.work(confer)
-        score_build.work(confer)
-        bitlize.work(confer)
-        selected.work(confer)
         if not base.is_test_flag():
             dassert_ta.work(confer)
+        score_build.work(confer)
+        if not base.is_test_flag():
+            dassert_score.work(confer)
+        bitlize.work(confer)
+        selected.work(confer)
         confer.force = False
         print(confer.get_classifier_file())
         model.work(confer)
