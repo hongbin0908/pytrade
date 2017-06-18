@@ -36,7 +36,7 @@ def work(confer):
     df1.reset_index(drop=True, inplace=True)
     df2.reset_index(drop=True, inplace=True)
     assert len(df1) == len(df2)
-    assert_frame_equal(df1, df2)
+    assert_frame_equal(df1[base.get_feat_names(df1)], df2[base.get_feat_names(df2)])
 
 
     #for sym in syms1:
