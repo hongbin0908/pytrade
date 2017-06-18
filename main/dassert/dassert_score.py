@@ -34,7 +34,9 @@ def work(confer):
     df2.reset_index(drop=True, inplace=True)
     assert len(df1) == len(df2)
     del df1["volume"]
+    del df1["volumeo"]
     del df2["volume"]
+    del df2["volumeo"]
     assert_frame_equal(df1, df2)
 
     #for sym in syms1:
