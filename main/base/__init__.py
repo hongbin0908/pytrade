@@ -72,6 +72,11 @@ def get_feat_names(df):
     the the columns of feature names to train
     """
     return sorted([x for x in df.columns if x.startswith('ta_')])
+def get_feat_score_names(df):
+    """
+    the the columns of feature names to train
+    """
+    return sorted([x for x in df.columns if x.startswith('ta_') or x.startswith('score_')])
 def get_tabase_names(df):
     """
     the the columns of feature names to train
