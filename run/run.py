@@ -89,7 +89,7 @@ if __name__ == '__main__':
 
     for confer in get_confs() if not base.is_test_flag() else get_test_confs():
         confer.force = options.force
-        confer.force = True
+        confer.force = False
         if not base.is_test_flag():
             dassert_yeod.work(confer)
         build.work(confer)
@@ -98,7 +98,7 @@ if __name__ == '__main__':
         selected.work(confer)
         if not base.is_test_flag():
             dassert_ta.work(confer)
-        confer.force = True
+        confer.force = False
         print(confer.get_classifier_file())
         model.work(confer)
         pd.set_option('display.expand_frame_repr', False)
