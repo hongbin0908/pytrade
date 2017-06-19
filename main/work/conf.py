@@ -58,7 +58,7 @@ class MltradeConf:
         for score in self.scores:
             name_score += "%s_" % score.get_name()
         name_score += self.last_trade_date
-        return name_score
+        return "%s_%d" % (name_score, self.is_adj)
 
     def get_name_clazz(self):
         return "%s_%s_%d_%s_%s_%s_%s" % (self.syms.get_name(), self.ta.get_name(), self.is_adj,
