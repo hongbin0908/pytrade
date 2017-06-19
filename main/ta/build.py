@@ -46,9 +46,9 @@ def _one_work(sym, ta, confer, dirname = ""):
         if (len(df) < 300):
             print(sym, "too short!")
             return None
-        if (len(df[df.closeo< 10])/len(df) > 0.5):
-            print(sym, "price too low!")
-            return None
+        #if (len(df[df.closeo< 10])/len(df) > 0.5):
+        #    print(sym, "price too low!")
+        #    return None
         if (len(df[df.volume< 100000])/len(df) > 0.5):
             print(sym, "volume too low!")
             return None
@@ -85,7 +85,7 @@ def work(pool_num, symset, ta, confer, dirname = ""):
                     if data is None:
                         continue
                     #data = data[data.ta_NATR_7 > 1.0]
-                    data = data[data.closeo > 10]
+                    #data = data[data.closeo > 10]
                     if (len(data) < 300):
                         print(sym, "too short!")
                         continue
