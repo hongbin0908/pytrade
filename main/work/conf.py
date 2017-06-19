@@ -20,15 +20,14 @@ from main.classifier.tree import cnn
 from main.classifier.tree import MyMdnClassifier
 from main.classifier.ts import Ts
 from main.classifier.logit2 import Logit2
-from main.classifier.tf_dnn import TfDnn
 from main.selector.selector import MiSelector
 from main import base
 
 class MltradeConf:
     def __init__(self, model_split, 
                  classifier=MyRandomForestClassifier(),
-                 scores=[ScoreLabel(5, 1.0), ScoreRelative(5), ScoreRelativeOpen(5)],
-                 ta=TaSetBase1(),  is_adj = True, selector=None, n_pool=10,
+             scores=[ScoreLabel(5, 1.0), ScoreRelative(5), ScoreRelativeOpen(5)],
+                 ta=TaSetBase1(), selector=None, n_pool=10,
                  syms=yeod.sp500_snapshot("sp500_snapshot_20091231"),
                  week=0, model_postfix="", train_iters = 1):
         self.model_split = model_split
@@ -39,7 +38,6 @@ class MltradeConf:
         self.week = week
         self.force = False
         self.ta = ta
-        self.is_adj = is_adj
         self.last_trade_date = base.get_last_trade_date_local(self.syms.get_name())
         self.model_postfix = model_postfix
         self.train_iters = train_iters
@@ -49,23 +47,20 @@ class MltradeConf:
             self.selector = selector
 
 
+        self.name_score = ""
+        for score in self.scores:
+            self.name_score += "%s_" % score.get_name()
+        self.name_score += self.last_trade_date
         self.name_bitlize = "%s_%s_%s_%s" % (self.name_ta(), self.model_split.train_start,
                                                 self.model_split.train_end, self.scores[0].get_name())
         self.name_sel = "%s" % (self.selector.get_name())
 
-    def get_name_score(self):
-        name_score = ""
-        for score in self.scores:
-            name_score += "%s_" % score.get_name()
-        name_score += self.last_trade_date
-        return "%s_%d" % (name_score, self.is_adj)
-
     def get_name_clazz(self):
-        return "%s_%s_%d_%s_%s_%s_%s" % (self.syms.get_name(), self.ta.get_name(), self.is_adj,
-                                                  self.get_name_score(), self.model_split.train_start, self.model_split.train_end,
+        return "%s_%s_%s_%s_%s" % (self.syms.get_name(), self.ta.get_name(),
+                                                  self.model_split.train_start, self.model_split.train_end,
                                                   self.classifier.get_name())
     def name_ta(self):
-        return "%s_%s_%d_%s_%s" % (self.syms.get_name(), self.ta.get_name(), self.is_adj, self.get_name_score(), self.last_trade_date)
+        return "%s_%s_%s" % (self.syms.get_name(), self.ta.get_name(), self.last_trade_date)
     def get_years(self, df):
         if "yyyy" not in df:
             df['yyyy'] = df.date.str.slice(0,4)
@@ -82,10 +77,9 @@ class MltradeConf:
 
     
     def get_ta_file(self):
-        name_ta = "%s_%s_%d_%s" % (self.syms.get_name(), self.ta.get_name(), self.is_adj, self.last_trade_date)
         if not os.path.exists(os.path.join(root, 'data', 'ta')):
             os.makedirs(os.path.join(root,'data','ta'))
-        return os.path.join(root, "data", "ta", "%s.pkl" % (name_ta))
+        return os.path.join(root, "data", "ta", "%s.pkl" % (self.name_ta()))
 
     def get_bitlize_file(self):
         if not os.path.exists(os.path.join(root, 'data', 'bitlize')):
@@ -100,17 +94,17 @@ class MltradeConf:
     def get_score_file(self):
         if not os.path.exists(os.path.join(root, 'data', 'score')):
             os.makedirs(os.path.join(root, 'data', 'score'))
-        return os.path.join(root, 'data', 'score', "%s_%s.pkl" % (self.get_name_score() , self.last_trade_date))
+        return os.path.join(root, 'data', 'score', "%s_%s.pkl" % (self.name_score , self.last_trade_date))
 
     def get_sel_file(self):
         if not os.path.exists(os.path.join(root, 'data', 'sel')):
             os.makedirs(os.path.join(root, 'data', 'sel'))
-        return os.path.join(root, 'data', 'sel', "%s.pkl" % (self.name_ta()))
+        return os.path.join(root, 'data', 'sel', "%s_%s.pkl" % (self.name_sel, self.last_trade_date))
 
     def get_pred_file(self):
         if not os.path.exists(os.path.join(root, 'data', 'pred')):
             os.makedirs(os.path.join(root, 'data', 'pred'))
-        return os.path.join(root, "data", "pred", "%s_%s_%s.pkl" % (self.name_ta(), self.classifier.get_name(), self.model_postfix))
+        return os.path.join(root, "data", "pred", "%s_%s_%s.pkl" % (self.get_name_clazz(),  self.last_trade_date, self.model_postfix))
 
     def get_long_report_file(self):
         return os.path.join(local_path, '..','..',"data", 'report', self.last_trade_date + "_long.txt")
@@ -118,8 +112,11 @@ class MltradeConf:
     def get_short_report_file(self):
         return os.path.join(local_path, '..','..',"data", 'report', self.last_trade_date + "_short.txt")
 
+    def get_abtest_report_file(self):
+        return os.path.join(local_path, '..','..',"data", 'report', self.last_trade_date + "_abtest.txt")
+
 class MyConfStableLTa(MltradeConf):
-    def __init__(self, ta = ta_set.TaSetBase1Ext4(), is_adj = False,
+    def __init__(self, ta = ta_set.TaSetBase1Ext4(),
             classifier=RFCv1n2000md6msl100(),
             #train_start="1990",
             train_start="2000",
@@ -134,7 +131,7 @@ class MyConfStableLTa(MltradeConf):
                 model_split=model_split,
                 classifier=classifier,
                 scores = [ScoreLabel(score, 1.0), ScoreRelative(score), ScoreRelativeOpen(score)],
-                ta = ta, is_adj = is_adj, n_pool=30, syms=syms, week = week)
+                ta = ta, n_pool=30, syms=syms, week = week)
 
 class MyConfForTest(MltradeConf):
     def __init__(self):
@@ -142,7 +139,6 @@ class MyConfForTest(MltradeConf):
         classifier = Ts(max_iterations=2000)
         classifier = ccl2()
         classifier = Logit2(nb_epoch=1)
-        classifier = TfDnn(nb_epoch=1)
         model_split=YearSpliter('2010', "2017", "1990", "2010")
         MltradeConf.__init__(self, model_split=model_split, classifier=classifier, n_pool=1, syms=yeod.SymsForTest())
 
