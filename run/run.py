@@ -94,11 +94,11 @@ if __name__ == '__main__':
         if not base.is_test_flag():
             dassert_yeod.work(confer)
         build.work(confer)
-        if not base.is_test_flag():
-            dassert_ta.work(confer)
+        #if not base.is_test_flag():
+        #    dassert_ta.work(confer)
         score_build.work(confer)
-        if not base.is_test_flag():
-            dassert_score.work(confer)
+        #if not base.is_test_flag():
+        #    dassert_score.work(confer)
         bitlize.work(confer)
         selected.work(confer)
         confer.force = False
