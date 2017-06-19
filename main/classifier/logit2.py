@@ -17,23 +17,16 @@ from main.classifier.base_classifier import BaseClassifier
 from main.classifier.interval_acc import IntervalAcc
 
 class Logit2(BaseClassifier):
-    def __init__(self, dim = 64, hs = 3, batch_size = 100, nb_epoch=30, dropout=0.5, verbose = 1):
+    def __init__(self, dim = 64, hs = 3, batch_size = 100, nb_epoch=30, verbose = 1):
         self.batch_size = batch_size
         self.nb_epoch = nb_epoch
         self.verbose = verbose
         self.dim = dim
         self.hs = hs
-        self.dropout = dropout
-        self.lr = 4e-5
         pass
     def get_name(self):
-        if self.dropout == 0.5:
-            return "ccl-logit-%d-%d-%d-%d" % (self.nb_epoch, self.batch_size, self.dim, self.hs)
-        else:
-            return "ccl-logit-%d-%d-%d-%d-%d" % (self.nb_epoch, self.batch_size, self.dim, self.hs, self.dropout * 10)
-
+        return "ccl-logit-%d-%d-%d-%d" % (self.nb_epoch, self.batch_size, self.dim, self.hs)
     def fit(self, X, y, df_test, score):
-        self.opt = Adam(self.lr)
         import numpy as np
         np.random.seed(608317)
         model = Sequential()
@@ -42,16 +35,18 @@ class Logit2(BaseClassifier):
                                   kernel_initializer=keras.initializers.glorot_uniform(seed=570255),
                                   bias_initializer=keras.initializers.constant(0.0)))
         self.classifier.add(Activation('relu'))
-        self.classifier.add(Dropout(self.dropout, seed=969458))
+        self.classifier.add(Dropout(0.5, seed=969458))
         for i in range(self.hs):
             self.classifier.add(Dense(output_dim=self.dim, kernel_initializer=keras.initializers.glorot_normal(seed=846635)))
             self.classifier.add(Activation('relu'))
-            self.classifier.add(Dropout(self.dropout ,seed=14306))
+            self.classifier.add(Dropout(0.5 ,seed=14306))
 
         self.classifier.add(Dense(output_dim=1, kernel_initializer=keras.initializers.glorot_uniform(seed=447630),
                                   bias_initializer=keras.initializers.constant(0.0)))
         self.classifier.add(Activation('sigmoid'))
-        self.classifier.compile(loss='binary_crossentropy', optimizer=self.opt, metrics=['accuracy'])
+        #opt = SGD(lr=0.01)
+        opt = Adam(lr=4e-5)
+        self.classifier.compile(loss='binary_crossentropy', optimizer=opt, metrics=['accuracy'])
         ival = IntervalAcc(cls = self, validation_data=(df_test, score), interval=1)
         self.classifier.fit(X, y, shuffle=False, batch_size=self.batch_size, nb_epoch=self.nb_epoch, callbacks=[ival])
     def predict_proba(self, X):
