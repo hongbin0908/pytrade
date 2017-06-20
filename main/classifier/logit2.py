@@ -23,6 +23,8 @@ class Logit2(BaseClassifier):
         self.verbose = verbose
         self.dim = dim
         self.hs = hs
+        self.lr = 4e-5
+        self.dropout = 0.5
         pass
     def get_name(self):
         return "ccl-logit-%d-%d-%d-%d" % (self.nb_epoch, self.batch_size, self.dim, self.hs)
@@ -35,17 +37,17 @@ class Logit2(BaseClassifier):
                                   kernel_initializer=keras.initializers.glorot_uniform(seed=570255),
                                   bias_initializer=keras.initializers.constant(0.0)))
         self.classifier.add(Activation('relu'))
-        self.classifier.add(Dropout(0.5, seed=969458))
+        self.classifier.add(Dropout(self.dropout, seed=969458))
         for i in range(self.hs):
             self.classifier.add(Dense(output_dim=self.dim, kernel_initializer=keras.initializers.glorot_normal(seed=846635)))
             self.classifier.add(Activation('relu'))
-            self.classifier.add(Dropout(0.5 ,seed=14306))
+            self.classifier.add(Dropout(self.dropout ,seed=14306))
 
         self.classifier.add(Dense(output_dim=1, kernel_initializer=keras.initializers.glorot_uniform(seed=447630),
                                   bias_initializer=keras.initializers.constant(0.0)))
         self.classifier.add(Activation('sigmoid'))
         #opt = SGD(lr=0.01)
-        opt = Adam(lr=4e-5)
+        opt = Adam(lr=self.lr)
         self.classifier.compile(loss='binary_crossentropy', optimizer=opt, metrics=['accuracy'])
         ival = IntervalAcc(cls = self, validation_data=(df_test, score), interval=1)
         self.classifier.fit(X, y, shuffle=False, batch_size=self.batch_size, nb_epoch=self.nb_epoch, callbacks=[ival])
